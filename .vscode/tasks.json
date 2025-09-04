@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Project",
+            "type": "shell",
+            "command": "make",
+            "args": [],
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Flash to Device",
+            "type": "shell",
+            "command": "make",
+            "args": ["flash"],
+            "dependsOn": "Build Project",
+            "group": "test"
+        },
+        {
+            "label": "Clean Build",
+            "type": "shell",
+            "command": "make",
+            "args": ["clean"],
+            "group": "build"
+        },
+        {
+            "label": "Erase Device",
+            "type": "shell",
+            "command": "make",
+            "args": ["erase"],
+            "group": "test"
+        },
+        {
+            "label": "Debug Project",
+            "type": "shell",
+            "command": "make",
+            "args": ["debug"],
+            "dependsOn": "Build Project",
+            "group": "test",
+            "isBackground": true
+        }
+    ]
+}
