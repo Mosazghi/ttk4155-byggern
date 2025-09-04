@@ -14,13 +14,13 @@ void uart_init(unsigned int baud_rate){
 // Transmit data function. Including polling for TX ready
 int uart_tx(char msgdata, FILE * file){
     while (!(/* TODO Finn register for: TX ready */ & (1 << /*Flag bit for empty buffer*/)));
-        /* TODO Finn register for: TX data */ = msgdata;
-    return;
+    //     /* TODO Finn register for: TX data */ = msgdata;
+    return 0;
 }
 
 // Receive data function. Including polling for RX ready
 int uart_rx(FILE * file){
-    while (!(/* TODO Finn register for: RX ready */ & (1 << /*Flag bit for data in buffer*/)));
-    return /* TODO Finn register for: RX data */;
+    // while (!(/* TODO Finn register for: RX ready */ & (1 << /*Flag bit for data in buffer*/)));
+    return 0; /* TODO Finn register for: RX data */
 }
 
