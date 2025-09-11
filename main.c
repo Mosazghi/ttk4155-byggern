@@ -9,22 +9,29 @@
 #include <string.h>
 #include <util/delay.h>
 #include "uart.h"
+#include "sram.h"
+void init_sys();
 
 int main() {
   DDRB |= (1 << PB0); 
-  uart_init(MY_UBRR);
-  char data[100];
-  int i = 0;
-  while(1) {
-    scanf("%s", data); 
-    if(data) {
-      printf("Rec: %s\n\r", data);
-      if (strcmp(data, "y") == 0)  {
-        PORTB ^= (1 << PB0); 
-      }
-    }
-    _delay_ms(100);
-  }
+
+  init_sys();
+
+  char data[255];
+  sram_write_string(0x1400, "Hello, world!");
+  sram_read_string(0x1400, data, sizeof(data));
+  printf("SRAM read: %s\n\r", data);
+  // sprintf(data, "%s", sram_read(0x1400));
+  // printf("SRAM read: %s\n", data);
+  // while(1) {
+  //   PORTB ^= (1 << PB0); 
+  //   _delay_ms(100);
+  // }
 
   return 0;
+}
+
+void init_sys() {
+  uart_init(MY_UBRR);
+  ext_ram_init();
 }

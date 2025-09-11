@@ -8,6 +8,11 @@
         "io.h": "c",
         "iom162.h": "c",
         "uart.h": "c",
-        "portpins.h": "c"
+        "portpins.h": "c",
+        "string.h": "c",
+        "stdint.h": "c",
+        "utility.h": "c",
+        "stdlib.h": "c",
+        "sram.h": "c"
     }
 }

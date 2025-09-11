@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include "uart.h"
-#include <avr/iom162.h>
+#include "utility.h"
 
 // Initialize uart
 void uart_init(unsigned int ubrr){
@@ -22,8 +22,9 @@ void uart_init(unsigned int ubrr){
 }
 
 // Transmit data function. Including polling for empty TX buffer
-int uart_tx(char msgdata, FILE * file){
+int uart_tx(char msgdata, FILE *file ){
 
+   UNUSED(file); 
     while (!( UCSR0A & (1 << UDRE0)));  // UDRE0 = 1 -> Transmit buffer empty & ready
     UDR0 = msgdata;                     // UDR0 = USART0 I/O Data Register
     return 0;
@@ -31,6 +32,7 @@ int uart_tx(char msgdata, FILE * file){
 
 // Receive data function. Including polling for data received.
 int uart_rx(FILE * file){
+   UNUSED(file);
 
     while (!(UCSR0A & (1 << RXC0)));    // RXC0 = 0 -> No unread data in buffer
     return UDR0;
