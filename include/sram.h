@@ -3,6 +3,6 @@
 #include <avr/io.h>
 #include <stdint.h>
 
-void xmem_init();
+void ext_ram_init();
 void sram_write(uint16_t addr, uint8_t data);
 uint8_t sram_read(uint16_t addr);
