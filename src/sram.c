@@ -3,6 +3,7 @@
 #include <avr/io.h>
 #include <stdint.h>
 #include "sram.h"
+#include <stdlib.h>
 
 
 void ext_ram_init(){
