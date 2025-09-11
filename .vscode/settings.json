@@ -13,6 +13,7 @@
         "stdint.h": "c",
         "utility.h": "c",
         "stdlib.h": "c",
-        "sram.h": "c"
+        "sram.h": "c",
+        "adc.h": "c"
     }
 }
