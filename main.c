@@ -19,7 +19,6 @@ int main() {
 
   init_sys();
   adc_init();
-
   // adc_read(0); 
   // char data[255];
   // int i = 0;
@@ -33,4 +32,5 @@ int main() {
 void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
+  LOG_INF("System initialized.\n");
 }
