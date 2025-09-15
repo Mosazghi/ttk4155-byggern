@@ -8,9 +8,9 @@
 
 
 void ext_ram_init(){
-    MCUCR |= (1 << SRE);        // Enable external memory
-    SFIOR |= (1 << XMM2);       // Mask PC4-PC7, used for JTAG
-LOG_INF("MCUCR = %02X, SFIOR = %02X", MCUCR, SFIOR);
+  MCUCR |= (1 << SRE);        // Enable external memory
+  SFIOR |= (1 << XMM2);       // Mask PC4-PC7, used for JTAG
+  LOG_INF("MCUCR = %02X, SFIOR = %02X", MCUCR, SFIOR);
 }
 
 void sram_write(uint16_t addr, uint8_t data){

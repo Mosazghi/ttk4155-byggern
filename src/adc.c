@@ -10,7 +10,7 @@ void adc_init() {
     TCCR1B = (1 << WGM12) | (1 << CS10); // CTC mode, no prescaler
     TCCR1A |= (1 << COM1A0);
 
-    OCR1A = 1024; // f_out = F_CPU / (2 * (OCR1A + 1)); 0 here gives half CPU frequency
+    OCR1A = 0; // f_out = F_CPU / (2 * (OCR1A + 1)); 0 here gives half CPU frequency
 
 }
 
