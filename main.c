@@ -22,12 +22,9 @@ int main() {
 
   while (1) {
     PORTB ^= (1 << PB0);
-    sram_write_string(0, "Hello, SRAM!");
-    char buffer[20];
-    sram_read_string(0, buffer, sizeof(buffer));
-    // Write the address of EEARL + first bit of EEARH to UART
-    LOG_INF("EEARL = %02X, EEARH = %02X, Full address = %04X", EEARL, (EEARH & 0x01), ((EEARH & 0x01) << 8) | EEARL);
-    LOG_INF("Read from SRAM: %s", buffer);
+    uint8_t adc_ch1 = adc_read(ADC_CH0);
+    uint8_t adc_ch2 = adc_read(ADC_CH1);
+    LOG_INF("ADC Value: %d (CHANNEL 0) %d (CHANNEL 1)\n", adc_ch1, adc_ch2);
     _delay_ms(200);
   }
   return 0;

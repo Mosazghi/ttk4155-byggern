@@ -9,4 +9,3 @@
 #define LOG_INF(fmt, ...) BASE_LOG(fmt,"[Info]: ", ##__VA_ARGS__);
 #define LOG_ERR(fmt, ...) BASE_LOG(fmt,"[Error]: ", ##__VA_ARGS__);
 #define UNUSED(x) (void)(x);
-
