@@ -21,13 +21,12 @@ void adc_timer_init()
 
 uint8_t adc_read(adc_channel_t channel)
 {
-  LOG_DBG("Reading from ADC: channel = %02X", (1 << channel));
-  uint8_t value = 0;
-
+  LOG_DBG("Reading from ADC: channel = %d", channel);
   volatile uint8_t *ext_ram = (uint8_t *)ADC_START; // ADC start address
+  uint8_t value = 0;
+  _delay_us(T_CONV); // Wait for ADC to stabilize
   for (int i = 0; i < (int)channel; i++)
   {                                  // Cycle to the correct channel
-    _delay_us(T_CONV);               // Wait for ADC to stabilize
     ext_ram[0] = (uint8_t)(channel); // Read data from ADC
   }
   value = ext_ram[channel]; // Read the ADC value from the specified channel

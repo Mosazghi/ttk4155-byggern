@@ -2,17 +2,28 @@
 
 #include "adc.h"
 
-struct joystick
+typedef struct
 {
     uint8_t x;
     uint8_t y;
     uint8_t btn;
-};
-struct touch_pad
+} joystick_xy_t;
+
+typedef enum
+{
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN,
+    NEUTRAL
+} joystick_dir_t;
+
+typedef struct
 {
     uint8_t x;
     uint8_t y;
-};
+} touch_pad_xy_t;
+
 typedef struct ADC
 {
     struct joystick;
