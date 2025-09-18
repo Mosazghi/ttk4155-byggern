@@ -24,8 +24,7 @@ int main()
   // DDRB |= (1 << PB0);
   init_sys();
 
-  
-while (1)
+  while (1)
   {
     joystick_xy_t joystick_data = avr_get_joystick();
 

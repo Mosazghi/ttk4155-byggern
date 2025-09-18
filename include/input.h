@@ -3,11 +3,11 @@
 #include <stdbool.h>
 typedef struct
 {
-    uint8_t x;
-    uint8_t y;
+    int8_t x;
+    int8_t y;
     bool btn;
 
-    // uint8_t btn;
+    // uint8_t btn
 } joystick_xy_t;
 
 typedef enum
@@ -36,7 +36,6 @@ typedef struct ADC
     touch_pad_xy_t touch_pad;
 } ADC;
 
-// ADC adc_read_all();
 void map_joystick(joystick_xy_t *joystick);
 ADC adc_read_all();
 void joystick_read(joystick_xy_t *joystick);
