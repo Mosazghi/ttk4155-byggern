@@ -1,9 +1,9 @@
 #define F_CPU 4915200UL
 #define BAUD 9600
-#define MY_UBRR F_CPU/16/BAUD-1
+#define MY_UBRR F_CPU / 16 / BAUD - 1
 #ifndef __AVR_ATmega162__
 #define __AVR_ATmega162__
-#endif 
+#endif
 #include <avr/io.h>
 #include <stdio.h>
 #include <string.h>
@@ -14,13 +14,13 @@
 #include "adc.h"
 void init_sys();
 
-int main() {
-  DDRB |= (1 << PB0); 
-
+int main()
+{
+  DDRB |= (1 << PB0);
   init_sys();
-  adc_init();
 
-  while (1) {
+  while (1)
+  {
     PORTB ^= (1 << PB0);
     uint8_t adc_ch1 = adc_read(ADC_CH0);
     uint8_t adc_ch2 = adc_read(ADC_CH1);
@@ -30,8 +30,10 @@ int main() {
   return 0;
 }
 
-void init_sys() {
+void init_sys()
+{
   uart_init(MY_UBRR);
   ext_ram_init();
+  adc_timer_init();
   LOG_INF("System initialized.\n");
 }

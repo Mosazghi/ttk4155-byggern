@@ -6,7 +6,8 @@
 #include <util/delay.h>
 #define T_CONV (9 * N_CHANNELS * 2) / F_CPU
 
-void adc_init() {
+void adc_timer_init()
+{
 
   // Set PD5 (OC1A) as output
   DDRD |= (1 << PD5);
@@ -18,14 +19,18 @@ void adc_init() {
       0; // f_out = F_CPU / (2 * (OCR1A + 1)); 0 here gives half CPU frequency
 }
 
-uint8_t adc_read(ADC_CHANNEL channel) {
+uint8_t adc_read(adc_channel_t channel)
+{
   LOG_DBG("Reading from ADC: channel = %02X", (1 << channel));
+  uint8_t value = 0;
+
   volatile uint8_t *ext_ram = (uint8_t *)ADC_START; // ADC start address
-  for (int i = 0; i < (int)channel; i++) { // Cycle to the correct channel
-    ext_ram[0] = (1 << channel);           // Read data from ADC
-    _delay_us(T_CONV);                     // Wait for ADC to stabilize
+  for (int i = 0; i < (int)channel; i++)
+  {                                  // Cycle to the correct channel
+    _delay_us(T_CONV);               // Wait for ADC to stabilize
+    ext_ram[0] = (uint8_t)(channel); // Read data from ADC
   }
-  uint8_t value =
-      ext_ram[channel]; // Read the ADC value from the specified channel
+  value = ext_ram[channel]; // Read the ADC value from the specified channel
+
   return value;
 }
