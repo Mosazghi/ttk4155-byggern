@@ -6,37 +6,33 @@
 #endif
 #include "adc.h"
 #include "avr.h"
+#include "input.h"
 #include "spi.h"
 #include "sram.h"
 #include "uart.h"
-#include "input.h"
 #include "utility.h"
 #include <avr/io.h>
-#include <stdio.h>
-#include <string.h>
 #include <util/delay.h>
 
 void init_sys();
 void init_gpio();
 
-int main()
-{
-  // DDRB |= (1 << PB0);
+int main() {
   init_sys();
 
-  while (1)
-  {
-    joystick_xy_t joystick_data = avr_get_joystick();
+  joystick_xy_t joystick_data;
+  while (1) {
+    joystick_data = avr_get_joystick();
 
-    LOG_INF("Joystick data: x = %d, y = %d, btn = %d", joystick_data.x, joystick_data.y, joystick_data.btn);
+    LOG_INF("Joystick data: x = %d, y = %d, btn = %d", joystick_data.x,
+            joystick_data.y, joystick_data.btn);
     _delay_ms(100);
   }
 
   return 0;
 }
 
-void init_sys()
-{
+void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
   adc_timer_init();
@@ -45,8 +41,7 @@ void init_sys()
   LOG_INF("System initialized.\n");
 }
 
-void init_gpio()
-{
+void init_gpio() {
   DDRB |= (1 << PB5) | (1 << PB4); // avr_cs, display_cs as output
   PORTB ^= (1 << PB4);             // select AVR
   PORTB ^= (1 << PB5);             // select AVR
