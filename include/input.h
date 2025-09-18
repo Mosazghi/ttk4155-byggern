@@ -1,13 +1,13 @@
 #pragma once
-
-#include <stdbool.h>
 #include "adc.h"
-
+#include <stdbool.h>
 typedef struct
 {
     uint8_t x;
     uint8_t y;
     bool btn;
+
+    // uint8_t btn;
 } joystick_xy_t;
 
 typedef enum
@@ -21,8 +21,8 @@ typedef enum
 
 typedef struct
 {
-    uint8_t x;
-    uint8_t y;
+    int16_t x;
+    int16_t y;
 } touch_pad_xy_t;
 
 // typedef struct ADC
@@ -30,5 +30,14 @@ typedef struct
 //     struct joystick;
 //     struct touch_pad;
 // };
+typedef struct ADC
+{
+    joystick_xy_t joystick;
+    touch_pad_xy_t touch_pad;
+} ADC;
 
 // ADC adc_read_all();
+void map_joystick(joystick_xy_t *joystick);
+ADC adc_read_all();
+void joystick_read(joystick_xy_t *joystick);
+touch_pad_xy_t touch_pad_read();

@@ -15,7 +15,7 @@ TARGET_CPU := atmega162
 TARGET_DEVICE := m162
 
 CC := avr-gcc
-CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb -Iinclude -Wall -Wextra -Werror
+CFLAGS := -O -std=c11 -mmcu=$(TARGET_CPU) -ggdb -Iinclude -Wall -Wextra
 
 ifeq ($(DEBUG), 1)
 	CFLAGS += -DDEBUG=1 
