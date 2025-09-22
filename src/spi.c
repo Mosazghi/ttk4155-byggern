@@ -1,4 +1,6 @@
 #include "spi.h"
+#include "utility.h"
+#include <util/delay.h>
 
 void spi_init() {
   // Set MOSI, SCK, !SS as Output
@@ -24,3 +26,12 @@ uint8_t spi_recveive() {
     ;
   return SPDR; // Return received data
 }
+   // data: input data. Ex.: [0x01, 0x02, 0x03, ...]
+void spi_transmit_packet(const uint8_t *data, int length) {
+  for (int i = 0; i < length; i++) {
+    LOG_DBG("Writing command: %2X (SPI)", data[i]);
+    spi_transmit(data[i]);
+  }
+}
+
+  

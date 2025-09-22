@@ -10,3 +10,4 @@
 void spi_init();
 void spi_transmit(uint8_t data);
 uint8_t spi_recveive(void);
+void spi_transmit_packet(const uint8_t *data, int length);
