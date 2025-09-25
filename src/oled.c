@@ -12,22 +12,22 @@ const uint8_t s[] = {0b00100110, 0b01100111, 0b01001101, 0b01011001,
                      0b01111011, 0b00110010, 0b00000000, 0b00000000};
 
 static void oled_write(uint8_t data, oled_write_mode_t type) {
-  PIN_WRITE(PORTB, OLED_CS, LOW);
+  spi_slave_select(OLED);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   LOG_DBG("Transmitting from oled_write: %#x", data);
   spi_transmit(data);
 }
 
 static void oled_write_data_packet(const uint8_t *data, int size) {
-  PIN_WRITE(PORTB, OLED_CS, LOW);
+  spi_slave_select(OLED);
   PIN_WRITE(PORTB, OLED_CMD, HIGH);
   spi_transmit_packet(data, size);
 }
 
 int oled_init(void) {
-  DDRB |= (1 << PB2);
-  PORTB &= ~(1 << PB3); // Display CS
-  PORTB &= ~(1 << PB2); // OLED cmd display
+  DDRB |= (1 << OLED_CMD);
+  spi_slave_select(OLED); // Display CS
+  PORTB &= ~(1 << OLED_CMD); // OLED cmd display PB2
   uint8_t oled_init_array[] = {
       0xAE, // display off
       0xA8, // multiplex ratio mode: 63
@@ -53,8 +53,8 @@ int oled_init(void) {
   };
 
   spi_transmit_packet(oled_init_array, ARRAY_LENGTH(oled_init_array));
-  PORTB |= (1 << PB2); // Display cmd
-  PORTB |= (1 << PB3); // Display CS
+  PORTB |= (1 << OLED_CMD); // Display cmd
+  spi_slave_deselect();
                        // 000100 (1 << PB4)
                        //
                        //  000100 (1 << PB4)
@@ -85,17 +85,10 @@ void oled_print() {
   oled_write_data_packet(a_normal, ARRAY_LENGTH(a_normal));
   oled_write(0xB6, CMD); // Set page adress to page0
   oled_go_to_column(64);
-  oled_write_data_packet(a_small, ARRAY_LENGTH(a_small));
-  // oled_write_command(0xB1); // Set page adress to page0
-  // oled_go_to_column(0);
-  // oled_write_data_packet(s, ARRAY_LENGTH(s));
+  oled_write_data_packet(a_normal, ARRAY_LENGTH(a_normal));
 }
 
 void oled_go_to_column(int column) {
   oled_write(0x00 + (column % 16), CMD);
   oled_write(0x10 + (column / 16), CMD);
-}
-
-void oled_printf(const char* str) {
-    
 }
