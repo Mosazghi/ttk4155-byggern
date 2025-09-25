@@ -76,11 +76,10 @@ int oled_init(void) {
 void oled_clear(void) {
   int addr = ADDR_START;
   for (int i = 0; i < 8; i++) {
-    oled_set_cursor(0, 0);
+    oled_set_cursor(i, 0);
     for (int j = 0; j < 128; j++) {
       oled_write(0x00, DATA);       // writing blank to each page
-      oled_write_sram(addr, 0x00);  // writing blank in sram
-      addr++;
+      oled_write_sram(addr++, 0x00);  // writing blank in sram
     }
   }
   LOG_INF("finished clearing sram at %#X", addr); 
@@ -154,7 +153,7 @@ void oled_display() {
         data = sram_read((ADDR_START + j)); 
         oled_write(data, DATA);
       }
-      oled_set_cursor(i, 0); 
+      // oled_set_cursor(i, 0); 
       if (data != 0)
         LOG_INF("sending from sram data %#X", data); 
     }
