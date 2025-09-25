@@ -1,8 +1,8 @@
 #pragma once
-#include <avr/iom162.h>
-#include <stdio.h>
 #include <avr/io.h>
+#include <avr/iom162.h>
 #include <stdint.h>
+#include <stdio.h>
 #define SRAM_START 0x1400
 #define SRAM_SIZE 0x0C00
 void ext_ram_init();

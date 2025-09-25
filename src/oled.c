@@ -27,8 +27,8 @@ static void oled_write_data_packet(const uint8_t *data, int size) {
 
 int oled_init(void) {
   DDRB |= (1 << OLED_CMD);
-  spi_slave_select(OLED); // Display CS
-  PORTB &= ~(1 << OLED_CMD); // OLED cmd display PB2
+  spi_slave_select(OLED);     // Display CS
+  PORTB &= ~(1 << OLED_CMD);  // OLED cmd display PB2
   uint8_t oled_init_array[] = {
       0xAE,  // display off
       0xA8,  // multiplex ratio mode: 63
@@ -54,13 +54,13 @@ int oled_init(void) {
   };
 
   spi_transmit_packet(oled_init_array, ARRAY_LENGTH(oled_init_array));
-  PORTB |= (1 << OLED_CMD); // Display cmd
+  PORTB |= (1 << OLED_CMD);  // Display cmd
   spi_slave_deselect();
-                       // 000100 (1 << PB4)
-                       //
-                       //  000100 (1 << PB4)
-                       //| 001000 (PORTB)
-                       //  001000
+  // 000100 (1 << PB4)
+  //
+  //  000100 (1 << PB4)
+  //| 001000 (PORTB)
+  //  001000
   oled_clear();
   oled_init_timer_30hz();
   return 0;  // Return 0 on success

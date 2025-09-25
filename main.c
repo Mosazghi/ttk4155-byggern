@@ -29,7 +29,6 @@ int main() {
   oled_init();
   oled_clear();
 
-
   return 0;
 }
 
@@ -43,7 +42,7 @@ void init_sys() {
 }
 
 void init_gpio() {
-  DDRB |= (1 << PB4) | (1 << PB3); // avr_cs, display_cs as output
+  DDRB |= (1 << PB4) | (1 << PB3);  // avr_cs, display_cs as output
   spi_slave_deselect();
 }
 

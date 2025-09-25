@@ -1,10 +1,12 @@
 #include "avr.h"
-#include "spi.h"
+
 #include <avr/io.h>
+
+#include "spi.h"
 #define F_CPU 4915200UL
-#include "utility.h"
 #include <util/delay.h>
 
+#include "utility.h"
 
 static long map(long x, long in_min, long in_max, long out_min, long out_max) {
   long ret = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -15,11 +17,9 @@ static void avr_write(uint8_t data) {
   spi_transmit(data);  // Read AVR info
 }
 
- 
-
 joystick_xy_t avr_get_joystick() {
   joystick_xy_t joystick;
-  avr_write(0x03); // Command to read joystick data
+  avr_write(0x03);  // Command to read joystick data
   _delay_us(40);
   joystick.x = spi_receive();
   _delay_us(2);
@@ -35,7 +35,7 @@ joystick_xy_t avr_get_joystick() {
 
 buttons_t avr_get_buttons() {
   buttons_t buttons;
-  avr_write(0x04);        // Command for reading button data
+  avr_write(0x04);  // Command for reading button data
   _delay_us(40);
   buttons.right = spi_receive();
   _delay_us(2);
@@ -47,9 +47,9 @@ buttons_t avr_get_buttons() {
   return buttons;
 }
 
-touch_pad_t avr_get_touch_pad(){
+touch_pad_t avr_get_touch_pad() {
   touch_pad_t touch_pad;
-  avr_write(0x01);       // Command for reading touch_pad data
+  avr_write(0x01);  // Command for reading touch_pad data
   _delay_us(40);
   touch_pad.x = spi_receive();
   _delay_us(2);
@@ -57,13 +57,13 @@ touch_pad_t avr_get_touch_pad(){
   _delay_us(2);
   touch_pad.size = spi_receive();
   spi_slave_deselect();
- 
+
   return touch_pad;
 }
 
 touch_slider_t avr_get_touch_slider() {
   touch_slider_t touch_slider;
-  avr_write(0x02);      // Command for reading touch_slider data
+  avr_write(0x02);  // Command for reading touch_slider data
   _delay_us(40);
   touch_slider.x = spi_receive();
   _delay_us(2);
