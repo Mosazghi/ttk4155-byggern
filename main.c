@@ -24,10 +24,10 @@ int main() {
   oled_clear();
   oled_set_cursor(0, 0);
   oled_set_font(SMALL);
-  oled_printf("H");
-  // oled_set_cursor(3, 30);
-  // oled_set_font(SMALL);
-  // oled_printf("Testing");
+  oled_printf("Hello world");
+  oled_set_cursor(3, 30);
+  oled_set_font(SMALL);
+  oled_printf("Testing");
   oled_display();
   while (1) {
     _delay_ms(10);

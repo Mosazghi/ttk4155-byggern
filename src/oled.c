@@ -95,11 +95,11 @@ void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
 
 void oled_set_cursor(int x, int y) {
   /* Outside scope cases */
-  if (x > PAGE_HEIGHT) {
-    x = PAGE_HEIGHT;
+  if (x > SEG_WIDTH) {
+    x = SEG_WIDTH;
   }
-  if (y > SEG_WIDTH) {
-    y = SEG_WIDTH;
+  if (y > PAGE_HEIGHT) {
+    y = PAGE_HEIGHT;
   }
   if (y < 0) {
     y = 0;
@@ -149,16 +149,14 @@ void oled_printf(const char* str) {
 
 void oled_display() {
     uint8_t data = 0; 
-    // uint8_t screen[8 * 128]; 
-    // sram_read_packet(ADDR_START, screen, ARRAY_LENGTH(screen)); 
-    // oled_write_data_packet(screen, ARRAY_LENGTH(screen)); 
-    for (int i = 0; i < (8 * 128); i++) {
-      data = sram_read((ADDR_START + i)); 
-      oled_write(data, DATA);
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 128; j++) {
+        data = sram_read((ADDR_START + j)); 
+        oled_write(data, DATA);
+      }
+      oled_set_cursor(i, 0); 
       if (data != 0)
         LOG_INF("sending from sram data %#X", data); 
     }
     LOG_INF("data should be displayed");
-    // uint8_t first = sram_read(0x1400); 
-    // LOG_INF("wrote to oled %#X", first);
 }
