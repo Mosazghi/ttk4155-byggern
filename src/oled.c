@@ -95,3 +95,7 @@ void oled_go_to_column(int column) {
   oled_write(0x00 + (column % 16), CMD);
   oled_write(0x10 + (column / 16), CMD);
 }
+
+void oled_printf(const char* str) {
+    
+}
