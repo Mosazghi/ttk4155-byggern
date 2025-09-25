@@ -22,8 +22,8 @@ void init_gpio();
 int main() {
   init_sys();
   oled_init();
+  oled_clear();
   while(1) {
-    oled_clear();
     oled_print();
     _delay_ms(10);
   }

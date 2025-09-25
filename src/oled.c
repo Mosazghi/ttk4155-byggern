@@ -13,7 +13,7 @@ const uint8_t s[] = {0b00100110, 0b01100111, 0b01001101, 0b01011001,
 
 static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
-  PIN_WRITE(PORTB, OLED_CMD, oled_write_mode == CMD ? LOW : HIGH);
+  PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   LOG_DBG("Transmitting from oled_write: %#x", data);
   spi_transmit(data);
 }
@@ -24,40 +24,29 @@ static void oled_write_data_packet(const uint8_t *data, int size) {
   spi_transmit_packet(data, size);
 }
 
-// static void oled_write_command(uint8_t data) {
-//     PIN_WRITE(PORTB, OLED_CMD, LOW);
-//     oled_write(data);
-// }
-//
-// static void oled_write_data(uint8_t data) {
-//     PIN_WRITE(PORTB, OLED_CMD, HIGH);
-//     oled_write(data);
-// }
-
 int oled_init(void) {
   DDRB |= (1 << PB2);
   PORTB &= ~(1 << PB3); // Display CS
   PORTB &= ~(1 << PB2); // OLED cmd display
   uint8_t oled_init_array[] = {
       0xAE, // display off
-      0xA1, // segment remap
-      0xDA, // common pads hardware: alternative
-      0x12, //
-      0xC8, // common output scan direction: com63-com0
       0xA8, // multiplex ratio mode: 63
       0x3F, //
       0xD5, // dispay division ratio / osc. freq. mode
       0x80,
-      0x81, // contrast control
-      0xFF, //
-      0xD9, // set pre-charge preiod
-      0x21, //
+      0xd3, // display offset 
+      0x00, 
+      0x40, // display start line 0 
       0x20, // set addressing mode
       0x02, // enable page mode
+      0xA1, // segment remap (SEG0=COM127)
+      0xC8, // common output scan direction: com63-com0
+      0xDA, // common pads hardware: alternative
+      0x12, //
+      0x81, // contrast control
+      0xFF, //
       0xDB, // VCOM deselect level mode
-      0x30, //
-      0xAD, // master configuration
-      0x00, //
+      0x34, //
       0xA4, // out follows RAM content
       0xA6, // set normal display
       0xAF  // display on
@@ -82,7 +71,7 @@ void oled_clear(void) {
     oled_write(0x00, CMD);     // set oled lower column line
     oled_write(0x10, CMD);     // Set oled higher column line
     for (int j = 0; j < 128; j++) {
-      oled_write_data(0x00); // writing blank to each page
+      oled_write(0x00, DATA); // writing blank to each page
     }
   }
 }
