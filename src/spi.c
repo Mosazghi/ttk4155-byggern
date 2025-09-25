@@ -18,8 +18,15 @@ void spi_transmit(uint8_t data) {
   while (!(SPSR & (1 << SPIF)))
     ;
 }
+uint8_t spi_txrx(uint8_t data) {
+    SPDR = data;
+  // Wait for transmission to complete
+  while (!(SPSR & (1 << SPIF)))
+    ;
+    return SPDR; 
+}
 
-uint8_t spi_recveive() {
+uint8_t spi_receive() {
   SPDR = 0xFF; // Send dummy byte to initiate SPI read
   // Wait for transmission to complete
   while (!(SPSR & (1 << SPIF)))
@@ -34,4 +41,19 @@ void spi_transmit_packet(const uint8_t *data, int length) {
   }
 }
 
+void spi_slave_select(spi_slave_t device){
+  if (device == OLED) {
+    PORTB &= ~(1 << DISPLAY_SS_PIN);
+  }
+  // else if (unit == AVR) {
+  //   PORTB &= ~(1 << AVR_SS_PIN);
+  // }
+  else {
+    PORTB &= ~(1 << AVR_SS_PIN);
+  }
+}
+
+void spi_slave_deselect() {
+    PORTB |= (1 << DISPLAY_SS_PIN) | (1 << AVR_SS_PIN); 
+}
   
