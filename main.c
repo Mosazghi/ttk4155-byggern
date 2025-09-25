@@ -4,28 +4,34 @@
 #ifndef __AVR_ATmega162__
 #define __AVR_ATmega162__
 #endif
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <util/delay.h>
+
 #include "adc.h"
 #include "avr.h"
 #include "input.h"
+#include "oled.h"
 #include "spi.h"
 #include "sram.h"
 #include "uart.h"
 #include "utility.h"
-#include <avr/io.h>
-#include <util/delay.h>
-#include "oled.h"
 
 void init_sys();
 void init_gpio();
 
+volatile uint8_t oled_ctrl_flag = 0;
 
 int main() {
+  sei();
+  DDRD |= (1 << PD4);  // Set PD0 as output for testing
   init_sys();
   oled_init();
   oled_clear();
-  while(1) {
-    oled_print();
-    _delay_ms(10);
+  while (1) {
+    if (oled_ctrl_flag) {
+      oled_update();
+    }
   }
   // uint8_t packet[3] = {0x05, 1, 1};
   // PORTB &= ~(1 << PB4);
@@ -56,6 +62,8 @@ void init_sys() {
 }
 
 void init_gpio() {
-  DDRB |= (1 << PB4) | (1 << PB3); // avr_cs, display_cs as output
-  PORTB |= (1 << PB4) | (1 << PB3); // select display
+  DDRB |= (1 << PB4) | (1 << PB3);   // avr_cs, display_cs as output
+  PORTB |= (1 << PB4) | (1 << PB3);  // select display
 }
+
+ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }
