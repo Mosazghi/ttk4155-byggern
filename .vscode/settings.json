@@ -3,6 +3,7 @@
   "stm32-for-vscode.openOCDPath": false,
   "stm32-for-vscode.armToolchainPath": false,
   "files.associations": {
+    ".als.json": "jsonc",
     "delay.h": "c",
     "stdio.h": "c",
     "io.h": "c",
@@ -14,7 +15,11 @@
     "utility.h": "c",
     "stdlib.h": "c",
     "sram.h": "c",
-    "adc.h": "c"
+    "adc.h": "c",
+    "spi.h": "c",
+    "avr.h": "c",
+    "oled.h": "c",
+    "fonts.h": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",
@@ -57,7 +62,7 @@
   "C_Cpp_Runner.includePaths": [],
   "C_Cpp_Runner.includeSearch": [
     "*",
-    "**/*"
+    "**/*available"
   ],
   "C_Cpp_Runner.excludeSearch": [
     "**/build",

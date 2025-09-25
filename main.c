@@ -4,43 +4,58 @@
 #ifndef __AVR_ATmega162__
 #define __AVR_ATmega162__
 #endif
-#include <avr/io.h>
-#include <stdio.h>
-#include <string.h>
-#include <util/delay.h>
-#include "uart.h"
-#include "sram.h"
-#include "utility.h"
 #include "adc.h"
+#include "avr.h"
 #include "input.h"
+#include "spi.h"
+#include "sram.h"
+#include "uart.h"
+#include "utility.h"
+#include <avr/io.h>
+#include <util/delay.h>
+#include "oled.h"
 
 void init_sys();
+void init_gpio();
 
-int main()
-{
-  DDRB |= (1 << PB0);
+
+int main() {
   init_sys();
-
-  
-while (1)
-  {
-    PORTB ^= (1 << PB0);
-    ADC input_values = adc_read_all();
-    LOG_INF("Joystick X: %d, Y: %d\n", input_values.joystick.x, input_values.joystick.y);
-    //LOG_INF("Touch Pad X: %d, Y: %d\n", input_values.touch_pad.x, input_values.touch_pad.y);
-    //uint8_t adc_ch1 = adc_read(ADC_CH0);
-    //uint8_t adc_ch2 = adc_read(ADC_CH1);
-    //LOG_INF("ADC Value: %d (CHANNEL 0) %d (CHANNEL 1)\n", adc_ch1, adc_ch2);
-    _delay_ms(200);
+  oled_init();
+  oled_clear();
+  while(1) {
+    oled_print();
+    _delay_ms(10);
   }
+  // uint8_t packet[3] = {0x05, 1, 1};
+  // PORTB &= ~(1 << PB4);
+  // spi_transmit_packet(packet, 3);
+  // // spi_transmit(0x05);
+  // // spi_transmit(0);
+  // // spi_transmit(1);
+  // PORTB |= (1 << PB4);
+  // joystick_xy_t joystick_data;
+  // while (1) {
+  //   // joystick_data = avr_get_joystick();
+
+  //   // LOG_INF("Joystick data: x = %d, y = %d, btn = %d", joystick_data.x,
+  //   //         joystick_data.y, joystick_data.btn);
+  //   _delay_ms(100);
+  // }
+
   return 0;
 }
 
-void init_sys()
-{
+void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
   adc_timer_init();
+  init_gpio();
+  spi_init();
   LOG_INF("System initialized.\n");
 }
 
+void init_gpio() {
+  DDRB |= (1 << PB4) | (1 << PB3); // avr_cs, display_cs as output
+  PORTB |= (1 << PB4) | (1 << PB3); // select display
+}
