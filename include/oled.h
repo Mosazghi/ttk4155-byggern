@@ -1,11 +1,14 @@
 #pragma once 
 #include "spi.h"
+#include "sram.h"
 #include "utility.h"
 #include <string.h>
 #define OLED_CS PB3
 #define OLED_CMD PB2
 #define SEG_WIDTH 127 
 #define PAGE_HEIGHT 7
+#define ADDR_START 0x1400 // start of sram (1kb)
+#define ADDR_END 0x1800 // end of sram (2kb) 
 
 typedef enum { CMD, DATA } oled_write_mode_t;
 typedef enum { SMALL = 4, MEDIUM = 5, LARGE = 8 } oled_font_size_t; 
@@ -25,3 +28,4 @@ void oled_clear(void);
 
 /* Graphics */
 void oled_printf(const char* str);
+void oled_display(); 

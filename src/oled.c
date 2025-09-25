@@ -4,16 +4,31 @@
 
 static oled_ctx ctx = {0};
 
+
 static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   spi_transmit(data);
 }
 
+static void oled_write_sram(uint16_t addr, uint8_t data) {
+  if (addr < ADDR_START && addr > ADDR_END) {
+    LOG_ERR("Outside of display sram scope (oled_write_sram)");
+  }
+  sram_write(addr, data);
+}
+
 static void oled_write_data_packet(const uint8_t* data, int size) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, HIGH);
   spi_transmit_packet(data, size);
+}
+
+static void oled_write_data_packet_sram(uint16_t addr, const uint8_t *data, size_t size) {
+  // PIN_WRITE(PORTB, OLED_CS, LOW);
+  // PIN_WRITE(PORTB, OLED_CMD, HIGH);
+    sram_transmit_packet(addr, data, size);
+  //   // 0x1400-0x1800 (1kb-2kb or 1kb space)
 }
 
 int oled_init(void) {
@@ -59,14 +74,16 @@ int oled_init(void) {
 }
 
 void oled_clear(void) {
+  int addr = ADDR_START;
   for (int i = 0; i < 8; i++) {
-    oled_write(0xB0 + i, CMD);  // Set page adress to page0
-    oled_write(0x00, CMD);      // set oled lower column line
-    oled_write(0x10, CMD);      // Set oled higher column line
+    oled_set_cursor(0, 0);
     for (int j = 0; j < 128; j++) {
-      oled_write(0x00, DATA);  // writing blank to each page
+      oled_write(0x00, DATA);       // writing blank to each page
+      oled_write_sram(addr, 0x00);  // writing blank in sram
+      addr++;
     }
   }
+  LOG_INF("finished clearing sram at %#X", addr); 
 }
 
 void oled_go_to_column(int column) {
@@ -116,6 +133,7 @@ void oled_printf(const char* str) {
   size_t size = strlen(str);
   uint8_t msg[size][(int)ctx.font_size];
   int pos = 0;
+  int addr = ADDR_START;
 
   /* Convert str to font */
   for (size_t i = 0; i < size; i++) {
@@ -125,6 +143,22 @@ void oled_printf(const char* str) {
 
   /* Display words */
   for (size_t i = 0; i < size; i++) {
-    oled_write_data_packet(msg[i], ARRAY_LENGTH(msg[i]));
+    oled_write_data_packet_sram(addr + ((int)ctx.font_size * i), msg[i], (int)ctx.font_size);
   }
+}
+
+void oled_display() {
+    uint8_t data = 0; 
+    // uint8_t screen[8 * 128]; 
+    // sram_read_packet(ADDR_START, screen, ARRAY_LENGTH(screen)); 
+    // oled_write_data_packet(screen, ARRAY_LENGTH(screen)); 
+    for (int i = 0; i < (8 * 128); i++) {
+      data = sram_read((ADDR_START + i)); 
+      oled_write(data, DATA);
+      if (data != 0)
+        LOG_INF("sending from sram data %#X", data); 
+    }
+    LOG_INF("data should be displayed");
+    // uint8_t first = sram_read(0x1400); 
+    // LOG_INF("wrote to oled %#X", first);
 }

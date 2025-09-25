@@ -10,4 +10,6 @@ void sram_write(uint16_t addr, uint8_t data);
 uint8_t sram_read(uint16_t addr);
 void sram_write_string(uint16_t addr, const char *data);
 void sram_read_string(uint16_t addr, char *buffer, size_t max_length);
+void sram_read_packet(uint16_t addr, uint8_t *buffer, size_t size);
+void sram_transmit_packet(uint16_t addr, const uint8_t *data, size_t size);
 void sram_test(void);
