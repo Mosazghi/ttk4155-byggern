@@ -1,18 +1,19 @@
 {
-    "C_Cpp.default.compilerPath": "/usr/bin/avr-gcc",
-    "stm32-for-vscode.openOCDPath": false,
-    "stm32-for-vscode.armToolchainPath": false,
-    "files.associations": {
-        "delay.h": "c",
-        "stdio.h": "c",
-        "io.h": "c",
-        "iom162.h": "c",
-        "uart.h": "c",
-        "portpins.h": "c",
-        "string.h": "c",
-        "stdint.h": "c",
-        "utility.h": "c",
-        "stdlib.h": "c",
-        "sram.h": "c"
-    }
+  "C_Cpp.default.compilerPath": "/usr/bin/avr-gcc",
+  "stm32-for-vscode.openOCDPath": false,
+  "stm32-for-vscode.armToolchainPath": false,
+  "files.associations": {
+    "delay.h": "c",
+    "stdio.h": "c",
+    "io.h": "c",
+    "iom162.h": "c",
+    "uart.h": "c",
+    "portpins.h": "c",
+    "string.h": "c",
+    "stdint.h": "c",
+    "utility.h": "c",
+    "stdlib.h": "c",
+    "sram.h": "c"
+  },
+  "C_Cpp_Runner.msvcBatchPath": ""
 }
