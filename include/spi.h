@@ -3,6 +3,8 @@
 #include <avr/iom162.h>
 #include <stdint.h>
 
+#define DISPLAY_SS_PIN PB3
+#define AVR_SS_PIN PB4
 typedef enum { AVR, OLED } spi_slave_t;
 
 void spi_init();

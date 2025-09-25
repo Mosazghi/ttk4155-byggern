@@ -1,0 +1,24 @@
+{
+    "name": "avr-gcc-dev (ATmega162)",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--device=/dev/bus/usb:/dev/bus/usb",
+        "--privileged"
+        
+        // If you use a USB-serial programmer, you can map a specific port instead:
+        // "--device=/dev/ttyUSB0:/dev/ttyUSB0"
+    ],
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "postCreateCommand": "avr-gcc --version && avrdude -? >/dev/null 2>&1 || true && clang-format --version",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true,
+                "C_Cpp.clang_format_style": "file"
+            },
+            "extensions": ["ms-vscode.cpptools", "ms-vscode.makefile-tools"]
+        }
+    }
+}

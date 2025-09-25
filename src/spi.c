@@ -1,8 +1,8 @@
 #include "spi.h"
 
+#include "utility.h"
 #include <util/delay.h>
 
-#include "utility.h"
 
 void spi_init() {
   // Set MOSI, SCK, !SS as Output
