@@ -14,16 +14,29 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "oled.h"
+#include "menu.h"
 
 void init_sys();
 void init_gpio();
 
+static menu_state_t menu_state;
+static buttons_t buttons;
+//menu_t menu;
 
 int main() {
   init_sys();
   oled_init();
   oled_clear();
+  //menu_state_t menu_state;
+  menu_init(&menu_state, NULL);
 
+  while (1) {
+    buttons = avr_get_buttons();
+    // LOG_INF("Current Menu: %s\n", menu_state.current_menu->title);
+    // LOG_INF("Current Selection: %s\n", menu.items->label);
+    hat_test_loop(buttons);
+    _delay_ms(200);
+  }
 
   return 0;
 }
