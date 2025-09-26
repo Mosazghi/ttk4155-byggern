@@ -37,6 +37,7 @@ void menu_move_up(menu_state_t *state);
 void menu_move_down(menu_state_t *state);
 bool menu_select(menu_state_t *state);
 void hat_test_loop(buttons_t buttons);
+static void reset_high_score(void);
 //void menu_test_loop(void);
 
 

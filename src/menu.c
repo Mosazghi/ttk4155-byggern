@@ -20,7 +20,7 @@ static struct {
 }
 menu_data = {
     .score_items = {
-        {"Reset High Score", NULL, NULL},
+        {"Reset High Score", NULL, reset_high_score},
         {"Return", NULL, NULL}
     },
     .score_menu = {
@@ -45,38 +45,10 @@ menu_data = {
     }
 };
 
-
-// menu_t score_menu;
-// menu_item_t main_items[3];
-// menu_t main_menu;
-// score_menu = {
-//     .header = "Current High Score: ",
-//     .title = "High Score",
-//     .items = score_menu_items,
-//     .num_items = 2,
-//     .parent = main_menu
-// };
-
-// main_items[] = {
-//     {"New Game", NULL, NULL},
-//     {"High Score", score_menu, NULL},
-//     {"Calibrate Joystick", NULL, NULL}
-// };
-
-// menu_t main_menu = {
-//     .header = "Name of the Game",
-//     .title = "Main Menu",
-//     .items = main_items,
-//     .num_items = 3,
-//     .parent = NULL
-// };
-
-// menu_item_t score_menu_items[] = {
-//     {"Reset High Score", NULL, NULL},
-//     {"Return", NULL, NULL}
-// };
-
-
+static void reset_high_score(void) {
+    // TODO: Logic
+    LOG_INF("High score has been reset!\n");
+}
 
 static void setup_menu_structure(void) {
     // Link score menu
@@ -113,24 +85,30 @@ void menu_move_down(menu_state_t *state) {
     else state->current_index = 0;
 }
 
-// void menu_return(menu_state_t *state) {
-//     menu_item_t *item =&state->current_menu->items[state->]
-// }
-
-bool menu_select(menu_state_t *state){
-    // FIXME: If items size < current_index, add a check 
+bool menu_select(menu_state_t *state){ 
     menu_item_t *item = &state->current_menu->items[state->current_index];
+    
+    // Enter submenu
     if (item->sub_menu != NULL) {
         state->current_menu = item->sub_menu;
         state->current_index = 0;
         return true;
     }
+
+    // Return to parent menu
     else if (item->sub_menu == NULL && state->current_menu->parent != NULL && strcmp(item->label, "Return") == 0) {
         state->current_menu = state->current_menu->parent;
         state->current_index = 0;
         return true;
     }
-    else return false;
+
+    // Execute callback function
+    else if (item->callback != NULL) {
+        item->callback();
+        return true;
+    }
+
+    return false;
 };
 
 // void menu_test_loop(void) {
