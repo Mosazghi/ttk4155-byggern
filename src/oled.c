@@ -1,3 +1,4 @@
+#include <math.h>
 #include <oled.h>
 #include <string.h>
 
@@ -36,18 +37,8 @@ static void oled_write_data_packet_sram(uint16_t addr, const uint8_t* data, size
 
 static void set_cursor(int x, int y) {
   /* Outside scope cases */
-  if (x > SEG_WIDTH) {
-    x = SEG_WIDTH;
-  }
-  if (y > PAGE_HEIGHT) {
-    y = PAGE_HEIGHT;
-  }
-  if (y < 0) {
-    y = 0;
-  }
-  if (x < 0) {
-    x = 0;
-  }
+  x = CLAMP(x, 0, SEG_WIDTH);
+  y = CLAMP(y, 0, PAGE_HEIGHT);
 
   oled_write(0xB0 + y, CMD);
   oled_go_to_column(x);
@@ -182,14 +173,48 @@ void oled_draw_pixel(int x, int y) {
   uint16_t addr = ADDR_START;
 
   /* Limit */
-  if (x <= 0) x = 0;
-  if (y <= 0) y = 0;
-  if (x > OLED_WIDHT - 1) x = OLED_WIDHT - 1;
-  if (y > OLED_HEIGHT - 1) y = OLED_HEIGHT - 1;
+  x = CLAMP(x, 0, OLED_WIDTH - 1);
+  y = CLAMP(y, 0, OLED_HEIGHT - 1);
 
   /* Calculate pixel position */
   point = (1 << (uint8_t)(y % 8));
   addr = ADDR_START + x + (y / 8 * 128);
 
   oled_write_data_packet_sram(addr, &point, sizeof(point));
+}
+
+void oled_draw_line(int x_start, int y_start, int x_end, int y_end) {
+  /* Limit */
+  x_start = CLAMP(x_start, 0, OLED_WIDTH);
+  y_start = CLAMP(y_start, 0, OLED_HEIGHT);
+  x_end = CLAMP(x_end, 0, OLED_WIDTH);
+  y_end = CLAMP(y_end, 0, OLED_HEIGHT);
+
+  /* Calculate line using Bresenham's algorithm */
+  int dx = ABS(x_end - x_start);
+  int sx = x_start < x_end ? 1 : -1;
+  int dy = -ABS(y_end - y_start);
+  int sy = y_start < y_end ? 1 : -1;
+  int error = dx + dy;
+  int e2 = 0;
+
+  while (1) {
+    oled_draw_pixel(x_start, y_start);
+    e2 = 2 * error;
+    LOG_INF("x: %d, y: %d", x_start, y_start);
+
+    if (x_start == x_end && y_start == y_end) break;
+
+    LOG_INF("e2: %d, dy: %d, dx: %d", e2, dy, dx);
+    if (e2 >= dy) {
+      if (x_start == x_end) break;
+      error += dy;
+      x_start += sx;
+    }
+    if (e2 <= dx) {
+      if (y_start == y_end) break;
+      error += dx;
+      y_start += sy;
+    }
+  }
 }

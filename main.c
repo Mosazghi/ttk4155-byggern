@@ -26,15 +26,7 @@ int main() {
   // oled_printf("Testing", 0, 1);
   // oled_set_font(LARGE);
   // oled_printf("This is longg", 0, 2);
-  oled_draw_pixel(0, 0);
-  oled_draw_pixel(128, 0);
-
-  oled_draw_pixel(0, 64);
-  oled_draw_pixel(128, 64);
-
-  oled_draw_pixel(64, 32);
-  oled_draw_pixel(2, 0);
-  oled_draw_pixel(24, 32);
+  oled_draw_line(0, 0, 128, 64);
   oled_display();
   while (1) {
     _delay_ms(10);
