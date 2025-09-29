@@ -1,6 +1,10 @@
 #include <oled.h>
+#include <string.h>
 
 #include "fonts.h"
+#include "spi.h"
+#include "sram.h"
+#include "utility.h"
 
 static oled_ctx ctx = {0};
 

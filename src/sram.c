@@ -40,20 +40,20 @@ void sram_read_string(uint16_t addr, char *buffer, size_t max_length) {
       break; // Stop if we hit the null terminator
     }
   }
-  buffer[i] = '\0'; // Ensure the string is null-terminated
+  buffer[i] = '\0';  // Ensure the string is null-terminated
 }
 
 void sram_read_packet(uint16_t addr, uint8_t *buffer, size_t size) {
-  for(size_t i = 0; i < size; i++) {
-    buffer[i] = sram_read(addr + i); 
+  for (size_t i = 0; i < size; i++) {
+    buffer[i] = sram_read(addr + i);
   }
 }
 
 void sram_transmit_packet(uint16_t addr, const uint8_t *data, size_t size) {
   for (size_t i = 0; i < size; i++) {
-    sram_write(addr++, *data++); 
+    sram_write(addr++, *data++);
   }
-  LOG_DBG("Transmitted up until %#X", addr); 
+  LOG_DBG("Transmitted up until %#X", addr);
 }
 
 void sram_test(void) {
