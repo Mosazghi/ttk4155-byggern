@@ -5,7 +5,8 @@
 #include <stdio.h>
 
 #define ADC_START 0x1000
-typedef enum {
+typedef enum
+{
   ADC_CH0,
   ADC_CH1,
   ADC_CH2,

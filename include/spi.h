@@ -3,13 +3,11 @@
 #include <avr/iom162.h>
 #include <stdint.h>
 
-typedef enum { AVR, OLED } spi_slave_t;
+// TODO: Define correct pins
+#define AVR_SS_PIN PB3
+#define DISPLAY_SS_PIN PB4
 
 void spi_init();
 void spi_transmit(uint8_t data);
-uint8_t spi_receive(void);
+uint8_t spi_recveive(void);
 void spi_transmit_packet(const uint8_t *data, int length);
-uint8_t spi_txrx(uint8_t data);
-
-void spi_slave_select(spi_slave_t unit);
-void spi_slave_deselect();

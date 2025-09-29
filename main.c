@@ -4,7 +4,6 @@
 #ifndef __AVR_ATmega162__
 #define __AVR_ATmega162__
 #endif
-#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -20,15 +19,19 @@
 void init_sys();
 void init_gpio();
 
-volatile uint8_t oled_ctrl_flag = 0;
-
 int main() {
-  sei();
-  DDRD |= (1 << PD4);  // Set PD0 as output for testing
   init_sys();
-  oled_init();
   oled_clear();
-
+  oled_set_font(SMALL);
+  oled_printf("Hello world", 0, 0);
+  oled_set_font(MEDIUM);
+  oled_printf("Testing", 0, 1);
+  oled_set_font(LARGE);
+  oled_printf("This is longg", 0, 2);
+  oled_display();
+  while (1) {
+    _delay_ms(10);
+  }
   return 0;
 }
 
@@ -38,12 +41,11 @@ void init_sys() {
   adc_timer_init();
   init_gpio();
   spi_init();
+  oled_init();
   LOG_INF("System initialized.\n");
 }
 
 void init_gpio() {
-  DDRB |= (1 << PB4) | (1 << PB3);  // avr_cs, display_cs as output
-  spi_slave_deselect();
+  DDRB |= (1 << PB4) | (1 << PB3);   // avr_cs, display_cs as output
+  PORTB |= (1 << PB4) | (1 << PB3);  // select display
 }
-
-ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }

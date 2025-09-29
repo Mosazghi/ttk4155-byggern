@@ -1,7 +1,6 @@
 #pragma once
-#include <stdbool.h>
-
 #include "adc.h"
+#include <stdbool.h>
 typedef struct {
   int x;
   int y;
