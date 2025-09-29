@@ -1,114 +1,130 @@
 #include "menu.h"
-#include <stdint.h>
-#include <stdbool.h>
 #include "utility.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
+void set_difficulty_level(uint8_t level);
 
-static struct {
-    menu_state_t state;
-
-    // Score menu items & structure
-    menu_item_t score_items[2];
-    menu_t score_menu;
-
-    // Future menu items & structure
-
-    //Main menu items & structure
-    menu_item_t main_items[3];
-    menu_t main_menu;
+static void return_menu(void) {
+  // This function is intentionally left blank.
+  // The actual return logic is handled in menu_select.
 }
-menu_data = {
-    .score_items = {
-        {"Reset High Score", NULL, reset_high_score},
-        {"Return", NULL, NULL}
-    },
-    .score_menu = {
-        .header = "Current High Score: ",
-        .title = "High Score",
-        .items = NULL,
-        .num_items = 2,
-        .parent = NULL
-    },
-
-    .main_items = {
-        {"New Game", NULL, NULL},
-        {"High Score", NULL, NULL},
-        {"Calibrate Joystick", NULL, NULL}
-    },
-    .main_menu = {
-        .header = "Name of the Game",
-        .title = "Main Menu",
-        .items = NULL,
-        .num_items = 3,
-        .parent = NULL
-    }
-};
 
 static void reset_high_score(void) {
-    // TODO: Logic
-    LOG_INF("High score has been reset!\n");
+  // TODO: Logic
+  LOG_INF("High score has been reset!\n");
 }
 
+// Solution: Initialize without parent, then set parent after declaration
+static menu_item_t difficulty_items[] = {
+    {"Easy", NULL, NULL},
+    {"Medium", NULL, NULL},
+    {"Hard", NULL, NULL},
+    {"Return", NULL, NULL},
+};
+
+static menu_t difficulty_menu = {
+    .header = "Choose Difficulty",
+    .title = "New Game",
+    .items = difficulty_items,
+    .num_items = 4,
+    .parent = NULL // Will be set in setup function
+};
+static menu_item_t score_items[] = {
+    {"Reset High Scores", NULL, NULL},
+    {"Return", NULL, NULL},
+};
+
+static menu_t scor_menu = {
+    .header = "High Scores",
+    .title = "High Scores",
+    .items = score_items,
+    .num_items = 2,
+    .parent = NULL // Will be set in setup function
+};
+
+static menu_item_t main_items[] = {{"New Game", &difficulty_menu, NULL},
+                                   {"High Scorue", NULL, NULL},
+                                   {"Calibrate Joystick", NULL, NULL},
+                                   {"Debug", NULL, NULL}};
+
+menu_t menu_root = {
+    .header = "Ping Pong",
+    .title = "Main Menu",
+    .items = main_items,
+    .num_items = 4,
+    .parent = NULL,
+};
+
+// Global menu state
+static menu_state_t menu_data_state;
+
 static void setup_menu_structure(void) {
-    // Link score menu
-    menu_data.score_menu.items = menu_data.score_items;
-    menu_data.score_menu.parent = &menu_data.main_menu;
-    
-    // Link main menu
-    menu_data.main_menu.items = menu_data.main_items;
-    menu_data.main_items[1].sub_menu = &menu_data.score_menu;
-    
-    // Initialize state
-    menu_data.state.current_menu = &menu_data.main_menu;
-    menu_data.state.current_index = 0;
+  // NEW GAME ---
+  // Set up parent relationships AFTER all menus are declared
+  difficulty_menu.parent = &menu_root;
+
+  // Set up callbacks with proper parameters if needed
+  // Note: Your callback signature might need adjustment for level parameter
+  difficulty_items[0].callback = (void (*)(void))set_difficulty_level;
+  difficulty_items[1].callback = (void (*)(void))set_difficulty_level;
+  difficulty_items[2].callback = (void (*)(void))set_difficulty_level;
+  difficulty_items[3].callback = (void (*)(void))return_menu;
+  // SCORE ---
+  scor_menu.parent = &menu_root;
+  score_items[0].callback = &reset_high_score;
+  score_items[1].callback = (void (*)(void))return_menu;
+
+  // TODO: DEBUG ---
 }
 
 void menu_init(menu_state_t *state, menu_t *root) {
-    (void)root;
-    setup_menu_structure();
-    state->current_menu = &menu_data.main_menu;
-    state->current_index = 0;
+  (void)root;
+  setup_menu_structure();
+  state->current_menu = &menu_root;
+  state->current_index = 0;
 }
 
-void menu_move_up(menu_state_t *state){
-    if (state->current_index > 0) {
-        state->current_index --;
-    }
-    else state->current_index = state->current_menu->num_items - 1;
+void menu_move_up(menu_state_t *state) {
+  if (state->current_index > 0) {
+    state->current_index--;
+  } else
+    state->current_index = state->current_menu->num_items - 1;
 }
 
 void menu_move_down(menu_state_t *state) {
-    if (state->current_index < state->current_menu->num_items -1) {
-        state->current_index ++;
-    }
-    else state->current_index = 0;
+  if (state->current_index < state->current_menu->num_items - 1) {
+    state->current_index++;
+  } else
+    state->current_index = 0;
 }
 
-bool menu_select(menu_state_t *state){ 
-    menu_item_t *item = &state->current_menu->items[state->current_index];
-    
-    // Enter submenu
-    if (item->sub_menu != NULL) {
-        state->current_menu = item->sub_menu;
-        state->current_index = 0;
-        return true;
-    }
+bool menu_select(menu_state_t *state) {
+  menu_item_t *item = &state->current_menu->items[state->current_index];
 
-    // Return to parent menu
-    else if (item->sub_menu == NULL && state->current_menu->parent != NULL && strcmp(item->label, "Return") == 0) {
-        state->current_menu = state->current_menu->parent;
-        state->current_index = 0;
-        return true;
-    }
+  // Enter submenu
+  if (item->sub_menu != NULL) {
+    state->current_menu = item->sub_menu;
+    state->current_index = 0;
+    return true;
+  }
 
-    // Execute callback function
-    else if (item->callback != NULL) {
-        item->callback();
-        return true;
-    }
+  // Return to parent menu
+  else if (item->sub_menu == NULL && state->current_menu->parent != NULL &&
+           strcmp(item->label, "Return") == 0) {
+    state->current_menu = state->current_menu->parent;
+    state->current_index = 0;
+    return true;
+  }
 
-    return false;
+  // Execute callback function
+  else if (item->callback != NULL) {
+    item->callback();
+    return true;
+  }
+
+  return false;
 };
 
 // void menu_test_loop(void) {
@@ -123,29 +139,29 @@ bool menu_select(menu_state_t *state){
 
 //     if (js.btn == 1) {
 //         menu_select(&menu_data.state);
-//         LOG_INF("Selected: %s\n", 
+//         LOG_INF("Selected: %s\n",
 //             menu_data.state.current_menu->items[menu_data.state.current_index].label);
 //     }
-    
+
 //     LOG_INF("Current Menu: %s\n", menu_data.state.current_menu->title);
-//     LOG_INF("Current Selection: %s\n", 
+//     LOG_INF("Current Selection: %s\n",
 //             menu_data.state.current_menu->items[menu_data.state.current_index].label);
 // }
 
 void hat_test_loop(buttons_t buttons) {
-    if (buttons.NU == 1) {
-        menu_move_up(&menu_data.state);
-    }
-    else if (buttons.ND == 1) {
-        menu_move_down(&menu_data.state);
-    }
-    if (buttons.NB == 1) {
-        menu_select(&menu_data.state);
-        LOG_INF("Selected: %s\n", 
-            menu_data.state.current_menu->items[menu_data.state.current_index].label);
-    }
-    LOG_INF("Current Menu: %s\n", menu_data.state.current_menu->title);
-    LOG_INF("Current Selection: %s\n", 
-            menu_data.state.current_menu->items[menu_data.state.current_index].label);
-    
+  if (buttons.NU == 1) {
+    menu_move_up(&menu_data_state);
+  } else if (buttons.ND == 1) {
+    menu_move_down(&menu_data_state);
+  }
+  if (buttons.NB == 1) {
+    menu_select(&menu_data_state);
+    LOG_INF("Selected: %s\n",
+            menu_data_state.current_menu->items[menu_data_state.current_index]
+                .label);
+  }
+  LOG_INF("Current Menu: %s\n", menu_data_state.current_menu->title);
+  LOG_INF(
+      "Current Selection: %s\n",
+      menu_data_state.current_menu->items[menu_data_state.current_index].label);
 }

@@ -7,27 +7,27 @@
 #include "adc.h"
 #include "avr.h"
 #include "input.h"
+#include "menu.h"
+#include "oled.h"
 #include "spi.h"
 #include "sram.h"
 #include "uart.h"
 #include "utility.h"
 #include <avr/io.h>
 #include <util/delay.h>
-#include "oled.h"
-#include "menu.h"
 
 void init_sys();
 void init_gpio();
 
 static menu_state_t menu_state;
 static buttons_t buttons;
-//menu_t menu;
+// menu_t menu;
 
 int main() {
   init_sys();
   oled_init();
   oled_clear();
-  //menu_state_t menu_state;
+  // menu_state_t menu_state;
   menu_init(&menu_state, NULL);
 
   while (1) {
