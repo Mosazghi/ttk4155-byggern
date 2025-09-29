@@ -5,6 +5,8 @@
 #define PAGE_HEIGHT 7
 #define ADDR_START 0x1400  // start of sram (1kb)
 #define ADDR_END 0x1800    // end of sram (2kb)
+#define OLED_WIDHT 128
+#define OLED_HEIGHT 64
 
 typedef enum { CMD, DATA } oled_write_mode_t;
 typedef enum { SMALL = 4, MEDIUM = 5, LARGE = 8 } oled_font_size_t;
@@ -23,3 +25,4 @@ void oled_clear(void);
 /* Graphics */
 void oled_printf(const char* str, int x, int y);
 void oled_display();
+void oled_draw_pixel(int x, int y);

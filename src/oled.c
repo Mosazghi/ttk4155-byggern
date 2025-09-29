@@ -176,3 +176,20 @@ void oled_display() {
     }
   }
 }
+
+void oled_draw_pixel(int x, int y) {
+  uint8_t point = 0;
+  uint16_t addr = ADDR_START;
+
+  /* Limit */
+  if (x <= 0) x = 0;
+  if (y <= 0) y = 0;
+  if (x > OLED_WIDHT - 1) x = OLED_WIDHT - 1;
+  if (y > OLED_HEIGHT - 1) y = OLED_HEIGHT - 1;
+
+  /* Calculate pixel position */
+  point = (1 << (uint8_t)(y % 8));
+  addr = ADDR_START + x + (y / 8 * 128);
+
+  oled_write_data_packet_sram(addr, &point, sizeof(point));
+}

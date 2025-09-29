@@ -13,7 +13,7 @@ static long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return ret;
 }
 static void avr_write(uint8_t data) {
-  spi_slave_select(AVR);
+  spi_slave_select(SPI_AVR);
   spi_transmit(data);  // Read AVR info
 }
 
