@@ -1,10 +1,10 @@
-#ifndef MENU_H
-#define MENU_H
+#pragma once
 
-#include "avr.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include "avr.h"
 
 // Forward declarations
 typedef struct menu_t menu_t;
@@ -38,5 +38,3 @@ bool menu_select(menu_state_t *state);
 void hat_test_loop(buttons_t buttons);
 static void reset_high_score(void);
 // void menu_test_loop(void);
-
-#endif /* MENU_H */

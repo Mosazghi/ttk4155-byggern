@@ -1,10 +1,15 @@
-#include "menu.h"
-#include "utility.h"
+#include "game_menu.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
-void set_difficulty_level(uint8_t level);
+#include "utility.h"
+
+uint8_t set_difficulty_level(uint8_t level) {
+  int x = level;
+  return x;
+}
 
 static void return_menu(void) {
   // This function is intentionally left blank.
@@ -29,7 +34,7 @@ static menu_t difficulty_menu = {
     .title = "New Game",
     .items = difficulty_items,
     .num_items = 4,
-    .parent = NULL // Will be set in setup function
+    .parent = NULL  // Will be set in setup function
 };
 static menu_item_t score_items[] = {
     {"Reset High Scores", NULL, NULL},
@@ -41,7 +46,7 @@ static menu_t scor_menu = {
     .title = "High Scores",
     .items = score_items,
     .num_items = 2,
-    .parent = NULL // Will be set in setup function
+    .parent = NULL  // Will be set in setup function
 };
 
 static menu_item_t main_items[] = {{"New Game", &difficulty_menu, NULL},
@@ -157,11 +162,9 @@ void hat_test_loop(buttons_t buttons) {
   if (buttons.NB == 1) {
     menu_select(&menu_data_state);
     LOG_INF("Selected: %s\n",
-            menu_data_state.current_menu->items[menu_data_state.current_index]
-                .label);
+            menu_data_state.current_menu->items[menu_data_state.current_index].label);
   }
   LOG_INF("Current Menu: %s\n", menu_data_state.current_menu->title);
-  LOG_INF(
-      "Current Selection: %s\n",
-      menu_data_state.current_menu->items[menu_data_state.current_index].label);
+  LOG_INF("Current Selection: %s\n",
+          menu_data_state.current_menu->items[menu_data_state.current_index].label);
 }

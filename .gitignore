@@ -1,6 +1,7 @@
 # Prerequisites
 build/
 *.d
+.cache/
 
 # Object files
 *.o
