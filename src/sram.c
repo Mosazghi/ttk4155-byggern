@@ -43,6 +43,19 @@ void sram_read_string(uint16_t addr, char *buffer, size_t max_length) {
   buffer[i] = '\0';  // Ensure the string is null-terminated
 }
 
+void sram_read_packet(uint16_t addr, uint8_t *buffer, size_t size) {
+  for (size_t i = 0; i < size; i++) {
+    buffer[i] = sram_read(addr + i);
+  }
+}
+
+void sram_transmit_packet(uint16_t addr, const uint8_t *data, size_t size) {
+  for (size_t i = 0; i < size; i++) {
+    sram_write(addr++, *data++);
+  }
+  LOG_DBG("Transmitted up until %#X", addr);
+}
+
 void sram_test(void) {
   volatile char *ext_ram = (char *)SRAM_START;  // Start address for the SRAM
   uint16_t ext_ram_size = SRAM_SIZE;

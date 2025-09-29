@@ -40,7 +40,7 @@ void spi_transmit_packet(const uint8_t *data, int length) {
 }
 
 void spi_slave_select(spi_slave_t device) {
-  if (device == OLED) {
+  if (device == SPI_OLED) {
     PORTB &= ~(1 << DISPLAY_SS_PIN);
   }
   // else if (unit == AVR) {
