@@ -1,3 +1,4 @@
+#include <avr/interrupt.h>
 #include <oled.h>
 #include <string.h>
 
@@ -6,8 +7,8 @@
 #include "sram.h"
 #include "utility.h"
 
+static void oled_init_timer_30hz();
 static oled_ctx ctx = {0};
-
 static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
@@ -91,6 +92,7 @@ int oled_init(void) {
                         //| 001000 (PORTB)
                         //  001000
   oled_clear();
+  oled_init_timer_30hz();
 
   return 0;  // Return 0 on success
 }
@@ -144,7 +146,7 @@ void oled_printf(const char* str, int x, int y) {
     store_letter(msg[i], pos);
   }
 
-  LOG_INF("cursor address is starting at: %#X", cursor_to_addr(x, y));
+  LOG_DBG("cursor address is starting at: %#X", cursor_to_addr(x, y));
 
   /* Display words */
   for (size_t i = 0; i < size; i++) {
@@ -175,4 +177,20 @@ void oled_display() {
       prev_data = data;
     }
   }
+}
+
+static void oled_init_timer_30hz() {
+  cli();
+  // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
+  TCCR0 = (1 << WGM12) | (1 << CS02) | (1 << CS00);
+
+  // Enable Output Compare Match interrupt
+  TIMSK |= (1 << OCIE0);
+
+  /*
+    use the following: (f_CPU / prescaler * target_freq) - 1
+    (4915200 / 1024 * 30) - 1 = 159
+  */
+  OCR0 = 159;
+  sei();
 }
