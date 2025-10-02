@@ -1,6 +1,8 @@
 #include "avr.h"
+
 #include <avr/interrupt.h>
 #include <avr/io.h>
+
 #include "spi.h"
 #define F_CPU 4915200UL
 #include <util/delay.h>
@@ -11,6 +13,9 @@ long map(long x, long in_min, long in_max, long out_min, long out_max) {
   long ret = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   return ret;
 }
+
+void avr_init() { avr_timer_init_10hz(); }
+
 void avr_write(uint8_t data) {
   spi_slave_select(SPI_AVR);
   spi_transmit(data);  // Read AVR info
@@ -75,9 +80,9 @@ touch_slider_t avr_get_touch_slider() {
 void avr_timer_init_10hz() {
   cli();
 
-  TCCR3B |= (1 << WGM32) | (1 << CS32) | (1 << CS30);   // CTC, 1024 prescaler
-  ETIMSK |= (1 << OCIE3A);                // IE: IV executed when OCF3A in TIFR is set
-                                          // Set when TCNT3 = OCR3A 
-  OCR3A = HZ_TO_TIMER(10);                // compare register: 10hz = 459
+  TCCR3B |= (1 << WGM32) | (1 << CS32) | (1 << CS30);  // CTC, 1024 prescaler
+  ETIMSK |= (1 << OCIE3A);                             // IE: IV executed when OCF3A in TIFR is set
+                                                       // Set when TCNT3 = OCR3A
+  OCR3A = HZ_TO_TIMER(10);                             // compare register: 10hz = 459
   sei();
 }
