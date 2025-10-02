@@ -43,7 +43,6 @@ void menu_init();
 void menu_move_up(menu_state_t *state);
 void menu_move_down(menu_state_t *state);
 void menu_select(menu_state_t *state);
-void menu_loop(buttons_t buttons);
+void menu_loop(buttons_t *buttons);
 void update_display();
-void update_menu_state(buttons_t buttons);
 // void menu_test_loop(void);

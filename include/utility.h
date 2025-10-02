@@ -2,7 +2,7 @@
 #define F_CPU 4915200UL
 #include <stdio.h>
 #include <util/delay.h>
-#define BASE_LOG(fmt, info, ...) printf(info fmt "\n\r", ##__VA_ARGS__);
+#define BASE_LOG(fmt, info, ...) printf(info fmt, ##__VA_ARGS__);
 #if DEBUG
 #define LOG_DBG(fmt, ...) BASE_LOG(fmt, "[Debug]: ", ##__VA_ARGS__);
 #else

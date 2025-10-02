@@ -52,6 +52,7 @@ typedef struct __attribute__((packed)) {
   uint8_t size;
 } touch_slider_t;
 
+void avr_init();
 joystick_xy_t avr_get_joystick();
 touch_pad_t avr_get_touch_pad();
 touch_slider_t avr_get_touch_slider();

@@ -20,6 +20,8 @@ volatile uint8_t input_ctrl_flag = 0;
 buttons_t buttons;
 void init_sys();
 void init_gpio();
+#include "avr.h"
+#include "game_logic.h"
 
 int main() {
   init_sys();
@@ -28,20 +30,18 @@ int main() {
     if (input_ctrl_flag) {
       input_ctrl_flag = 0;
       buttons = avr_get_buttons();
-      menu_loop(buttons);
+      menu_loop(&buttons);
     }
     if (oled_ctrl_flag) {
       oled_ctrl_flag = 0;
-      update_display();
+      if (g_game_state.is_in_game) {
+        game_loop(&buttons);
+      } else {
+        update_display();
+      }
     }
     _delay_ms(50);
   }
-}
-
-void test_draw(int i) {
-  oled_draw_line(0, 0, 128, 0);  // top
-  oled_printf("TEST", 26, i);
-  oled_printf("ANNET", 64, 3);
 }
 
 void init_sys() {
@@ -51,7 +51,7 @@ void init_sys() {
   spi_init();
   oled_init();
   menu_init();
-  avr_timer_init_10hz();
+  avr_init();
   LOG_INF("System initialized.\n");
 }
 
