@@ -39,7 +39,7 @@ typedef struct __attribute__((packed)) {
     };
   };
 } buttons_t;
-buttons_t buttons;
+
 typedef struct __attribute__((packed)) {
   uint8_t x;
   uint8_t y;

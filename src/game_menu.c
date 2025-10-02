@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "oled.h"
 #include "utility.h"
 
 uint8_t set_difficulty_level(uint8_t level) {
@@ -41,7 +42,7 @@ static menu_item_t score_items[] = {
     {"Return", NULL, NULL},
 };
 
-static menu_t scor_menu = {
+static menu_t score_menu = {
     .header = "High Scores",
     .title = "High Scores",
     .items = score_items,
@@ -54,41 +55,104 @@ static menu_item_t main_items[] = {{"New Game", &difficulty_menu, NULL},
                                    {"Calibrate Joystick", NULL, NULL},
                                    {"Debug", NULL, NULL}};
 
-menu_t menu_root = {
+// GLOBAL MENU STATES
+static menu_t g_menu_root = {
     .header = "Ping Pong",
     .title = "Main Menu",
     .items = main_items,
     .num_items = 4,
     .parent = NULL,
 };
-
-// Global menu state
-static menu_state_t menu_data_state;
+static menu_state_t g_menu_state;
+// ------------------
 
 static void setup_menu_structure(void) {
   // NEW GAME ---
   // Set up parent relationships AFTER all menus are declared
-  difficulty_menu.parent = &menu_root;
+  difficulty_menu.parent = &g_menu_root;
 
   // Set up callbacks with proper parameters if needed
   // Note: Your callback signature might need adjustment for level parameter
-  difficulty_items[0].callback = (void (*)(void))set_difficulty_level;
-  difficulty_items[1].callback = (void (*)(void))set_difficulty_level;
-  difficulty_items[2].callback = (void (*)(void))set_difficulty_level;
-  difficulty_items[3].callback = (void (*)(void))return_menu;
+  difficulty_items[0].callback = NULL;  //(void (*)(void))set_difficulty_level;
+  difficulty_items[1].callback = NULL;
+  difficulty_items[2].callback = NULL;
+  difficulty_items[3].callback = NULL;
   // SCORE ---
-  scor_menu.parent = &menu_root;
-  score_items[0].callback = &reset_high_score;
-  score_items[1].callback = (void (*)(void))return_menu;
+  score_menu.parent = &g_menu_root;
+  score_items[0].callback = NULL;
+  score_items[1].callback = NULL;
 
   // TODO: DEBUG ---
+  // MENU STATE ---
+  g_menu_state.current_menu = &g_menu_root;
+  g_menu_state.is_playing = false;
+  g_menu_state.current_render = MAIN_MENU;
+  g_menu_state.current_index = 0;
 }
 
-void menu_init(menu_state_t *state, menu_t *root) {
-  (void)root;
+void menu_init() {
+  // (void)root;
   setup_menu_structure();
-  state->current_menu = &menu_root;
-  state->current_index = 0;
+}
+
+void update_menu_state(buttons_t buttons) {
+  if (buttons.NU == 1) {
+    LOG_INF("UP\n");
+    menu_move_up(&g_menu_state);
+  } else if (buttons.ND == 1) {
+    LOG_INF("DOWN\n");
+    menu_move_down(&g_menu_state);
+  }
+  if (buttons.NB == 1) {
+    LOG_INF("BUTTON\n");
+    menu_select(&g_menu_state);
+    // LOG_INF("Selected: %s\n",
+    // g_menu_state.current_menu->items[g_menu_state.current_index].label);
+  }
+}
+
+void menu_loop(buttons_t buttons) {
+  update_menu_state(buttons);
+  // update_display();
+}
+
+void update_display() {
+  char display_buffer[128];
+  LOG_INF("Current Menu: %s\n", g_menu_state.current_menu->title);
+  switch (g_menu_state.current_render) {
+    case MAIN_MENU:
+      snprintf(display_buffer, sizeof(display_buffer), "Menu: %s",
+               g_menu_state.current_menu->title);
+
+      oled_printf(display_buffer, 0, 0);
+      // print its items
+      for (uint8_t i = 0; i < g_menu_state.current_menu->num_items; i++) {
+        if (i == g_menu_state.current_index) {
+          snprintf(display_buffer, sizeof(display_buffer), "> %s",
+                   g_menu_state.current_menu->items[i].label);
+        } else {
+          snprintf(display_buffer, sizeof(display_buffer), "  %s",
+                   g_menu_state.current_menu->items[i].label);
+        }
+        oled_printf(display_buffer, 0, i + 1);  // +1 to account for header
+      }
+      break;
+    case NEW_GAME_MENU:
+      oled_printf("New Game Menu", 0, 0);
+      break;
+    case SCORES_MENU:
+      oled_printf("Scores Menu", 0, 0);
+      break;
+    case CALIBRATE_MENU:
+      oled_printf("Calibrate Menu", 0, 0);
+      break;
+    case DEBUG_MENU:
+      oled_printf("Debug Menu", 0, 0);
+      break;
+    default:
+      break;
+  }
+  oled_display();
 }
 
 void menu_move_up(menu_state_t *state) {
@@ -132,39 +196,17 @@ bool menu_select(menu_state_t *state) {
   return false;
 };
 
-// void menu_test_loop(void) {
-//     joystick_xy_t js = avr_get_joystick();
-
-//     if (js.y > 40) {
-//         menu_move_up(&menu_data.state);
-//     }
-//     else if (js.y < -40) {
-//         menu_move_down(&menu_data.state);
-//     }
-
-//     if (js.btn == 1) {
-//         menu_select(&menu_data.state);
-//         LOG_INF("Selected: %s\n",
-//             menu_data.state.current_menu->items[menu_data.state.current_index].label);
-//     }
-
-//     LOG_INF("Current Menu: %s\n", menu_data.state.current_menu->title);
-//     LOG_INF("Current Selection: %s\n",
-//             menu_data.state.current_menu->items[menu_data.state.current_index].label);
-// }
-
 void hat_test_loop(buttons_t buttons) {
   if (buttons.NU == 1) {
-    menu_move_up(&menu_data_state);
+    menu_move_up(&g_menu_state);
   } else if (buttons.ND == 1) {
-    menu_move_down(&menu_data_state);
+    menu_move_down(&g_menu_state);
   }
   if (buttons.NB == 1) {
-    menu_select(&menu_data_state);
-    LOG_INF("Selected: %s\n",
-            menu_data_state.current_menu->items[menu_data_state.current_index].label);
+    menu_select(&g_menu_state);
+    LOG_INF("Selected: %s\n", g_menu_state.current_menu->items[g_menu_state.current_index].label);
   }
-  LOG_INF("Current Menu: %s\n", menu_data_state.current_menu->title);
+  LOG_INF("Current Menu: %s\n", g_menu_state.current_menu->title);
   LOG_INF("Current Selection: %s\n",
-          menu_data_state.current_menu->items[menu_data_state.current_index].label);
+          g_menu_state.current_menu->items[g_menu_state.current_index].label);
 }

@@ -13,6 +13,7 @@ static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   spi_transmit(data);
+  spi_slave_deselect();
 }
 
 static void oled_write_sram(uint16_t addr, uint8_t data) {
@@ -22,11 +23,11 @@ static void oled_write_sram(uint16_t addr, uint8_t data) {
   sram_write(addr, data);
 }
 
-static void oled_write_data_packet(const uint8_t* data, int size) {
-  PIN_WRITE(PORTB, OLED_CS, LOW);
-  PIN_WRITE(PORTB, OLED_CMD, HIGH);
-  spi_transmit_packet(data, size);
-}
+// static void oled_write_data_packet(const uint8_t* data, int size) {
+//   PIN_WRITE(PORTB, OLED_CS, LOW);
+//   PIN_WRITE(PORTB, OLED_CMD, HIGH);
+//   spi_transmit_packet(data, size);
+// }
 
 static void oled_write_data_packet_sram(uint16_t addr, const uint8_t* data, size_t size) {
   // PIN_WRITE(PORTB, OLED_CS, LOW);
@@ -93,7 +94,7 @@ int oled_init(void) {
                         //  001000
   oled_clear();
   oled_init_timer_30hz();
-
+  spi_slave_deselect();
   return 0;  // Return 0 on success
 }
 

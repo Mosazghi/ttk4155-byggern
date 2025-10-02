@@ -22,7 +22,8 @@
         "oled.h": "c",
         "fonts.h": "c",
         "menu.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "input.h": "c"
     },
     "C_Cpp_Runner.msvcBatchPath": "",
     "C_Cpp_Runner.cCompilerPath": "gcc",
