@@ -1,4 +1,4 @@
-#include <math.h>
+#include <avr/interrupt.h>
 #include <oled.h>
 #include <string.h>
 
@@ -7,6 +7,7 @@
 #include "sram.h"
 #include "utility.h"
 
+static void oled_init_timer_30hz();
 static oled_ctx ctx = {0};
 
 /****************************************************************
@@ -101,7 +102,9 @@ int oled_init(void) {
                         //| 001000 (PORTB)
                         //  001000
   oled_clear();
-  return 0;
+  oled_init_timer_30hz();
+
+  return 0;  // Return 0 on success
 }
 
 void oled_clear(void) {
@@ -207,4 +210,19 @@ void oled_draw_line(int x_start, int y_start, int x_end, int y_end) {
       y_start += sy;
     }
   }
+}
+static void oled_init_timer_30hz() {
+  cli();
+  // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
+  TCCR0 = (1 << WGM12) | (1 << CS02) | (1 << CS00);
+
+  // Enable Output Compare Match interrupt
+  TIMSK |= (1 << OCIE0);
+
+  /*
+    use the following: (f_CPU / prescaler * target_freq) - 1
+    (4915200 / 1024 * 30) - 1 = 159
+  */
+  OCR0 = 159;
+  sei();
 }
