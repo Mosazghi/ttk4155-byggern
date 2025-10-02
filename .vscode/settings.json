@@ -19,7 +19,8 @@
     "spi.h": "c",
     "avr.h": "c",
     "oled.h": "c",
-    "fonts.h": "c"
+    "fonts.h": "c",
+    "math.h": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",

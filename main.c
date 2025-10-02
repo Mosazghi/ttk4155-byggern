@@ -41,6 +41,12 @@ int main() {
   return 0;
 }
 
+void test_draw(int i) {
+  oled_draw_line(0, 0, 128, 0);  // top
+  oled_printf("TEST", 26, i);
+  oled_printf("ANNET", 64, 3);
+}
+
 void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
