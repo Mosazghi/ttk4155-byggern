@@ -16,8 +16,6 @@
 #include "sram.h"
 #include "uart.h"
 #include "utility.h"
-// menu_state_t menu_state;
-// menu_t menu;
 volatile uint8_t oled_ctrl_flag = 0;
 buttons_t buttons;
 void init_sys();

@@ -84,7 +84,7 @@ int oled_init(void) {
       0xAF   // display on
   };
 
-  spi_transmit_packet(oled_init_array, ARRAY_LENGTH(oled_init_array));
+  spi_transmit_packet(oled_init_array, ARR_LEN(oled_init_array));
   PORTB |= (1 << PB2);  // Display cmd
   PORTB |= (1 << PB3);  // Display CS
                         // 000100 (1 << PB4)
@@ -183,7 +183,7 @@ void oled_display() {
 static void oled_init_timer_30hz() {
   cli();
   // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
-  TCCR0 = (1 << WGM12) | (1 << CS02) | (1 << CS00);
+  TCCR0 |= (1 << WGM12) | (1 << CS02) | (1 << CS00);
 
   // Enable Output Compare Match interrupt
   TIMSK |= (1 << OCIE0);
