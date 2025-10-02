@@ -126,6 +126,15 @@ void setup_menu_structure(void) {
   score_items[1].callback = NULL;
 
   // TODO: DEBUG ---
+  debug_menu.parent = &g_menu_root;
+  debug_items[0].callback = NULL;  // Placeholder
+  debug_items[1].callback = NULL;  // Placeholder
+  debug_items[2].callback = NULL;  // CALIBRATE ---
+  // CALIBRATE ---
+  calibrate_menu.parent = &g_menu_root;
+  calibrate_items[0].callback = NULL;  // Placeholder
+  calibrate_items[1].callback = NULL;  // Placeholder
+  calibrate_items[2].callback = NULL;  // RETURN ---
   // MENU STATE ---
   g_menu_state.current_menu = &g_menu_root;
   g_menu_state.current_render = MAIN_MENU;
@@ -191,7 +200,7 @@ void update_display() {
       break;
     case SCORES_MENU:
       snprintf(display_buffer, sizeof(display_buffer), "Score: %d", g_game_state.score);
-      oled_printf(display_buffer, 0, 9);
+      oled_printf(display_buffer, 0, 0);
       break;
     case CALIBRATE_MENU:
       break;
