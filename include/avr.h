@@ -39,7 +39,7 @@ typedef struct __attribute__((packed)) {
     };
   };
 } buttons_t;
-buttons_t buttons;
+
 typedef struct __attribute__((packed)) {
   uint8_t x;
   uint8_t y;
@@ -56,3 +56,4 @@ joystick_xy_t avr_get_joystick();
 touch_pad_t avr_get_touch_pad();
 touch_slider_t avr_get_touch_slider();
 buttons_t avr_get_buttons();
+void avr_timer_init_10hz();

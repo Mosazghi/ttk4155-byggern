@@ -1,4 +1,5 @@
-MAIN MENU 
+" Ping Pong" 
+MAIN MENU <
 	| <- NEW GAME -> 
 	| | <- void DIFFICULTY 1, 2, 3 -> 
 	| <- HIGH SCORE ->
@@ -6,6 +7,5 @@ MAIN MENU
 	| | <- void RESET HIGH SCORE -> 
 	| <- DEBUGGING -> 
 	| | <- PRINT XYZ VARIABLES -> 
-	| <- void RESTART -> 
 GAME 
 	| <- SCORE -> 

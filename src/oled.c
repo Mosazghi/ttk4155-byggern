@@ -2,6 +2,7 @@
 #include <oled.h>
 #include <string.h>
 
+#include "avr.h"
 #include "fonts.h"
 #include "spi.h"
 #include "sram.h"
@@ -18,9 +19,10 @@ static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   spi_transmit(data);
+  spi_slave_deselect();
 }
 
-static void oled_write_sram(uint16_t addr, uint8_t data) {
+void oled_write_sram(uint16_t addr, uint8_t data) {
   if (addr < ADDR_START && addr > ADDR_END) {
     LOG_ERR("Outside of display sram scope (oled_write_sram)");
   }
@@ -32,7 +34,7 @@ static void oled_go_to_column(int column) {
   oled_write(0x10 + (column / 16), CMD);
 }
 
-static void set_cursor(int x, int y) {
+void set_cursor(int x, int y) {
   /* Outside scope cases */
   x = CLAMP(x, 0, SEG_WIDTH);
   y = CLAMP(y, 0, PAGE_HEIGHT);
@@ -109,7 +111,7 @@ int oled_init(void) {
       0xAF   // display on
   };
 
-  spi_transmit_packet(oled_init_array, ARRAY_LENGTH(oled_init_array));
+  spi_transmit_packet(oled_init_array, ARR_LEN(oled_init_array));
   PORTB |= (1 << PB2);  // Display cmd
   PORTB |= (1 << PB3);  // Display CS
                         // 000100 (1 << PB4)
@@ -119,14 +121,13 @@ int oled_init(void) {
                         //  001000
   oled_clear();
   oled_init_timer_30hz();
-
+  spi_slave_deselect();
   return 0;  // Return 0 on success
 }
 
 void oled_clear(void) {
   int addr = ADDR_START;
   for (int i = 0; i < 8; i++) {
-    set_cursor(0, i);
     for (int j = 0; j < 128; j++) {
       // oled_write(0x00, DATA);         // writing blank to each page
       oled_write_sram(addr++, 0x00);  // writing blank in sram

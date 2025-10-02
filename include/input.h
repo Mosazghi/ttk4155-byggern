@@ -1,7 +1,8 @@
 #pragma once
 #include <stdbool.h>
+#include <stdint.h>
 
-#include "adc.h"
+// #include "adc.h"
 typedef struct {
   int x;
   int y;
@@ -22,12 +23,12 @@ typedef struct {
 //     struct joystick;
 //     struct touch_pad;
 // };
-typedef struct ADC {
-  joystick_xy_t joystick;
-  touch_pad_xy_t touch_pad;
-} ADC;
+// typedef struct ADC {
+//   joystick_xy_t joystick;
+//   touch_pad_xy_t touch_pad;
+// } ADC;
 
 void map_joystick(joystick_xy_t *joystick);
-ADC adc_read_all();
+// ADC adc_read_all();
 void joystick_read(joystick_xy_t *joystick);
 touch_pad_xy_t touch_pad_read();
