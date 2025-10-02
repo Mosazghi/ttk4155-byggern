@@ -19,14 +19,17 @@ void init_gpio();
 
 int main() {
   init_sys();
-  oled_clear();
-  // oled_set_font(SMALL);
-  // oled_printf("Hello world", 0, 0);
-  // oled_set_font(MEDIUM);
-  // oled_printf("Testing", 0, 1);
-  // oled_set_font(LARGE);
-  // oled_printf("This is longg", 0, 2);
-  oled_draw_line(0, 0, 128, 64);
+
+  oled_draw_line(0, 0, 128, 0);     // top
+  oled_draw_line(0, 64, 128, 64);   // bottom
+  oled_draw_line(128, 0, 128, 64);  // right
+  oled_draw_line(0, 0, 0, 64);      // left
+
+  oled_printf("Hello with lines", 16, 3);
+
+  oled_draw_line(0, 0, 128, 64);  // cross-left
+  oled_draw_line(128, 0, 0, 64);  // cross-right
+
   oled_display();
   while (1) {
     _delay_ms(10);

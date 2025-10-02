@@ -33,7 +33,7 @@
   } while (0)
 
 #define CLAMP(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
-#define ABS(value) (sqrt(value * value))
+#define ABS(value) ((value) < 0 ? -(value) : (value))
 
 #define ARRAY_LENGTH(arr) sizeof(arr) / sizeof(arr[0])
 #define LOW 0
