@@ -46,12 +46,26 @@ void init_sys() {
   spi_init();
   oled_init();
   menu_init();
+  avr_timer_init_10hz();
   LOG_INF("System initialized.\n");
 }
 
 void init_gpio() {
   DDRB |= (1 << PB4) | (1 << PB3);  // avr_cs, display_cs as output
+  DDRD |= (1 << PD3);                     // TEMP: PD4 output
+  DDRD |= (1 << PD4);                     // TEMP: PD4 output
+
   spi_slave_deselect();
 }
 
-ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }
+ISR(TIMER0_COMP_vect) { 
+  PORTD |= (1 << PD3);
+  oled_ctrl_flag = 1;
+    PORTD &= ~(1 << PD3);
+}
+
+ISR(TIMER3_COMPA_vect) {
+   PORTD |= (1 << PD4);
+  oled_ctrl_flag = 1;
+    PORTD &= ~(1 << PD4);
+}
