@@ -1,5 +1,6 @@
 #include "game_menu.h"
 
+#include <avr/pgmspace.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -8,95 +9,107 @@
 #include "oled.h"
 #include "utility.h"
 
-static menu_render_t str_to_render_t(const char *str);
-static void set_easy_difficulty(void) { set_difficulty_level(LVL_EASY); }
-static void set_medium_difficulty(void) { set_difficulty_level(LVL_MEDIUM); }
-static void set_hard_difficulty(void) { set_difficulty_level(LVL_HARD); }
+// Store strings in flash memory to save RAM
+const char str_easy[] PROGMEM = "Easy";
+const char str_medium[] PROGMEM = "Medium";
+const char str_hard[] PROGMEM = "Hard";
+const char str_return[] PROGMEM = "Return";
+const char str_new_game[] PROGMEM = "New Game";
+const char str_high_scores[] PROGMEM = "High Scores";
+const char str_calibrate[] PROGMEM = "Calibrate Joystick";
+const char str_debug[] PROGMEM = "Debug";
+const char str_reset_scores[] PROGMEM = "Reset High Scores";
+const char str_choose_difficulty[] PROGMEM = "Choose Difficulty";
+const char str_high_scores_title[] PROGMEM = "High Scores";
+const char str_debug_menu[] PROGMEM = "Debug Menu";
+const char str_debug_options[] PROGMEM = "Debug Options";
+const char str_calibrate_title[] PROGMEM = "Calibrate";
+const char str_ping_pong[] PROGMEM = "Ping Pong";
+const char str_main_menu[] PROGMEM = "Main Menu";
+const char str_placeholder1[] PROGMEM = "Debug Opt 1";
+const char str_placeholder2[] PROGMEM = "Debug Opt 2";
+const char str_cal_opt1[] PROGMEM = "Cal Opt 1";
+const char str_cal_opt2[] PROGMEM = "Cal Opt 2";
 
-static void return_menu(void) {
-  // if (g_menu_state.current_menu->parent != NULL) {
-  //   g_menu_state.current_menu = g_menu_state.current_menu->parent;
-  //   g_menu_state.current_index = 0;
-  // }
-}
-
-static void reset_high_score(void) {
-  // TODO: Logic
-  LOG_INF("High score has been reset!\n");
-}
+menu_render_t str_to_render_t(const char *str);
+void set_easy_difficulty(void) { set_difficulty_level(LVL_EASY); }
+void set_medium_difficulty(void) { set_difficulty_level(LVL_MEDIUM); }
+void set_hard_difficulty(void) { set_difficulty_level(LVL_HARD); }
 
 // Solution: Initialize without parent, then set parent after declaration
-static menu_item_t difficulty_items[] = {
-    {"Easy", NULL, NULL},
-    {"Medium", NULL, NULL},
-    {"Hard", NULL, NULL},
-    {"Return", NULL, NULL},
+menu_item_t difficulty_items[] = {
+    {str_easy, NULL, NULL},
+    {str_medium, NULL, NULL},
+    {str_hard, NULL, NULL},
+    {str_return, NULL, NULL},
 };
 
-static menu_t difficulty_menu = {
-    .header = "Choose Difficulty",
-    .title = "New Game",
+menu_t difficulty_menu = {
+    .header = str_choose_difficulty,
+    .title = str_new_game,
     .items = difficulty_items,
     .num_items = ARR_LEN(difficulty_items),
     .parent = NULL  // Will be set in setup function
 };
-static menu_item_t score_items[] = {
-    {"Reset High Scores", NULL, NULL},
-    {"Return", NULL, NULL},
+
+menu_item_t score_items[] = {
+    {str_reset_scores, NULL, NULL},
+    {str_return, NULL, NULL},
 };
 
-static menu_t score_menu = {
-    .header = "High Scores",
-    .title = "High Scores",
+menu_t score_menu = {
+    .header = str_high_scores_title,
+    .title = str_high_scores_title,
     .items = score_items,
     .num_items = ARR_LEN(score_items),
     .parent = NULL  // Will be set in setup function
 };
 
-static menu_item_t debug_items[] = {
-    {"(Placeholder) Debug Option 1", NULL, NULL},
-    {"(Placeholder) Debug Option 2", NULL, NULL},
-    {"Return", NULL, NULL},
+menu_item_t debug_items[] = {
+    {str_placeholder1, NULL, NULL},
+    {str_placeholder2, NULL, NULL},
+    {str_return, NULL, NULL},
 };
 
-static menu_t debug_menu = {
-    .header = "Debug Menu",
-    .title = "Debug Options",
+menu_t debug_menu = {
+    .header = str_debug_menu,
+    .title = str_debug_options,
     .items = debug_items,
     .num_items = ARR_LEN(debug_items),
     .parent = NULL  // Will be set in setup function
 };
 
-static menu_item_t calibrate_items[] = {
-    {"(Placeholder) Calibrate Option 1", NULL, NULL},
-    {"(Placeholder) Calibrate Option 2", NULL, NULL},
-    {"Return", NULL, NULL},
+menu_item_t calibrate_items[] = {
+    {str_cal_opt1, NULL, NULL},
+    {str_cal_opt2, NULL, NULL},
+    {str_return, NULL, NULL},
 };
-static menu_t calibrate_menu = {
-    .header = "Calibrate Joystick",
-    .title = "Calibrate",
+
+menu_t calibrate_menu = {
+    .header = str_calibrate,
+    .title = str_calibrate_title,
     .items = calibrate_items,
     .num_items = ARR_LEN(calibrate_items),
     .parent = NULL  // Will be set in setup function
 };
 
-static menu_item_t main_items[] = {{"New Game", &difficulty_menu, NULL},
-                                   {"High Scores", &score_menu, NULL},
-                                   {"Calibrate Joystick", &calibrate_menu, NULL},
-                                   {"Debug", &debug_menu, NULL}};
+menu_item_t main_items[] = {{str_new_game, &difficulty_menu, NULL},
+                            {str_high_scores, &score_menu, NULL},
+                            {str_calibrate, &calibrate_menu, NULL},
+                            {str_debug, &debug_menu, NULL}};
 
 // GLOBAL MENU STATES
-static menu_t g_menu_root = {
-    .header = "Ping Pong",
-    .title = "Main Menu",
+menu_t g_menu_root = {
+    .header = str_ping_pong,
+    .title = str_main_menu,
     .items = main_items,
     .num_items = ARR_LEN(main_items),
     .parent = NULL,
 };
-static menu_state_t g_menu_state;
+menu_state_t g_menu_state;
 // ------------------
 
-static void setup_menu_structure(void) {
+void setup_menu_structure(void) {
   // NEW GAME ---
   // Set up parent relationships AFTER all menus are declared
   difficulty_menu.parent = &g_menu_root;
@@ -109,13 +122,12 @@ static void setup_menu_structure(void) {
   difficulty_items[3].callback = NULL;
   // SCORE ---
   score_menu.parent = &g_menu_root;
-  score_items[0].callback = reset_high_score;
-  score_items[1].callback = return_menu;
+  score_items[0].callback = reset_high_scores;
+  score_items[1].callback = NULL;
 
   // TODO: DEBUG ---
   // MENU STATE ---
   g_menu_state.current_menu = &g_menu_root;
-  // g_menu_state.is_playing = false;
   g_menu_state.current_render = MAIN_MENU;
   g_menu_state.current_index = 0;
 }
@@ -136,8 +148,6 @@ void update_menu_state(buttons_t buttons) {
   if (buttons.NB == 1) {
     LOG_INF("BUTTON\n");
     menu_select(&g_menu_state);
-    // LOG_INF("Selected: %s\n",
-    // g_menu_state.current_menu->items[g_menu_state.current_index].label);
   }
 }
 
@@ -147,31 +157,41 @@ void menu_loop(buttons_t buttons) {
 }
 
 void update_display() {
-  char display_buffer[127];
+  static char display_buffer[32];  // Reduced size and made static
+  char temp_str[16];               // Temporary buffer for PROGMEM strings
+
   // Clear
   oled_clear();
-  LOG_INF("Current Menu: %s\n", g_menu_state.current_menu->title);
-  snprintf(display_buffer, sizeof(display_buffer), "%s", g_menu_state.current_menu->header);
-  // Draw
+
+  // Copy header from PROGMEM to RAM
+  strcpy_P(temp_str, g_menu_state.current_menu->header);
+  LOG_DBG("Current Menu: %s\n", temp_str);
+  strncpy(display_buffer, temp_str, sizeof(display_buffer) - 1);
+  display_buffer[sizeof(display_buffer) - 1] = '\0';
+
+  // Draw header
   oled_printf(display_buffer, 0, 0);
+
+  for (uint8_t i = 0; i < g_menu_state.current_menu->num_items; i++) {
+    // Copy menu item label from PROGMEM
+    strcpy_P(temp_str, g_menu_state.current_menu->items[i].label);
+
+    if (i == g_menu_state.current_index) {
+      snprintf(display_buffer, sizeof(display_buffer), "> %s", temp_str);
+    } else {
+      snprintf(display_buffer, sizeof(display_buffer), "  %s", temp_str);
+    }
+    oled_printf(display_buffer, 0, i + 1);  // +1 to account for header
+  }
+
   switch (g_menu_state.current_render) {
     case MAIN_MENU:
-      for (uint8_t i = 0; i < g_menu_state.current_menu->num_items; i++) {
-        if (i == g_menu_state.current_index) {
-          snprintf(display_buffer, sizeof(display_buffer), "> %s",
-                   g_menu_state.current_menu->items[i].label);
-        } else {
-          snprintf(display_buffer, sizeof(display_buffer), "  %s",
-                   g_menu_state.current_menu->items[i].label);
-        }
-        oled_printf(display_buffer, 0, i + 1);  // +1 to account for header
-      }
       break;
     case NEW_GAME_MENU:
       break;
     case SCORES_MENU:
-      snprintf(display_buffer, sizeof(display_buffer), "High Score: %d", g_game_state.score);
-      oled_printf(display_buffer, 0, 1);
+      snprintf(display_buffer, sizeof(display_buffer), "Score: %d", g_game_state.score);
+      oled_printf(display_buffer, 0, 9);
       break;
     case CALIBRATE_MENU:
       break;
@@ -208,9 +228,9 @@ void menu_select(menu_state_t *state) {
     state->current_render = str_to_render_t(item->label);
     state->current_index = 0;
   }
-  // Return to parent menu
+  // Return to parent menu - compare with PROGMEM string
   else if (item->sub_menu == NULL && state->current_menu->parent != NULL &&
-           strcmp(item->label, "Return") == 0) {
+           strcmp_P("Return", item->label) == 0) {
     state->current_menu = state->current_menu->parent;
     state->current_index = 0;
   }
@@ -220,19 +240,17 @@ void menu_select(menu_state_t *state) {
   }
 };
 
-static menu_render_t str_to_render_t(const char *str) {
-  if (strcmp(str, "MAIN_MENU") == 0) {
-    return MAIN_MENU;
-  } else if (strcmp(str, "NEW_GAME_MENU") == 0) {
+menu_render_t str_to_render_t(const char *str) {
+  // Since we're comparing PROGMEM strings, we need to use strcmp_P
+  if (strcmp_P("New Game", str) == 0) {
     return NEW_GAME_MENU;
-  } else if (strcmp(str, "SCORES_MENU") == 0) {
+  } else if (strcmp_P("High Scores", str) == 0) {
     return SCORES_MENU;
-  } else if (strcmp(str, "CALIBRATE_MENU") == 0) {
+  } else if (strcmp_P("Calibrate Joystick", str) == 0) {
     return CALIBRATE_MENU;
-  } else if (strcmp(str, "DEBUG_MENU") == 0) {
+  } else if (strcmp_P("Debug", str) == 0) {
     return DEBUG_MENU;
   } else {
-    LOG_ERR("Unknown menu render state: %s", str);
     return MAIN_MENU;  // Default case
   }
 }

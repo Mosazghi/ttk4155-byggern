@@ -7,36 +7,36 @@
 #include "sram.h"
 #include "utility.h"
 
-static void oled_init_timer_30hz();
-static oled_ctx ctx = {0};
-static void oled_write(uint8_t data, oled_write_mode_t type) {
+void oled_init_timer_30hz();
+oled_ctx ctx = {0};
+void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   spi_transmit(data);
   spi_slave_deselect();
 }
 
-static void oled_write_sram(uint16_t addr, uint8_t data) {
+void oled_write_sram(uint16_t addr, uint8_t data) {
   if (addr < ADDR_START && addr > ADDR_END) {
     LOG_ERR("Outside of display sram scope (oled_write_sram)");
   }
   sram_write(addr, data);
 }
 
-// static void oled_write_data_packet(const uint8_t* data, int size) {
+//  void oled_write_data_packet(const uint8_t* data, int size) {
 //   PIN_WRITE(PORTB, OLED_CS, LOW);
 //   PIN_WRITE(PORTB, OLED_CMD, HIGH);
 //   spi_transmit_packet(data, size);
 // }
 
-static void oled_write_data_packet_sram(uint16_t addr, const uint8_t* data, size_t size) {
-  // PIN_WRITE(PORTB, OLED_CS, LOW);
+void oled_write_data_packet_sram(uint16_t addr, const uint8_t* data, size_t size) {
+  // PIN_WRITE(PORTB, OLED_CS, LOW);G
   // PIN_WRITE(PORTB, OLED_CMD, HIGH);
   sram_transmit_packet(addr, data, size);
   //   // 0x1400-0x1800 (1kb-2kb or 1kb space)
 }
 
-static void set_cursor(int x, int y) {
+void set_cursor(int x, int y) {
   /* Outside scope cases */
   if (x > SEG_WIDTH) {
     x = SEG_WIDTH;
@@ -101,13 +101,11 @@ int oled_init(void) {
 void oled_clear(void) {
   int addr = ADDR_START;
   for (int i = 0; i < 8; i++) {
-    set_cursor(0, i);
     for (int j = 0; j < 128; j++) {
-      oled_write(0x00, DATA);         // writing blank to each page
       oled_write_sram(addr++, 0x00);  // writing blank in sram
     }
   }
-  LOG_INF("finished clearing sram at %#X", addr);
+  LOG_DBG("finished clearing sram at %#X", addr);
 }
 
 void oled_go_to_column(int column) {
@@ -117,7 +115,7 @@ void oled_go_to_column(int column) {
 
 void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
 
-static void store_letter(uint8_t* buffer, int pos) {
+void store_letter(uint8_t* buffer, int pos) {
   switch (ctx.font_size) {
     case SMALL:
       for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
@@ -134,7 +132,7 @@ static void store_letter(uint8_t* buffer, int pos) {
   }
 }
 
-static uint16_t cursor_to_addr(int x, int y) { return ADDR_START + (uint16_t)(128 * y + x); }
+uint16_t cursor_to_addr(int x, int y) { return ADDR_START + (uint16_t)(128 * y + x); }
 
 void oled_printf(const char* str, int x, int y) {
   size_t size = strlen(str);
@@ -164,26 +162,20 @@ void oled_display() {
   uint16_t x = ADDR_START;
 
   for (int i = 0; i < 8; i++) {
+    set_cursor(0, i);
     for (int j = 0; j < 128; j++) {
       uint16_t temp = (ADDR_START + j) + (0x80 * i);
       data = sram_read(temp);
-      if (data != 0x00) {
-        // If the prev. data is 0 AND we have valid data, then we have to calculate x-pos again.
-        if (prev_data == 0x00) {
-          x = (temp - ADDR_START) - (128 * i);
-          set_cursor(x, i);
-        }
-        oled_write(data, DATA);
-      }
+      oled_write(data, DATA);
       prev_data = data;
     }
   }
 }
 
-static void oled_init_timer_30hz() {
+void oled_init_timer_30hz() {
   cli();
-  // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
-  TCCR0 |= (1 << WGM12) | (1 << CS02) | (1 << CS00);
+  // CTC mode (TOP = OCR0), Normal port operation, clk/1024 prescaler
+  TCCR0 |= (1 << WGM01) | (1 << CS02) | (1 << CS00);
 
   // Enable Output Compare Match interrupt
   TIMSK |= (1 << OCIE0);

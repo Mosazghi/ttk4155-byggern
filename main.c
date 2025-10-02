@@ -9,7 +9,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#include "adc.h"
 #include "game_menu.h"
 #include "oled.h"
 #include "spi.h"
@@ -23,11 +22,11 @@ void init_gpio();
 
 int main() {
   init_sys();
-  // oled_set_font(SMALL);
   // int i = 0;
   while (1) {
     if (oled_ctrl_flag) {
       oled_ctrl_flag = 0;
+      // oled_printf("Hello, World!", 0, 0);
       buttons = avr_get_buttons();
       menu_loop(buttons);
       update_display();
@@ -39,7 +38,6 @@ int main() {
 void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
-  adc_timer_init();
   init_gpio();
   spi_init();
   oled_init();
