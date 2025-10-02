@@ -2,10 +2,11 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
+
+#include "spi.h"
 #define F_CPU 4915200UL
 #include <util/delay.h>
 
-#include "spi.h"
 #include "utility.h"
 
 long map(long x, long in_min, long in_max, long out_min, long out_max) {
@@ -18,7 +19,6 @@ void avr_init() { avr_timer_init_10hz(); }
 void avr_write(uint8_t data) {
   spi_slave_select(SPI_AVR);
   spi_transmit(data);  // Read AVR info
-                       // PORTB ^= (1 << PB4); // select AVR
 }
 
 joystick_xy_t avr_get_joystick() {
@@ -30,9 +30,10 @@ joystick_xy_t avr_get_joystick() {
   joystick.y = spi_receive();
   _delay_us(2);
   joystick.btn = spi_receive();
-  PORTB ^= (1 << PB4);  // Deselect AVR
+  spi_slave_deselect();
   joystick.x = map(joystick.x, 54, 201, -100, 100);
   joystick.y = map(joystick.y, 54, 201, -100, 100);
+
   return joystick;
 }
 
