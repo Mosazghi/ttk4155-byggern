@@ -34,11 +34,11 @@ int main() {
     }
     if (oled_ctrl_flag) {
       oled_ctrl_flag = 0;
-      if (g_game_state.is_in_game) {
-        game_loop(&buttons);
-      } else {
-        update_display();
-      }
+      // if (g_game_state.is_in_game) {
+      //   game_loop(&buttons);
+      // } else {
+      update_display();
+      // }
     }
     _delay_ms(50);
   }
