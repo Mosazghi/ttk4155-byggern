@@ -86,5 +86,3 @@ void oled_draw_pixel(int x, int y);
  * use @see oled_display().
  */
 void oled_draw_line(int x_start, int y_start, int x_end, int y_end);
-
-void oled_update();

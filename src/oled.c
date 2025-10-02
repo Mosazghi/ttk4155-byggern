@@ -60,6 +60,22 @@ static void store_letter(uint8_t* buffer, int pos) {
 
 static uint16_t cursor_to_addr(int x, int y) { return ADDR_START + (uint16_t)(OLED_WIDTH * y + x); }
 
+static void oled_init_timer_30hz() {
+  cli();
+  // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
+  TCCR0 = (1 << WGM12) | (1 << CS02) | (1 << CS00);
+
+  // Enable Output Compare Match interrupt
+  TIMSK |= (1 << OCIE0);
+
+  /*
+    use the following: (f_CPU / prescaler * target_freq) - 1
+    (4915200 / 1024 * 30) - 1 = 159
+  */
+  OCR0 = 159;
+  sei();
+}
+
 /****************************************************************
  *                      GLOABL FUNCTIONS                       *
  ****************************************************************/
@@ -144,7 +160,7 @@ void oled_printf(const char* str, int x, int y) {
 void oled_display() {  // TODO: LOGIC ERROR
   uint8_t data = 0;
   // uint8_t prev_data = 0;
-  uint16_t x = ADDR_START;
+  // uint16_t x = ADDR_START;
 
   for (int i = 0; i < 8; i++) {
     set_cursor(0, i);  // NOT NEEDED TO FIND X
@@ -210,19 +226,4 @@ void oled_draw_line(int x_start, int y_start, int x_end, int y_end) {
       y_start += sy;
     }
   }
-}
-static void oled_init_timer_30hz() {
-  cli();
-  // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
-  TCCR0 = (1 << WGM12) | (1 << CS02) | (1 << CS00);
-
-  // Enable Output Compare Match interrupt
-  TIMSK |= (1 << OCIE0);
-
-  /*
-    use the following: (f_CPU / prescaler * target_freq) - 1
-    (4915200 / 1024 * 30) - 1 = 159
-  */
-  OCR0 = 159;
-  sei();
 }
