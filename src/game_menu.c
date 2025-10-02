@@ -18,7 +18,7 @@ const char str_new_game[] PROGMEM = "New Game";
 const char str_high_scores[] PROGMEM = "High Scores";
 const char str_calibrate[] PROGMEM = "Calibrate Joystick";
 const char str_debug[] PROGMEM = "Debug";
-const char str_reset_scores[] PROGMEM = "Reset High Scores";
+const char str_reset_scores[] PROGMEM = "Reset High Score";
 const char str_choose_difficulty[] PROGMEM = "Choose Difficulty";
 const char str_high_scores_title[] PROGMEM = "High Scores";
 const char str_debug_menu[] PROGMEM = "Debug Menu";
@@ -180,6 +180,7 @@ void update_display() {
 
   // Draw header
   oled_printf(display_buffer, 0, 0);
+  oled_draw_line(0, 8, 128, 8);  // Underline
 
   for (uint8_t i = 0; i < g_menu_state.current_menu->num_items; i++) {
     // Copy menu item label from PROGMEM
@@ -190,7 +191,7 @@ void update_display() {
     } else {
       snprintf(display_buffer, sizeof(display_buffer), "  %s", temp_str);
     }
-    oled_printf(display_buffer, 0, i + 1);  // +1 to account for header
+    oled_printf(display_buffer, 0, i + 2);  // +1 to account for header
   }
 
   switch (g_menu_state.current_render) {

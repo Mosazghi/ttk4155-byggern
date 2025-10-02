@@ -13,7 +13,7 @@
 #define LOG_INF(fmt, ...) BASE_LOG(fmt, "[Info]: ", ##__VA_ARGS__);
 #define LOG_ERR(fmt, ...) BASE_LOG(fmt, "[Error]: ", ##__VA_ARGS__);
 #define UNUSED(x) (void)(x);
-#define HZ_TO_TIMER(HZ) (F_CPU / (1024UL * HZ)-1)
+#define HZ_TO_TIMER(HZ) (F_CPU / (1024UL * HZ) - 1)
 #define PIN_WRITE(PORT, PIN, MODE) \
   do {                             \
     if (MODE) {                    \
@@ -35,7 +35,7 @@
 #define CLAMP(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 #define ABS(value) ((value) < 0 ? -(value) : (value))
 
-#define ARRAY_LENGTH(arr) sizeof(arr) / sizeof(arr[0])
+#define ARR_LEN(arr) sizeof(arr) / sizeof(arr[0])
 #define LOW 0
 #define HIGH 1
 #define INPUT 0
