@@ -14,3 +14,4 @@ extern game_state_t g_game_state;
 
 void game_loop(buttons_t buttons);
 void set_difficulty_level(difficulty_level_t level);
+void reset_high_scores();

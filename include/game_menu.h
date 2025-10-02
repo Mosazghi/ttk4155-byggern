@@ -19,19 +19,18 @@ typedef struct menu_t menu_t;
 typedef struct menu_item_t menu_item_t;
 typedef struct menu_state_t menu_state_t;
 
-// Structure definitions
-struct menu_item_t {
-  const char *label;
-  menu_t *sub_menu;
-  void (*callback)(void);
-};
-
 struct menu_t {
   const char *header;
   const char *title;
   menu_item_t *items;
   uint8_t num_items;
   menu_t *parent;
+};
+
+struct menu_item_t {
+  const char *label;
+  menu_t *sub_menu;
+  void (*callback)(void);
 };
 
 struct menu_state_t {
