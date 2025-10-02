@@ -84,7 +84,7 @@ int oled_init(void) {
       0xAF   // display on
   };
 
-  spi_transmit_packet(oled_init_array, ARRAY_LENGTH(oled_init_array));
+  spi_transmit_packet(oled_init_array, ARR_LEN(oled_init_array));
   PORTB |= (1 << PB2);  // Display cmd
   PORTB |= (1 << PB3);  // Display CS
                         // 000100 (1 << PB4)

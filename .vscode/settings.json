@@ -23,7 +23,8 @@
         "fonts.h": "c",
         "menu.h": "c",
         "stdbool.h": "c",
-        "input.h": "c"
+        "input.h": "c",
+        "game_logic.h": "c"
     },
     "C_Cpp_Runner.msvcBatchPath": "",
     "C_Cpp_Runner.cCompilerPath": "gcc",

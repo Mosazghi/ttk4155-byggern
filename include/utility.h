@@ -32,7 +32,7 @@
     }                            \
   } while (0)
 
-#define ARRAY_LENGTH(arr) sizeof(arr) / sizeof(arr[0])
+#define ARR_LEN(arr) sizeof(arr) / sizeof(arr[0])
 #define LOW 0
 #define HIGH 1
 #define INPUT 0
