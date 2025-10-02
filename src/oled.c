@@ -1,15 +1,21 @@
 #include <avr/interrupt.h>
 #include <oled.h>
 #include <string.h>
+
 #include "avr.h"
 #include "fonts.h"
 #include "spi.h"
 #include "sram.h"
 #include "utility.h"
 
-void oled_init_timer_30hz();
-oled_ctx ctx = {0};
-void oled_write(uint8_t data, oled_write_mode_t type) {
+static void oled_init_timer_30hz();
+static oled_ctx ctx = {0};
+
+/****************************************************************
+ *                      STATIC FUNCTIONS                       *
+ ****************************************************************/
+
+static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CS, LOW);
   PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
   spi_transmit(data);
@@ -23,37 +29,58 @@ void oled_write_sram(uint16_t addr, uint8_t data) {
   sram_write(addr, data);
 }
 
-//  void oled_write_data_packet(const uint8_t* data, int size) {
-//   PIN_WRITE(PORTB, OLED_CS, LOW);
-//   PIN_WRITE(PORTB, OLED_CMD, HIGH);
-//   spi_transmit_packet(data, size);
-// }
-
-void oled_write_data_packet_sram(uint16_t addr, const uint8_t* data, size_t size) {
-  // PIN_WRITE(PORTB, OLED_CS, LOW);G
-  // PIN_WRITE(PORTB, OLED_CMD, HIGH);
-  sram_transmit_packet(addr, data, size);
-  //   // 0x1400-0x1800 (1kb-2kb or 1kb space)
+static void oled_go_to_column(int column) {
+  oled_write(0x00 + (column % 16), CMD);
+  oled_write(0x10 + (column / 16), CMD);
 }
 
 void set_cursor(int x, int y) {
   /* Outside scope cases */
-  if (x > SEG_WIDTH) {
-    x = SEG_WIDTH;
-  }
-  if (y > PAGE_HEIGHT) {
-    y = PAGE_HEIGHT;
-  }
-  if (y < 0) {
-    y = 0;
-  }
-  if (x < 0) {
-    x = 0;
-  }
+  x = CLAMP(x, 0, SEG_WIDTH);
+  y = CLAMP(y, 0, PAGE_HEIGHT);
 
   oled_write(0xB0 + y, CMD);
   oled_go_to_column(x);
 }
+
+static void store_letter(uint8_t* buffer, int pos) {
+  switch (ctx.font_size) {
+    case SMALL:
+      for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
+      break;
+    case MEDIUM:
+      for (int i = 0; i < (int)MEDIUM; i++) buffer[i] = pgm_read_byte(&font5[pos][i]);
+      break;
+    case LARGE:
+      for (int i = 0; i < (int)LARGE; i++) buffer[i] = pgm_read_byte(&font8[pos][i]);
+      break;
+    default:
+      for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
+      break;
+  }
+}
+
+static uint16_t cursor_to_addr(int x, int y) { return ADDR_START + (uint16_t)(OLED_WIDTH * y + x); }
+
+static void oled_init_timer_30hz() {
+  cli();
+  // CTC mode (TOP = OCR1A), Normal port operation, clk/1024 prescaler
+  TCCR0 = (1 << WGM12) | (1 << CS02) | (1 << CS00);
+
+  // Enable Output Compare Match interrupt
+  TIMSK |= (1 << OCIE0);
+
+  /*
+    use the following: (f_CPU / prescaler * target_freq) - 1
+    (4915200 / 1024 * 30) - 1 = 159
+  */
+  OCR0 = 159;
+  sei();
+}
+
+/****************************************************************
+ *                      GLOABL FUNCTIONS                       *
+ ****************************************************************/
 
 int oled_init(void) {
   ctx.font_size = SMALL;
@@ -102,37 +129,13 @@ void oled_clear(void) {
   int addr = ADDR_START;
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 128; j++) {
+      // oled_write(0x00, DATA);         // writing blank to each page
       oled_write_sram(addr++, 0x00);  // writing blank in sram
     }
   }
-  LOG_DBG("finished clearing sram at %#X", addr);
-}
-
-void oled_go_to_column(int column) {
-  oled_write(0x00 + (column % 16), CMD);
-  oled_write(0x10 + (column / 16), CMD);
 }
 
 void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
-
-void store_letter(uint8_t* buffer, int pos) {
-  switch (ctx.font_size) {
-    case SMALL:
-      for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
-      break;
-    case MEDIUM:
-      for (int i = 0; i < (int)MEDIUM; i++) buffer[i] = pgm_read_byte(&font5[pos][i]);
-      break;
-    case LARGE:
-      for (int i = 0; i < (int)LARGE; i++) buffer[i] = pgm_read_byte(&font8[pos][i]);
-      break;
-    default:
-      for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
-      break;
-  }
-}
-
-uint16_t cursor_to_addr(int x, int y) { return ADDR_START + (uint16_t)(128 * y + x); }
 
 void oled_printf(const char* str, int x, int y) {
   size_t size = strlen(str);
@@ -145,45 +148,83 @@ void oled_printf(const char* str, int x, int y) {
     store_letter(msg[i], pos);
   }
 
-  LOG_DBG("cursor address is starting at: %#X", cursor_to_addr(x, y));
+  x = CLAMP(x, 0, OLED_WIDTH - 1);
+  y = CLAMP(y, 0, PAGE_HEIGHT);
 
   /* Display words */
   for (size_t i = 0; i < size; i++) {
-    oled_write_data_packet_sram(cursor_to_addr(x, y) + ((int)ctx.font_size * i), msg[i],
-                                (int)ctx.font_size);
-    // oled_write_data_packet_sram(ADDR_START + ((int)ctx.font_size * i), msg[i],
-    // (int)ctx.font_size);
+    sram_transmit_packet(cursor_to_addr(x, y) + ((int)ctx.font_size * i), msg[i],
+                         (int)ctx.font_size);
   }
 }
 
-void oled_display() {
+void oled_display() {  // TODO: LOGIC ERROR
   uint8_t data = 0;
-  uint8_t prev_data = 0;
-  uint16_t x = ADDR_START;
+  // uint8_t prev_data = 0;
+  // uint16_t x = ADDR_START;
 
   for (int i = 0; i < 8; i++) {
-    set_cursor(0, i);
+    set_cursor(0, i);  // NOT NEEDED TO FIND X
     for (int j = 0; j < 128; j++) {
-      uint16_t temp = (ADDR_START + j) + (0x80 * i);
+      uint16_t temp = (ADDR_START + j) + (OLED_WIDTH * i);
       data = sram_read(temp);
+      // if (data != 0x00) {
+      // If the prev. data is 0 AND we have valid data, then we have to calculate x-pos again.
+      // if (prev_data == 0x00) {
+      // x = (temp - ADDR_START) - (OLED_WIDTH * i);
+      // set_cursor(x, i);
+      // }
       oled_write(data, DATA);
-      prev_data = data;
+      // }
+      // prev_data = data;
     }
   }
 }
 
-void oled_init_timer_30hz() {
-  cli();
-  // CTC mode (TOP = OCR0), Normal port operation, clk/1024 prescaler
-  TCCR0 |= (1 << WGM01) | (1 << CS02) | (1 << CS00);
+void oled_draw_pixel(int x, int y) {
+  uint8_t point = 0;
+  uint16_t addr = ADDR_START;
 
-  // Enable Output Compare Match interrupt
-  TIMSK |= (1 << OCIE0);
+  /* Limit */
+  x = CLAMP(x, 0, OLED_WIDTH - 1);
+  y = CLAMP(y, 0, OLED_HEIGHT - 1);
 
-  /*
-    use the following: (f_CPU / prescaler * target_freq) - 1
-    (4915200 / 1024 * 30) - 1 = 159
-  */
-  OCR0 = HZ_TO_TIMER(30);//159;
-  sei();
+  /* Calculate pixel position */
+  addr = ADDR_START + x + (y / 8 * OLED_WIDTH);
+  point = sram_read(addr);
+  point |= (1 << (y % 8));  // perseve data if already on
+
+  sram_transmit_packet(addr, &point, sizeof(uint8_t));
+}
+
+void oled_draw_line(int x_start, int y_start, int x_end, int y_end) {
+  /* Limit */
+  x_start = CLAMP(x_start, 0, OLED_WIDTH - 1);
+  y_start = CLAMP(y_start, 0, OLED_HEIGHT - 1);
+  x_end = CLAMP(x_end, 0, OLED_WIDTH - 1);
+  y_end = CLAMP(y_end, 0, OLED_HEIGHT - 1);
+
+  /* Calculate line using Bresenham's algorithm */
+  int dx = ABS(x_end - x_start);
+  int sx = x_start < x_end ? 1 : -1;
+  int dy = -ABS(y_end - y_start);
+  int sy = y_start < y_end ? 1 : -1;
+  int error = dx + dy;
+  int e2 = 0;
+
+  while (1) {
+    oled_draw_pixel(x_start, y_start);
+    e2 = 2 * error;
+
+    if (e2 >= dy) {
+      if (x_start == x_end) break;
+      error += dy;
+      x_start += sx;
+    }
+    if (e2 <= dx) {
+      if (y_start == y_end) break;
+      error += dx;
+      y_start += sy;
+    }
+  }
 }
