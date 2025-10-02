@@ -1,0 +1,11 @@
+" Ping Pong" 
+MAIN MENU <
+	| <- NEW GAME -> 
+	| | <- void DIFFICULTY 1, 2, 3 -> 
+	| <- HIGH SCORE ->
+	| | <- SEE CURRENT HIGH SCORE -> 
+	| | <- void RESET HIGH SCORE -> 
+	| <- DEBUGGING -> 
+	| | <- PRINT XYZ VARIABLES -> 
+GAME 
+	| <- SCORE -> 
