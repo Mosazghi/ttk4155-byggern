@@ -109,11 +109,10 @@ void oled_clear(void) {
   for (int i = 0; i < 8; i++) {
     set_cursor(0, i);
     for (int j = 0; j < 128; j++) {
-      oled_write(0x00, DATA);         // writing blank to each page
+      // oled_write(0x00, DATA);         // writing blank to each page
       oled_write_sram(addr++, 0x00);  // writing blank in sram
     }
   }
-  LOG_INF("finished clearing sram at %#X", addr);
 }
 
 void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
@@ -129,7 +128,6 @@ void oled_printf(const char* str, int x, int y) {
     store_letter(msg[i], pos);
   }
 
-  LOG_INF("cursor address is starting at: %#X", cursor_to_addr(x, y));
   x = CLAMP(x, 0, OLED_WIDTH - 1);
   y = CLAMP(y, 0, PAGE_HEIGHT);
 
@@ -140,20 +138,21 @@ void oled_printf(const char* str, int x, int y) {
   }
 }
 
-void oled_display() {
+void oled_display() {  // TODO: LOGIC ERROR
   uint8_t data = 0;
   // uint8_t prev_data = 0;
   uint16_t x = ADDR_START;
 
   for (int i = 0; i < 8; i++) {
+    set_cursor(0, i);  // NOT NEEDED TO FIND X
     for (int j = 0; j < 128; j++) {
       uint16_t temp = (ADDR_START + j) + (OLED_WIDTH * i);
       data = sram_read(temp);
       // if (data != 0x00) {
       // If the prev. data is 0 AND we have valid data, then we have to calculate x-pos again.
       // if (prev_data == 0x00) {
-      x = (temp - ADDR_START) - (OLED_WIDTH * i);
-      set_cursor(x, i);
+      // x = (temp - ADDR_START) - (OLED_WIDTH * i);
+      // set_cursor(x, i);
       // }
       oled_write(data, DATA);
       // }

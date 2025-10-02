@@ -16,25 +16,26 @@
 
 void init_sys();
 void init_gpio();
+void test_draw(int i);
 
 int main() {
   init_sys();
+  int i = 0;
 
-  oled_draw_line(0, 0, 128, 0);     // top
-  oled_draw_line(0, 64, 128, 64);   // bottom
-  oled_draw_line(128, 0, 128, 64);  // right
-  oled_draw_line(0, 0, 0, 64);      // left
-
-  oled_printf("Hello with lines", 16, 3);
-
-  oled_draw_line(0, 0, 128, 64);  // cross-left
-  oled_draw_line(128, 0, 0, 64);  // cross-right
-
-  oled_display();
   while (1) {
+    oled_clear();
+    test_draw(i);
+    oled_display();
+    i = (i >= OLED_HEIGHT - 8 ? 0 : i + 1);
     _delay_ms(10);
   }
   return 0;
+}
+
+void test_draw(int i) {
+  oled_draw_line(0, 0, 128, 0);  // top
+  oled_printf("TEST", 26, i);
+  oled_printf("ANNET", 64, 3);
 }
 
 void init_sys() {
