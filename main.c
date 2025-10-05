@@ -24,8 +24,16 @@ void init_gpio();
 #include "game_logic.h"
 
 int main() {
+  spi_config_t spi = {
+      .mosi_pin_num = PB5,
+      .sck_pin_num = PB7,
+      .miso_pin_num = PB6,
+      .clock_div = F_DIV_2,
+  };
+  spi_init(&spi);
   init_sys();
-  // int i = 0;
+
+  // --- MAIN LOOP ---
   while (1) {
     if (input_ctrl_flag) {
       input_ctrl_flag = 0;
@@ -48,7 +56,6 @@ void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
   init_gpio();
-  spi_init();
   oled_init();
   menu_init();
   avr_init();
@@ -57,10 +64,6 @@ void init_sys() {
 
 void init_gpio() {
   DDRB |= (1 << PB4) | (1 << PB3);  // avr_cs, display_cs as output
-  DDRD |= (1 << PD3);               // TEMP: PD4 output
-  DDRD |= (1 << PD4);               // TEMP: PD4 output
-
-  spi_slave_deselect();
 }
 
 ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }
