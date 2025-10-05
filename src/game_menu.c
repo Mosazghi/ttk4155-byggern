@@ -249,7 +249,7 @@ void menu_select(menu_state_t *state) {
   else if (item->callback != NULL) {
     item->callback();
   }
-};
+}
 
 menu_render_t str_to_render_t(const char *str) {
   // Compare against the actual PROGMEM string variables

@@ -7,8 +7,6 @@ typedef struct {
   int x;
   int y;
   bool btn;
-
-  // uint8_t btn
 } joystick_xy_t;
 
 typedef enum { LEFT, RIGHT, UP, DOWN, NEUTRAL } joystick_dir_t;
