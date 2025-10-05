@@ -10,7 +10,11 @@ void spi_init(spi_config_t *handle) {
   DDRB &= ~(1 << handle->miso_pin_num);  // Set MISO as input
 
   SPCR |= (1 << SPE) | (1 << MSTR) | (handle->clock_div & 0x03);
-  // SPSR |= (handle->clock_div & 0x04 ? (1 << SPI2X) : 0); //TODO: Check this line
+  if (handle->clock_div & 0x04) {
+    SPSR |= (1 << SPI2X);
+  } else {
+    SPSR &= ~(1 << SPI2X);
+  }
 }
 
 void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer) {
