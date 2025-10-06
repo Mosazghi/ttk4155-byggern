@@ -9,40 +9,17 @@
 #include "utility.h"
 
 static void oled_init_timer_30hz();
-static oled_ctx_t ctx = {0};
+static oled_ctx ctx = {0};
 
 /****************************************************************
  *                      STATIC FUNCTIONS                       *
  ****************************************************************/
 
 static void oled_write(uint8_t data, oled_write_mode_t type) {
-  PIN_WRITE(PORTB, OLED_CMD, type == OLED_CMD_M ? LOW : HIGH);
-
-  spi_device_handle_t dev = {
-      .ss_port_num = &PORTB,
-      .ss_pin_num = OLED_CS,
-  };
-  spi_transfer_t transfer = {
-      .tx_buf = &data,
-      .rx_buf = NULL,
-      .len = 1,
-  };
-  spi_transfer(&dev, &transfer);
-}
-
-static void oled_write_array(uint8_t* data, size_t len, oled_write_mode_t type) {
-  PIN_WRITE(PORTB, OLED_CMD, type == OLED_CMD_M ? LOW : HIGH);
-
-  spi_device_handle_t dev = {
-      .ss_port_num = &PORTB,
-      .ss_pin_num = OLED_CS,
-  };
-  spi_transfer_t transfer = {
-      .tx_buf = data,
-      .rx_buf = NULL,
-      .len = len,
-  };
-  spi_transfer(&dev, &transfer);
+  PIN_WRITE(PORTB, OLED_CS, LOW);
+  PIN_WRITE(PORTB, OLED_CMD, type == CMD ? LOW : HIGH);
+  spi_transmit(data);
+  spi_slave_deselect();
 }
 
 void oled_write_sram(uint16_t addr, uint8_t data) {
@@ -53,8 +30,8 @@ void oled_write_sram(uint16_t addr, uint8_t data) {
 }
 
 static void oled_go_to_column(int column) {
-  oled_write(0x00 + (column % 16), OLED_CMD_M);
-  oled_write(0x10 + (column / 16), OLED_CMD_M);
+  oled_write(0x00 + (column % 16), CMD);
+  oled_write(0x10 + (column / 16), CMD);
 }
 
 void set_cursor(int x, int y) {
@@ -62,23 +39,23 @@ void set_cursor(int x, int y) {
   x = CLAMP(x, 0, SEG_WIDTH);
   y = CLAMP(y, 0, PAGE_HEIGHT);
 
-  oled_write(0xB0 + y, OLED_CMD_M);
+  oled_write(0xB0 + y, CMD);
   oled_go_to_column(x);
 }
 
 static void store_letter(uint8_t* buffer, int pos) {
   switch (ctx.font_size) {
-    case FONT_S:
-      for (int i = 0; i < (int)FONT_S; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
+    case SMALL:
+      for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
       break;
-    case FONT_M:
-      for (int i = 0; i < (int)FONT_M; i++) buffer[i] = pgm_read_byte(&font5[pos][i]);
+    case MEDIUM:
+      for (int i = 0; i < (int)MEDIUM; i++) buffer[i] = pgm_read_byte(&font5[pos][i]);
       break;
-    case FONT_L:
-      for (int i = 0; i < (int)FONT_L; i++) buffer[i] = pgm_read_byte(&font8[pos][i]);
+    case LARGE:
+      for (int i = 0; i < (int)LARGE; i++) buffer[i] = pgm_read_byte(&font8[pos][i]);
       break;
     default:
-      for (int i = 0; i < (int)FONT_S; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
+      for (int i = 0; i < (int)SMALL; i++) buffer[i] = pgm_read_byte(&font4[pos][i]);
       break;
   }
 }
@@ -105,8 +82,8 @@ static void oled_init_timer_30hz() {
  *                      GLOABL FUNCTIONS                       *
  ****************************************************************/
 
-void oled_init(void) {
-  ctx.font_size = FONT_S;
+int oled_init(void) {
+  ctx.font_size = SMALL;
   DDRB |= (1 << PB2);
   PORTB &= ~(1 << PB3);  // Display CS
   PORTB &= ~(1 << PB2);  // OLED cmd display
@@ -133,22 +110,32 @@ void oled_init(void) {
       0xA6,  // set normal display
       0xAF   // display on
   };
-  oled_write_array(oled_init_array, ARR_LEN(oled_init_array), OLED_CMD_M);
+
+  spi_transmit_packet(oled_init_array, ARR_LEN(oled_init_array));
   PORTB |= (1 << PB2);  // Display cmd
+  PORTB |= (1 << PB3);  // Display CS
+                        // 000100 (1 << PB4)
+                        //
+                        //  000100 (1 << PB4)
+                        //| 001000 (PORTB)
+                        //  001000
   oled_clear();
   oled_init_timer_30hz();
+  spi_slave_deselect();
+  return 0;  // Return 0 on success
 }
 
 void oled_clear(void) {
   int addr = ADDR_START;
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 128; j++) {
+      // oled_write(0x00, DATA);         // writing blank to each page
       oled_write_sram(addr++, 0x00);  // writing blank in sram
     }
   }
 }
 
-inline void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
+void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
 
 void oled_printf(const char* str, int x, int y) {
   size_t size = strlen(str);
@@ -173,12 +160,23 @@ void oled_printf(const char* str, int x, int y) {
 
 void oled_display() {  // TODO: LOGIC ERROR
   uint8_t data = 0;
+  // uint8_t prev_data = 0;
+  // uint16_t x = ADDR_START;
+
   for (int i = 0; i < 8; i++) {
     set_cursor(0, i);  // NOT NEEDED TO FIND X
     for (int j = 0; j < 128; j++) {
       uint16_t temp = (ADDR_START + j) + (OLED_WIDTH * i);
       data = sram_read(temp);
-      oled_write(data, OLED_DATA_M);
+      // if (data != 0x00) {
+      // If the prev. data is 0 AND we have valid data, then we have to calculate x-pos again.
+      // if (prev_data == 0x00) {
+      // x = (temp - ADDR_START) - (OLED_WIDTH * i);
+      // set_cursor(x, i);
+      // }
+      oled_write(data, DATA);
+      // }
+      // prev_data = data;
     }
   }
 }
