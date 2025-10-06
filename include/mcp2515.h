@@ -128,6 +128,37 @@
 #define MCP_WAKIF 0x40
 #define MCP_MERRF 0x80
 
+// CAN buffer registers
+// transmit-buffer 0
+#define MCP_TXB0SIDH 0x31
+#define MCP_TXB0SIDL 0x32
+#define MCP_TXB0DLC 0x35
+#define MCP_TXB0D0 0x36
+
+// transmit-buffer 1
+#define MCP_TXB1SIDH 0x41
+#define MCP_TXB1SIDL 0x42
+#define MCP_TXB1DLC 0x45
+#define MCP_TXB1D0 0x46
+
+// transmit-buffer 2
+#define MCP_TXB2SIDH 0x51
+#define MCP_TXB2SIDL 0x52
+#define MCP_TXB2DLC 0x55
+#define MCP_TXB2D0 0x56
+
+// receive-buffer 0
+#define MCP_RXB0SIDH 0x61
+#define MCP_RXB0SIDL 0x62
+#define MCP_RXB0DLC 0x65
+#define MCP_RXB0D0 0x66
+
+// receive-buffer 1
+#define MCP_RXB1SIDH 0x71
+#define MCP_RXB1SIDL 0x72
+#define MCP_RXB1DLC 0x75
+#define MCP_RXB1D0 0x76
+
 void mcp2515_init(void);
 uint8_t mcp2515_read(uint8_t address);
 void mcp2515_write(uint8_t address, uint8_t data);

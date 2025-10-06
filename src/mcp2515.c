@@ -65,7 +65,8 @@ void mcp2515_bitmod(uint8_t address, uint8_t mask, uint8_t data) {
   spi_slave_deselect();
 }
 
-// modes: MODE_NORMAL, MODE_LOOPBACK
+// modes: MODE_NORMAL, MODE_LOOPBACK, MODE_CONFIG
 void mcp2515_setmode(uint8_t mode){
   mcp2515_bitmod(MCP_CANCTRL, 0x70, mode);
 }
+
