@@ -13,6 +13,7 @@ void ext_ram_init() {
 }
 
 void sram_write(uint16_t addr, uint8_t data) {
+  // debug log
   LOG_DBG("Writing to SRAM: addr = %04X (next = %04X), data = %02X", addr, addr + 1, data);
   volatile uint8_t *ext_ram = (uint8_t *)SRAM_START;  // SRAM start address
   ext_ram[addr] = data;                               // Write data to SRAM
