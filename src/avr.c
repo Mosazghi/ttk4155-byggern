@@ -35,12 +35,20 @@ joystick_xy_t avr_get_joystick() {
   joystick_xy_t joystick;
   avr_transfer(0x03);  // Command to read joystick data
   _delay_us(40);
-  joystick.x = avr_transfer(0xFF);
-  _delay_us(2);
-  joystick.y = avr_transfer(0xFF);
-  _delay_us(2);
-  joystick.btn = avr_transfer(0xFF);
-
+  uint8_t buf[3];
+  spi_transfer_t transfer = {
+      .tx_buf = NULL,
+      .rx_buf = buf,
+      .len = 3,
+  };
+  spi_device_handle_t dev = {
+      .ss_port_num = &PORTB,
+      .ss_pin_num = AVR_SS_PIN,
+  };
+  spi_transfer(&dev, &transfer);
+  joystick.x = buf[0];
+  joystick.y = buf[1];
+  joystick.btn = buf[2];
   joystick.x = map(joystick.x, 54, 201, -100, 100);
   joystick.y = map(joystick.y, 54, 201, -100, 100);
 

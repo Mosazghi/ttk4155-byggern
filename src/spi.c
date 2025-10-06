@@ -6,15 +6,11 @@
 
 
 void spi_init(spi_config_t *handle) {
-  DDRB |= (1 << handle->mosi_pin_num) | (1 << handle->sck_pin_num); // Set MOSI and SCK as outputs
-  DDRB &= ~(1 << handle->miso_pin_num);  // Set MISO as input
-
-  SPCR |= (1 << SPE) | (1 << MSTR) | (handle->clock_div & 0x03);
-  if (handle->clock_div & 0x04) {
-    SPSR |= (1 << SPI2X);
-  } else {
-    SPSR &= ~(1 << SPI2X);
-  }
+  // Set MOSI, SCK, !SS as Output
+  DDRB |= (1 << PB5) | (1 << PB7);
+  DDRB &= ~(1 << PB6);  // MISO as Input
+  // Enable SPI, Set as Master, set clock rate fck/16
+  SPCR |= (1 << SPE) | (1 << MSTR) | (1 << SPR0);
 }
 
 void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer) {
@@ -25,14 +21,16 @@ void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer) {
     tx_buf = (const uint8_t *)transfer->tx_buf;
   }
 
-  for (size_t i = 0; i < transfer->len; ++i) {
+  for (size_t i = 0; i < transfer->len; i++) {
     uint8_t data = 0xFF;
     if (tx_buf != NULL) {
       data = tx_buf[i];
     }
+    // LOG_INF("Transferring byte: 0x%02X\n", data);
     SPDR = data;
     while (!(SPSR & (1 << SPIF)));
     if (transfer->rx_buf != NULL) {
+      // wINF("Received byte: 0x%02X\n--------\n", SPDR);
       transfer->rx_buf[i] = SPDR;
     }
   }

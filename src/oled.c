@@ -108,8 +108,6 @@ static void oled_init_timer_30hz() {
 void oled_init(void) {
   ctx.font_size = FONT_S;
   DDRB |= (1 << PB2);
-  PORTB &= ~(1 << PB3);  // Display CS
-  PORTB &= ~(1 << PB2);  // OLED cmd display
   uint8_t oled_init_array[] = {
       0xAE,  // display off
       0xA8,  // multiplex ratio mode: 63
