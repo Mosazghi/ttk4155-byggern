@@ -1,0 +1,20 @@
+# Test build artifacts
+build/
+*.o
+*.out
+*.exe
+
+# Unity build artifacts
+*.gcda
+*.gcno
+*.gcov
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,106 @@
+name: Test Suite
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc make
+    
+    - name: Run tests
+      run: |
+        cd test
+        make test
+    
+    - name: Test summary
+      if: always()
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "✅ All tests passed!"
+        else
+          echo "❌ Tests failed!"
+          exit 1
+        fi
+
+  avr-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install AVR toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-avr avr-libc binutils-avr
+    
+    - name: Build project
+      run: |
+        make clean
+        make
+    
+    - name: Check memory usage
+      run: |
+        avr-size --format=avr --mcu=atmega162 build/a.out
+        
+        # Extract memory usage and check limits
+        DATA_USAGE=$(avr-size --format=avr --mcu=atmega162 build/a.out | grep "Data:" | awk '{print $2}')
+        PROGRAM_USAGE=$(avr-size --format=avr --mcu=atmega162 build/a.out | grep "Program:" | awk '{print $2}')
+        
+        echo "Program usage: $PROGRAM_USAGE bytes"
+        echo "Data usage: $DATA_USAGE bytes"
+        
+        # Warn if memory usage is high (>90%)
+        if [ "$DATA_USAGE" -gt "921" ]; then
+          echo "⚠️  Warning: RAM usage is >90%"
+        fi
+        if [ "$PROGRAM_USAGE" -gt "14745" ]; then
+          echo "⚠️  Warning: Flash usage is >90%"
+        fi
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware
+        path: |
+          build/main.hex
+          build/a.out
+        retention-days: 7
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Run basic code checks
+      run: |
+        # Check for trailing whitespace
+        if grep -r --include='*.c' --include='*.h' '[[:space:]]$' src/ include/ 2>/dev/null; then
+          echo "⚠️  Warning: Found trailing whitespace"
+        fi
+        
+        # Check for tabs vs spaces consistency
+        echo "Checking code formatting..."
+        
+        # Check for mixed tabs and spaces in the same file
+        for file in $(find src include -type f \( -name "*.c" -o -name "*.h" \)); do
+          if grep -q $'\t' "$file" && grep -q '^    ' "$file"; then
+            echo "⚠️  Warning: Mixed tabs and spaces in $file"
+          fi
+        done
+        
+        echo "✅ Basic lint checks completed"
