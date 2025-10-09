@@ -19,9 +19,9 @@ typedef struct {
 } spi_config_t;
 
 typedef struct {
-  void *tx_buf;
+  const void *tx_buf;
   uint8_t *rx_buf;
-  uint16_t len;
+  int len;
 } spi_transfer_t;
 
 typedef struct {

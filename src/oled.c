@@ -11,6 +11,10 @@
 static void oled_init_timer_30hz();
 static oled_ctx_t ctx = {0};
 
+static spi_device_handle_t dev = {
+    .ss_port_num = &PORTB,
+    .ss_pin_num = OLED_CS,
+};
 /****************************************************************
  *                      STATIC FUNCTIONS                       *
  ****************************************************************/
@@ -18,10 +22,6 @@ static oled_ctx_t ctx = {0};
 static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CMD, type == OLED_CMD_M ? LOW : HIGH);
 
-  spi_device_handle_t dev = {
-      .ss_port_num = &PORTB,
-      .ss_pin_num = OLED_CS,
-  };
   spi_transfer_t transfer = {
       .tx_buf = &data,
       .rx_buf = NULL,
@@ -33,10 +33,6 @@ static void oled_write(uint8_t data, oled_write_mode_t type) {
 static void oled_write_array(uint8_t* data, size_t len, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CMD, type == OLED_CMD_M ? LOW : HIGH);
 
-  spi_device_handle_t dev = {
-      .ss_port_num = &PORTB,
-      .ss_pin_num = OLED_CS,
-  };
   spi_transfer_t transfer = {
       .tx_buf = data,
       .rx_buf = NULL,
@@ -149,7 +145,7 @@ void oled_clear(void) {
 inline void oled_set_font(oled_font_size_t font_size) { ctx.font_size = font_size; }
 
 void oled_printf(const char* str, int x, int y) {
-  size_t size = strlen(str);
+  const size_t size = strlen(str);
   uint8_t msg[size][(int)ctx.font_size];
   int pos = 0;
 
@@ -205,10 +201,10 @@ void oled_draw_line(int x_start, int y_start, int x_end, int y_end) {
   y_end = CLAMP(y_end, 0, OLED_HEIGHT - 1);
 
   /* Calculate line using Bresenham's algorithm */
-  int dx = ABS(x_end - x_start);
-  int sx = x_start < x_end ? 1 : -1;
-  int dy = -ABS(y_end - y_start);
-  int sy = y_start < y_end ? 1 : -1;
+  const int dx = ABS(x_end - x_start);
+  const int sx = x_start < x_end ? 1 : -1;
+  const int dy = -ABS(y_end - y_start);
+  const int sy = y_start < y_end ? 1 : -1;
   int error = dx + dy;
   int e2 = 0;
 
