@@ -18,3 +18,4 @@
 #include "utility.h"
 
 #define OLED_SS_PIN PB3
+//#define MPC_SS_PIN PB1

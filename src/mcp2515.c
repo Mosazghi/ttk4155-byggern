@@ -5,7 +5,7 @@
 #include "spi.h"
 #include "utility.h"
 static spi_device_handle_t SPI_MCP2515 = {
-    .ss_port_num = &PORTD,
+    .ss_port_num = &PORTB,
     .ss_pin_num = MCP_SS_PIN,
 };
 
@@ -21,12 +21,27 @@ void mcp2515_reset() {
 
 uint8_t mcp2515_init() {
   mcp2515_reset();
+  //mcp2515_setmode(MODE_CONFIG);               // Enable config mode
+  // uint8_t value = mcp2515_read(MCP_CANSTAT);
+  // if ((value & MODE_MASK) != MODE_CONFIG) {
+  //   LOG_ERR("MCP2515 is NOT in configuration mode after reset!\n");
+  //   return 1;
+  // }
 
-  uint8_t value = mcp2515_read(MCP_CANSTAT);
-  if ((value & MODE_MASK) != MODE_CONFIG) {
-    LOG_ERR("MCP2515 is NOT in configuration mode after reset!\n");
-    return 1;
-  }
+  // TODO: TIMER settings
+ 
+  // Enable interrupt
+  //mcp2515_write(MCP_CANINTE, MCP_RX0IE);
+
+  // Set mask & filter to accept Node2 messages
+  // Node1 ID: 0x200 = 0100 0000 000
+  // Node2 ID: 0x400 = 1000 0000 000
+
+  // Set filter/mask
+  //mcp2515_write(MCP_RXF0SIDH, 0x80);        // Set filter = 1000 0000
+  //mcp2515_write(MCP_RXM0SIDH, 0x80);        // Set mask = 1000 0000
+
+  //mcp2515_setmode(MODE_LOOPBACK);             // Disable config mode
   _delay_ms(1);
   return 0;
 }

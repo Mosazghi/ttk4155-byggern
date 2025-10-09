@@ -6,6 +6,7 @@ uint8_t init_sys();
 void init_gpio();
 #include "avr.h"
 #include "game_logic.h"
+#include "can.h"
 
 int main() {
   spi_config_t spi_cfg = {
@@ -14,11 +15,35 @@ int main() {
       .miso_pin_num = PB6,
       .clock_div = F_DIV_16,
   };
+
   spi_init(&spi_cfg);
   if (init_sys() != 0) {
     LOG_ERR("System initialization failed!\n");
     return 1;
   }
+
+  // CAN TEST
+  // can_message_t msg;
+  // msg.data[0] = 0xFF;
+  // msg.data_length = 1;
+  // msg.id = 0x200;
+
+  // can_message_t received;
+
+
+  // LOG_INF("Pre-transmit");
+  // can_transmit(&msg);
+  // _delay_ms(50);
+  // LOG_INF("Post-transmit");
+    
+
+  // received = can_receive();
+  // if ((uint8_t)received.data[0] == 0xFF) {
+  //   LOG_INF("Data received: %d, %#x",received.data[0], received.id);
+  // }
+  // LOG_INF("Pre-while");
+
+
   // int i = 0;
   while (1) {
     if (input_ctrl_flag) {
@@ -36,7 +61,7 @@ int main() {
       update_display();
       // }
     }
-    _delay_ms(50);
+     _delay_ms(50);
   }
 }
 
@@ -56,10 +81,10 @@ uint8_t init_sys() {
 }
 
 void init_gpio() {
-  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS);   // avr_cs, display_cs as output
-  DDRD |= (1 << MCP_SS_PIN);                    // mcp_cs as output
-  PORTB |= (1 << AVR_SS_PIN) | (1 << OLED_CS);  // Set CS high
-  PORTD |= (1 << MCP_SS_PIN);                   // Set CS high
+  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);   // avr_cs, display_cs as output
+  //DDRD |= (1 << MCP_SS_PIN);                    // mcp_cs as output
+  PORTB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);  // Set CS high
+  //PORTD |= (1 << MCP_SS_PIN);                   // Set CS high
 }
 
 ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }
