@@ -27,7 +27,8 @@
         "game_logic.h": "c",
         "math.h": "c",
         "game_menu.h": "c",
-        "interrupt.h": "c"
+        "interrupt.h": "c",
+        "main.h": "c"
     },
     "C_Cpp_Runner.msvcBatchPath": "",
     "C_Cpp_Runner.cCompilerPath": "gcc",

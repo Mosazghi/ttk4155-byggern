@@ -13,17 +13,17 @@
 #define OLED_WIDTH 128
 #define OLED_HEIGHT 64
 
-typedef enum { CMD, DATA } oled_write_mode_t;
-typedef enum { SMALL = 4, MEDIUM = 5, LARGE = 8 } oled_font_size_t;
+typedef enum { OLED_CMD_M, OLED_DATA_M } oled_write_mode_t;
+typedef enum { FONT_S = 4, FONT_M = 5, FONT_L = 8 } oled_font_size_t;
 
 typedef struct {
   oled_font_size_t font_size;
-} oled_ctx;
+} oled_ctx_t;
 
 /**
  * @brief Initilazes the OLED IC for the ssd1306
  */
-int oled_init(void);
+void oled_init(void);
 
 /****************************************************************
  *                       COMMAND FUNCTIONS                       *
@@ -35,7 +35,7 @@ int oled_init(void);
  * The function will update the context of the oled and update
  * which font is used when using @see oled_printf(...)
  *
- * @param font_size (SMALL, MEDIUM, LARGE) from enum
+ * @param font_size (FONT_S, FONT_M, FONT_L) from enum
  */
 void oled_set_font(oled_font_size_t font_size);
 

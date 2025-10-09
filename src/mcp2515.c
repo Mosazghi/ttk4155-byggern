@@ -3,70 +3,107 @@
 #include <stdint.h>
 
 #include "spi.h"
+#include "utility.h"
+static spi_device_handle_t SPI_MCP2515 = {
+    .ss_port_num = &PORTD,
+    .ss_pin_num = MCP_SS_PIN,
+};
 
 void mcp2515_init() {
-  spi_init();
   _delay_ms(1);
-  spi_slave_select(SPI_MCP2515);
-  spi_transmit(MCP_RESET);
-  spi_slave_deselect();
+  // spi_slave_select(SPI_MCP2515);
+
+  spi_transfer_t transfer = {
+      .tx_buf = (uint8_t[]){MCP_RESET},
+      .rx_buf = 0,
+      .len = 1,
+  };
+  spi_transfer(&SPI_MCP2515, &transfer);
   _delay_ms(1);
 }
 
 uint8_t mcp2515_read(uint8_t address) {
-  spi_slave_select(SPI_MCP2515);
-  spi_transmit(MCP_READ);
-  spi_transmit(address);
-  uint8_t data = spi_receive();
-  spi_slave_deselect();
+  // spi_slave_select(SPI_MCP2515);
+  uint8_t data;
+  spi_transfer_t transfer = {
+      .tx_buf = (uint8_t[]){MCP_READ, address, 0x00},
+      .rx_buf = &data,
+      .len = 3,
+  };
+
+  // spi_transmit(MCP_READ);
+  // spi_transmit(address);
+  spi_transfer(&SPI_MCP2515, &transfer);
+  // uint8_t data = spi_receive();
+  // spi_slave_deselect();
   return data;
 }
 
 void mcp2515_write(uint8_t address, uint8_t data) {
-  spi_slave_select(SPI_MCP2515);
-  spi_transmit(MCP_WRITE);
-  spi_transmit(address);
-  spi_transmit(data);
-  spi_slave_deselect();
+  // spi_slave_select(SPI_MCP2515);
+  // spi_transmit(MCP_WRITE);
+  // spi_transmit(address);
+  // spi_transmit(data);
+  spi_transfer_t transfer = {
+      .tx_buf = (uint8_t[]){MCP_WRITE, address, data},
+      .rx_buf = 0,
+      .len = 3,
+  };
+  spi_transfer(&SPI_MCP2515, &transfer);
+  // spi_slave_deselect();
 }
 
-char mcp2515_read_status(char data) {
-  spi_slave_select(SPI_MCP2515);
-  spi_transmit(MCP_READ_STATUS);
-  char data = spi_receive();
-  spi_slave_deselect();
-  return data;
+uint8_t mcp2515_read_status(uint8_t data) {
+  uint8_t rx_buf;
+  // spi_slave_select(SPI_MCP2515);
+  // spi_transmit(MCP_READ_STATUS);
+  // char data = spi_receive();
+  // spi_slave_deselect();
+  spi_transfer_t transfer = {
+      .tx_buf = (uint8_t[]){MCP_READ_STATUS, data},
+      .rx_buf = &rx_buf,
+      .len = 2,
+  };
+  spi_transfer(&SPI_MCP2515, &transfer);
+  return rx_buf;
 }
 
 // Request to send
-void mcp2515_RTS(int buffer){       // Buffers 0-2
-  spi_slave_select(SPI_MCP2515);
+void mcp2515_RTS(int buffer) {  // Buffers 0-2
+  // spi_slave_select(SPI_MCP2515);
   buffer = buffer % 3;
   char data = MCP_RTS_TX0;
-  if (buffer == 0){
+  if (buffer == 0) {
     data = MCP_RTS_TX0;
-  }
-  else if (buffer == 1){
+  } else if (buffer == 1) {
     data = MCP_RTS_TX1;
-  }
-  else if (buffer == 2){
+  } else if (buffer == 2) {
     data = MCP_RTS_TX2;
   }
-  spi_transmit(data);
-  spi_slave_deselect();
+  // spi_transmit(data);
+  // spi_slave_deselect();
+  spi_transfer_t transfer = {
+      .tx_buf = (uint8_t[]){data},
+      .rx_buf = 0,
+      .len = 1,
+  };
+  spi_transfer(&SPI_MCP2515, &transfer);
 }
 
 void mcp2515_bitmod(uint8_t address, uint8_t mask, uint8_t data) {
-  spi_slave_select(SPI_MCP2515);
-  spi_transmit(MCP_BITMOD);
-  spi_transmit(address);            // Register to be edited
-  spi_transmit(mask);               // 1 byte: bit=1: edit allowed
-  spi_transmit(data);               // New bit values to be set
-  spi_slave_deselect();
+  // spi_slave_select(SPI_MCP2515);
+  // spi_transmit(MCP_BITMOD);
+  // spi_transmit(address);  // Register to be edited
+  // spi_transmit(mask);     // 1 byte: bit=1: edit allowed
+  // spi_transmit(data);     // New bit values to be set
+  // spi_slave_deselect();
+  spi_transfer_t transfer = {
+      .tx_buf = (uint8_t[]){MCP_BITMOD, address, mask, data},
+      .rx_buf = 0,
+      .len = 4,
+  };
+  spi_transfer(&SPI_MCP2515, &transfer);
 }
 
 // modes: MODE_NORMAL, MODE_LOOPBACK, MODE_CONFIG
-void mcp2515_setmode(uint8_t mode){
-  mcp2515_bitmod(MCP_CANCTRL, 0x70, mode);
-}
-
+void mcp2515_setmode(uint8_t mode) { mcp2515_bitmod(MCP_CANCTRL, 0x70, mode); }
