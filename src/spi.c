@@ -7,10 +7,11 @@
 
 void spi_init(spi_config_t *handle) {
   // Set MOSI, SCK, !SS as Output
-  DDRB |= (1 << PB5) | (1 << PB7);
-  DDRB &= ~(1 << PB6);  // MISO as Input
+  DDRB |= (1 << handle->mosi_pin_num) | (1 << handle->sck_pin_num);
+  DDRB &= ~(1 << handle->miso_pin_num);  // MISO as Input
   // Enable SPI, Set as Master, set clock rate fck/16
   SPCR |= (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+  // SPCR |= (handle->clock_div << SPR0);
 }
 
 void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer) {
