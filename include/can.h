@@ -7,4 +7,5 @@ typedef struct  {
 } can_message_t;
 
 void can_transmit(can_message_t *message);
+can_message_t can_receive();
 
