@@ -1,4 +1,5 @@
 #pragma once
+#include <avr/io.h>
 #include <stdint.h>
 
 #define MCP_RXF0SIDH 0x00
@@ -158,6 +159,7 @@
 #define MCP_RXB1SIDL 0x72
 #define MCP_RXB1DLC 0x75
 #define MCP_RXB1D0 0x76
+#define MCP_SS_PIN PD4
 
 void mcp2515_init(void);
 uint8_t mcp2515_read(uint8_t address);
