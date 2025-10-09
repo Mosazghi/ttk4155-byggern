@@ -8,16 +8,16 @@
 // long map(long x, long in_min, long in_max, long out_min, long out_max) {
 //   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 // }
-void map_joystick(joystick_xy_t *joystick) {
-  LOG_DBG("Mapping joystick values: X = %d, Y = %d", joystick->x, joystick->y);
-  if (joystick == NULL) {
-    return;  // Error: Null pointer
-  }
-  // joystick->x = (int)((joystick->x * (uint16_t) 200) / 241) - 100;
-  // joystick->y =   (int)((joystick->y * (uint16_t) 200) / 241) - 100;
-  // joystick->x = map(joystick->x, 0, 241, -100, 100);
-  // joystick->y = map(joystick->y, 0, 241, -100, 100);
-}
+// void map_joystick(joystick_xy_t *joystick) {
+//   LOG_DBG("Mapping joystick values: X = %d, Y = %d", joystick->x, joystick->y);
+//   if (joystick == NULL) {
+//     return;  // Error: Null pointer
+//   }
+//   // joystick->x = (int)((joystick->x * (uint16_t) 200) / 241) - 100;
+//   // joystick->y =   (int)((joystick->y * (uint16_t) 200) / 241) - 100;
+//   // joystick->x = map(joystick->x, 0, 241, -100, 100);
+//   // joystick->y = map(joystick->y, 0, 241, -100, 100);
+// }
 
 // void joystick_read(joystick_xy_t *joystick) {
 //   joystick->x = adc_read(ADC_CH1);
@@ -44,23 +44,6 @@ joystick_dir_t joystick_get_dir(joystick_xy_t joystick, uint8_t threshold) {
     LOG_DBG("Joystick direction: NEUTRAL\n");
     return NEUTRAL;
   }
-}
-
-// Adjusts the value to be 0 if within the deadzone threshold
-uint8_t deadzone_adjust(joystick_xy_t *joystick, uint8_t threshold) {
-  if (joystick == NULL) {
-    return 1;  // Error: Null pointer
-  }
-
-  if (sqrt(joystick->x * joystick->x) < threshold) {
-    joystick->x = 0;
-  }
-
-  if (sqrt(joystick->y * joystick->y) < threshold) {
-    joystick->y = 0;
-  }
-
-  return 0;
 }
 
 // Reads all inputs and returns an ADC struct with the values

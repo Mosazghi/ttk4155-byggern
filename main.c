@@ -1,20 +1,4 @@
-#include <stdint.h>
-#define F_CPU 4915200UL
-#define BAUD 9600
-#define MY_UBRR F_CPU / 16 / BAUD - 1
-#ifndef __AVR_ATmega162__
-#define __AVR_ATmega162__
-#endif
-#include <avr/interrupt.h>
-#include <avr/io.h>
-#include <util/delay.h>
-
-#include "game_menu.h"
-#include "oled.h"
-#include "spi.h"
-#include "sram.h"
-#include "uart.h"
-#include "utility.h"
+#include "main.h"
 volatile uint8_t oled_ctrl_flag = 0;
 volatile uint8_t input_ctrl_flag = 0;
 buttons_t buttons;
@@ -24,12 +8,21 @@ void init_gpio();
 #include "game_logic.h"
 
 int main() {
+  spi_config_t spi = {
+      .mosi_pin_num = PB5,
+      .sck_pin_num = PB7,
+      .miso_pin_num = PB6,
+      .clock_div = F_DIV_16,
+  };
+  spi_init(&spi);
   init_sys();
   // int i = 0;
   while (1) {
     if (input_ctrl_flag) {
       input_ctrl_flag = 0;
       buttons = avr_get_buttons();
+      joystick_xy_t joystick = avr_get_joystick();
+      // LOG_INF("Joystick X: %d, Y: %d, Btn: %d\n", joystick.x, joystick.y, joystick.btn);
       menu_loop(&buttons);
     }
     if (oled_ctrl_flag) {
@@ -48,7 +41,6 @@ void init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
   init_gpio();
-  spi_init();
   oled_init();
   menu_init();
   avr_init();
@@ -56,11 +48,8 @@ void init_sys() {
 }
 
 void init_gpio() {
-  DDRB |= (1 << PB4) | (1 << PB3);  // avr_cs, display_cs as output
-  DDRD |= (1 << PD3);               // TEMP: PD4 output
-  DDRD |= (1 << PD4);               // TEMP: PD4 output
-
-  spi_slave_deselect();
+  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS);   // avr_cs, display_cs as output
+  PORTB |= (1 << AVR_SS_PIN) | (1 << OLED_CS);  // Set CS high
 }
 
 ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }

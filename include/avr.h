@@ -1,5 +1,6 @@
 #pragma once
 
+#define AVR_SS_PIN PB4
 #include <stdint.h>
 
 #include "input.h"
@@ -52,9 +53,31 @@ typedef struct __attribute__((packed)) {
   uint8_t size;
 } touch_slider_t;
 
+/**
+ * @brief Initializes the AVR IO Board.
+ */
 void avr_init();
+/**
+ * @brief Gets the current joystick position.
+ * @return The current joystick position.
+ */
 joystick_xy_t avr_get_joystick();
+/**
+ * @brief Gets the current touch pad position.
+ * @return The current touch pad position.
+ */
 touch_pad_t avr_get_touch_pad();
+/**
+ * @brief Gets the current touch slider position.
+ * @return The current touch slider position.
+ */
 touch_slider_t avr_get_touch_slider();
+/**
+ * @brief Gets the current button states.
+ * @return The current button states.
+ */
 buttons_t avr_get_buttons();
+/**
+ * @brief Initializes the timer to trigger at 10Hz.
+ */
 void avr_timer_init_10hz();
