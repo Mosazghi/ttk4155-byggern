@@ -2,20 +2,23 @@
 volatile uint8_t oled_ctrl_flag = 0;
 volatile uint8_t input_ctrl_flag = 0;
 buttons_t buttons;
-void init_sys();
+uint8_t init_sys();
 void init_gpio();
 #include "avr.h"
 #include "game_logic.h"
 
 int main() {
-  spi_config_t spi = {
+  spi_config_t spi_cfg = {
       .mosi_pin_num = PB5,
       .sck_pin_num = PB7,
       .miso_pin_num = PB6,
       .clock_div = F_DIV_16,
   };
-  spi_init(&spi);
-  init_sys();
+  spi_init(&spi_cfg);
+  if (init_sys() != 0) {
+    LOG_ERR("System initialization failed!\n");
+    return 1;
+  }
   // int i = 0;
   while (1) {
     if (input_ctrl_flag) {
@@ -37,15 +40,19 @@ int main() {
   }
 }
 
-void init_sys() {
+uint8_t init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
   init_gpio();
   oled_init();
   menu_init();
   avr_init();
-  mcp2515_init();
+  if (mcp2515_init() != 0) {
+    LOG_ERR("MCP2515 initialization failed!\n");
+    return 1;
+  }
   LOG_INF("System initialized.\n");
+  return 0;
 }
 
 void init_gpio() {

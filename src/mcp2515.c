@@ -9,17 +9,26 @@ static spi_device_handle_t SPI_MCP2515 = {
     .ss_pin_num = MCP_SS_PIN,
 };
 
-void mcp2515_init() {
-  _delay_ms(1);
-  // spi_slave_select(SPI_MCP2515);
-
+void mcp2515_reset() {
   spi_transfer_t transfer = {
       .tx_buf = (uint8_t[]){MCP_RESET},
       .rx_buf = 0,
       .len = 1,
   };
+
   spi_transfer(&SPI_MCP2515, &transfer);
+}
+
+uint8_t mcp2515_init() {
+  mcp2515_reset();
+
+  uint8_t value = mcp2515_read(MCP_CANSTAT);
+  if ((value & MODE_MASK) != MODE_CONFIG) {
+    LOG_ERR("MCP2515 is NOT in configuration mode after reset!\n");
+    return 1;
+  }
   _delay_ms(1);
+  return 0;
 }
 
 uint8_t mcp2515_read(uint8_t address) {

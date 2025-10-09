@@ -1,5 +1,6 @@
 #pragma once
 #define F_CPU 4915200UL
+#include <stdio.h>
 #include <util/delay.h>
 #define BASE_LOG(fmt, info, ...) printf(info fmt, ##__VA_ARGS__);
 #if DEBUG
