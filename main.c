@@ -1,20 +1,4 @@
-#include <stdint.h>
-#define F_CPU 4915200UL
-#define BAUD 9600
-#define MY_UBRR F_CPU / 16 / BAUD - 1
-#ifndef __AVR_ATmega162__
-#define __AVR_ATmega162__
-#endif
-#include <avr/interrupt.h>
-#include <avr/io.h>
-#include <util/delay.h>
-
-#include "game_menu.h"
-#include "oled.h"
-#include "spi.h"
-#include "sram.h"
-#include "uart.h"
-#include "utility.h"
+#include "main.h"
 volatile uint8_t oled_ctrl_flag = 0;
 volatile uint8_t input_ctrl_flag = 0;
 buttons_t buttons;
@@ -32,8 +16,7 @@ int main() {
   };
   spi_init(&spi);
   init_sys();
-
-  // --- MAIN LOOP ---
+  // int i = 0;
   while (1) {
     if (input_ctrl_flag) {
       input_ctrl_flag = 0;

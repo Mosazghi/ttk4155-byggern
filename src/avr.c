@@ -1,11 +1,12 @@
-#define F_CPU 4915200UL
 #include "avr.h"
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <util/delay.h>
 
 #include "spi.h"
+#define F_CPU 4915200UL
+#include <util/delay.h>
+
 #include "utility.h"
 
 static spi_device_handle_t spi_avr_dev = {
