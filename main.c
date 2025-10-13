@@ -5,7 +5,6 @@ buttons_t buttons;
 uint8_t init_sys();
 void init_gpio();
 #include "avr.h"
-#include "game_logic.h"
 #include "can.h"
 
 int main() {
@@ -21,59 +20,34 @@ int main() {
     LOG_ERR("System initialization failed!\n");
     return 1;
   }
-
   // CAN TEST
-  // can_message_t msg;
-  // msg.data[0] = 0xFF;
-  // msg.data_length = 1;
-  // msg.id = 0x200;
+  can_message_t msg = {
+      .id = 0x200,
+      .data_length = 1,
+      .data = "H",
+  };
 
-  // can_message_t received;
-
-
-  // LOG_INF("Pre-transmit");
-  // can_transmit(&msg);
+  // LOG_INF("Pre-transmit\n");
+  can_transmit(&msg);
   // _delay_ms(50);
-  // LOG_INF("Post-transmit");
-    
+  // LOG_INF("Post-transmit\n");
 
-  // received = can_receive();
-  // if ((uint8_t)received.data[0] == 0xFF) {
-  //   LOG_INF("Data received: %d, %#x",received.data[0], received.id);
-  // }
+  can_message_t received = can_receive();
+  LOG_INF("Data received: %d, %#x\n", received.data[0], received.id);
   // LOG_INF("Pre-while");
 
-
-  // int i = 0;
-  while (1) {
-    if (input_ctrl_flag) {
-      input_ctrl_flag = 0;
-      buttons = avr_get_buttons();
-      joystick_xy_t joystick = avr_get_joystick();
-      // LOG_INF("Joystick X: %d, Y: %d, Btn: %d\n", joystick.x, joystick.y, joystick.btn);
-      menu_loop(&buttons);
-    }
-    if (oled_ctrl_flag) {
-      oled_ctrl_flag = 0;
-      // if (g_game_state.is_in_game) {
-      //   game_loop(&buttons);
-      // } else {
-      update_display();
-      // }
-    }
-     _delay_ms(50);
-  }
+  _delay_ms(50);
 }
 
 uint8_t init_sys() {
   uart_init(MY_UBRR);
   ext_ram_init();
   init_gpio();
-  oled_init();
-  menu_init();
-  avr_init();
+  // oled_init();
+  // menu_init();
+  // avr_init();
   if (mcp2515_init() != 0) {
-    LOG_ERR("MCP2515 initialization failed!\n");
+    // LOG_ERR("MCP2515 initialization failed!\n");
     return 1;
   }
   LOG_INF("System initialized.\n");
@@ -81,10 +55,10 @@ uint8_t init_sys() {
 }
 
 void init_gpio() {
-  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);   // avr_cs, display_cs as output
-  //DDRD |= (1 << MCP_SS_PIN);                    // mcp_cs as output
+  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);  // avr_cs, display_cs as output
+  // DDRD |= (1 << MCP_SS_PIN);                    // mcp_cs as output
   PORTB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);  // Set CS high
-  //PORTD |= (1 << MCP_SS_PIN);                   // Set CS high
+  // PORTD |= (1 << MCP_SS_PIN);                   // Set CS high
 }
 
 ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }

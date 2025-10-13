@@ -8,7 +8,7 @@ void draw_game();
 void game_reset();
 void set_difficulty_level(difficulty_level_t level) {
   if (!g_game_state.is_in_game) {
-    LOG_INF("Difficulty set to %d\n", level);
+    // LOG_INF("Difficulty set to %d\n", level);
     g_game_state.current_level = level;
     g_game_state.is_in_game = true;
   }
@@ -17,13 +17,13 @@ void reset_high_scores() { g_game_state.score = 0; }
 
 void game_loop(buttons_t *buttons) {
   // Simple game logic for demonstration
-  LOG_INF("Game loop running. Current score: %d\n", g_game_state.score);
+  // LOG_INF("Game loop running. Current score: %d\n", g_game_state.score);
   if (buttons->NB == 1) {      // If the navigation button is pressed
     g_game_state.score += 10;  // Increase score
     LOG_DBG("Score increased to %d\n", g_game_state.score);
   }
   if (g_game_state.score >= 100) {  // Win condition
-    LOG_INF("You win! Final score: %d\n", g_game_state.score);
+    // LOG_INF("You win! Final score: %d\n", g_game_state.score);
     game_reset();
   }
   draw_game();

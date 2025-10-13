@@ -29,13 +29,14 @@ void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer) {
       data = tx_buf[i];
     }
     SPDR = data;
+    LOG_INF("Transmitted byte: %#x\n", data);
     while (!(SPSR & (1 << SPIF)));
     // skip the first return byte
-    if (transfer->rx_buf != NULL && i != 0) {
-      transfer->rx_buf[i] = SPDR;
+    if (transfer->rx_buf != NULL) {
+      LOG_INF("Received byte: %#x\n", SPDR);
+        transfer->rx_buf[i] = SPDR;
     }
   }
-
   spi_slave_deselect(dev);
 }
 
