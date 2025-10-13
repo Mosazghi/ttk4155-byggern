@@ -14,10 +14,11 @@ void can_transmit(can_message_t *message) {
 }
 
 can_message_t can_receive() {
-  if (!(mcp2515_read(MCP_CANINTF) & MCP_RX0IF)) {
-    LOG_INF("No message received.\n");
-    return (can_message_t){0};  // Return an empty message if no message is received
+  while (!(mcp2515_read(MCP_CANINTF) & MCP_RX0IF)) {
+    LOG_INF("No CAN msg received. Waiting...\n");
+    // return (can_message_t){0};  // Return an empty message if no message is received
   }
+
   can_message_t message;
   uint8_t id_h, id_l;
   id_h = mcp2515_read(MCP_RXB0SIDH);
@@ -26,7 +27,8 @@ can_message_t can_receive() {
   message.id = (id_h << 3) | (id_l >> 5);  // Corrected ID extraction
 
   message.data_length = mcp2515_read(MCP_RXB0DLC);
-  LOG_INF("Received CAN message with ID: %#x, Data Length: %d\n", message.id, message.data_length);
+  LOG_INF("LFG!! Received CAN message with ID: %#x, Data Length: %d\n", message.id,
+          message.data_length);
   for (int i = 0; i < message.data_length; i++) {
     message.data[i] = mcp2515_read(MCP_RXB0D0 + i);
   }
