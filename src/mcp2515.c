@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include "avr/io.h"
 #include "spi.h"
 #include "utility.h"
 static spi_device_handle_t SPI_MCP2515 = {
@@ -46,6 +47,15 @@ uint8_t mcp2515_init() {
 
   mcp2515_setmode(MODE_LOOPBACK);  // Disable config mode
   _delay_ms(1);
+
+  // mcp2515 interupt
+  mcp2515_bitmodify(MCP_CANINTE, 0x01, MCP_RX0IE);
+  mcp2515_bitmodify(MCP_CANINTF, 0x01, MCP_RX0IF);
+
+  // Atmega interupt
+  SREG |= (1 << ATMEGA_GLOBAL_INTERUPT);  // Enable extern interupt
+  MCUCR |= (1 << ISC01) | (1 << ISC00);   // Falling edge set intrupt
+  GICR |= (1 << INT0);                    // Setup intrupt on INT0_vector
   return 0;
 }
 

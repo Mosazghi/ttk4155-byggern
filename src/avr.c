@@ -19,16 +19,16 @@ inline long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-uint8_t deadzone_adjust(joystick_xy_t *joystick, uint8_t threshold) {
+uint8_t deadzone_adjust(joystick_xy_t* joystick, uint8_t threshold) {
   if (joystick == NULL) {
     return 1;  // Error: Null pointer
   }
 
-  if (sqrt(joystick->x * joystick->x) < threshold) {
+  if (ABS(joystick->x) < threshold) {
     joystick->x = 0;
   }
 
-  if (sqrt(joystick->y * joystick->y) < threshold) {
+  if (ABS(joystick->y) < threshold) {
     joystick->y = 0;
   }
 

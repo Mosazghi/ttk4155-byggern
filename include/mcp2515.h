@@ -162,6 +162,9 @@
 #define MCP_RXB1D0 0x76
 #define MCP_SS_PIN PB1
 
+// Interupt
+#define ATMEGA_GLOBAL_INTERUPT 7
+
 uint8_t mcp2515_init(void);
 uint8_t mcp2515_read(uint8_t address);
 void mcp2515_write(uint8_t address, uint8_t data);

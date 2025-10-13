@@ -1,0 +1,5 @@
+CompileFlags: 
+  Add: [
+    "-I/usr/avr/include",
+    "-I/home/abdi/ttk4155-byggern/include/"
+  ]

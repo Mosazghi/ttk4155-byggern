@@ -1,6 +1,11 @@
 #include "main.h"
+
+#include "avr/io.h"
+
 volatile uint8_t oled_ctrl_flag = 0;
 volatile uint8_t input_ctrl_flag = 0;
+volatile uint8_t can_ctrl_flag = 0;
+
 buttons_t buttons;
 uint8_t init_sys();
 void init_gpio();
@@ -64,3 +69,5 @@ void init_gpio() {
 ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }
 
 ISR(TIMER3_COMPA_vect) { input_ctrl_flag = 1; }
+
+ISR(INT0_vect) { can_ctrl_flag = 1; }
