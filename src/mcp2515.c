@@ -52,10 +52,13 @@ uint8_t mcp2515_init() {
   mcp2515_bitmodify(MCP_CANINTE, 0x01, MCP_RX0IE);
   mcp2515_bitmodify(MCP_CANINTF, 0x01, MCP_RX0IF);
 
+  
+
   // Atmega interupt
   SREG |= (1 << ATMEGA_GLOBAL_INTERUPT);  // Enable extern interupt
   MCUCR |= (1 << ISC01) | (1 << ISC00);   // Falling edge set intrupt
   GICR |= (1 << INT0);                    // Setup intrupt on INT0_vector
+  DDRD |= (1 << PD2);
   return 0;
 }
 

@@ -29,7 +29,8 @@
         "game_menu.h": "c",
         "interrupt.h": "c",
         "main.h": "c",
-        "mcp2515.h": "c"
+        "mcp2515.h": "c",
+        "can.h": "c"
     },
     "C_Cpp_Runner.msvcBatchPath": "",
     "C_Cpp_Runner.cCompilerPath": "gcc",

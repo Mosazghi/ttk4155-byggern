@@ -36,12 +36,18 @@ int main() {
   can_transmit(&msg);
   // _delay_ms(50);
   // LOG_INF("Post-transmit\n");
+  while (1) {
+    if(can_ctrl_flag) {
+      LOG_INF("Interrup for CAN!\n");
+      can_ctrl_flag = 0;
+      // can_message_t received = can_receive();
+      // LOG_INF("Data received: %d, %#x\n", received.data[0], received.id);
+    }
+    _delay_ms(50);
+  }
 
-  can_message_t received = can_receive();
-  LOG_INF("Data received: %d, %#x\n", received.data[0], received.id);
   // LOG_INF("Pre-while");
 
-  _delay_ms(50);
 }
 
 uint8_t init_sys() {
