@@ -1,9 +1,13 @@
 #include "can.h"
 
+#include "mcp2515.h"
 #include "utility.h"
 
-void can_transmit(can_message_t *message) {
-  mcp2515_write(MCP_TXB0SIDH, (message->id >> 3));           // 8 MSB
+can_error_t can_transmit(can_message_t *message) {
+  if (message == NULL) return CAN_ERROR_MSG_NULL;
+
+  // TODO: verify these are corerct way of doing this
+  mcp2515_write(MCP_TXB0SIDH, (uint8_t)(message->id >> 3));  // 8 MSB
   mcp2515_write(MCP_TXB0SIDL, ((message->id & 0x07) << 5));  // Get 3 LSB then left shift 5 places
   mcp2515_write(MCP_TXB0DLC, message->data_length);
 
@@ -11,6 +15,7 @@ void can_transmit(can_message_t *message) {
     mcp2515_write(MCP_TXB0D0 + i, message->data[i]);
   }
   mcp2515_RTS(0);  // Request to send on buffer 0
+  return CAN_ERROR_NONE;
 }
 
 can_message_t can_receive() {

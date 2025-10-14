@@ -45,8 +45,6 @@ int main() {
     }
     _delay_ms(50);
   }
-
-  // LOG_INF("Pre-while");
 }
 
 uint8_t init_sys() {
@@ -57,7 +55,7 @@ uint8_t init_sys() {
   // menu_init();
   // avr_init();
   if (mcp2515_init() != 0) {
-    // LOG_ERR("MCP2515 initialization failed!\n");
+    LOG_ERR("MCP2515 initialization failed!\n");
     return 1;
   }
   LOG_INF("System initialized.\n");
@@ -65,10 +63,8 @@ uint8_t init_sys() {
 }
 
 void init_gpio() {
-  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);  // avr_cs, display_cs as output
-  // DDRD |= (1 << MCP_SS_PIN);                    // mcp_cs as output
-  PORTB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);  // Set CS high
-  // PORTD |= (1 << MCP_SS_PIN);                   // Set CS high
+  DDRB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);
+  PORTB |= (1 << AVR_SS_PIN) | (1 << OLED_CS) | (1 << MCP_SS_PIN);
 }
 
 ISR(TIMER0_COMP_vect) { oled_ctrl_flag = 1; }

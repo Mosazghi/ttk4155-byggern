@@ -16,11 +16,11 @@
       "-DDEBUG=0",
       "-c",
       "-o",
-      "build/src/oled.o",
-      "src/oled.c"
+      "build/src/can.o",
+      "src/can.c"
     ],
     "directory": "/home/mosa/NTNU/TTK4155/ttk4155-byggern",
-    "file": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/src/oled.c",
-    "output": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/build/src/oled.o"
+    "file": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/src/can.c",
+    "output": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/build/src/can.o"
   }
 ]

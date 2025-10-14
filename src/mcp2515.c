@@ -23,7 +23,6 @@ uint8_t mcp2515_init() {
   LOG_INF("Initializing MCP2515...\n");
   mcp2515_reset();
   _delay_ms(1);
-  // mcp2515_setmode(MODE_CONFIG);  // Enable config mode
   uint8_t value = mcp2515_read(MCP_CANSTAT);
   if ((value & MODE_MASK) != MODE_CONFIG) {
     LOG_ERR("MCP2515 is NOT in configuration mode after reset!\n");
