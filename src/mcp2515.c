@@ -5,20 +5,18 @@
 #include "avr/io.h"
 #include "spi.h"
 #include "utility.h"
-static spi_device_handle_t SPI_MCP2515 = {
-    .ss_port_num = &PORTB,
-    .ss_pin_num = MCP_SS_PIN,
+
+static spi_device_handle_t spi_mcp2515_dev = {
+    .ss_port = &PORTB,
+    .ss_pin = MCP_SS_PIN,
 };
 
 void mcp2515_reset() {
-  uint8_t tx_buf[] = {MCP_RESET};
-  spi_transfer_t transfer = {
-      .tx_buf = tx_buf,
-      .rx_buf = NULL,
-      .len = 1,
-  };
+  spi_slave_select(&spi_mcp2515_dev);
 
-  spi_transfer(&SPI_MCP2515, &transfer);
+  spi_transmit(MCP_RESET);
+
+  spi_slave_deselect(&spi_mcp2515_dev);
 }
 
 uint8_t mcp2515_init() {
@@ -52,8 +50,6 @@ uint8_t mcp2515_init() {
   mcp2515_bitmodify(MCP_CANINTE, 0x01, MCP_RX0IE);
   mcp2515_bitmodify(MCP_CANINTF, 0x01, MCP_RX0IF);
 
-  
-
   // Atmega interupt
   SREG |= (1 << ATMEGA_GLOBAL_INTERUPT);  // Enable extern interupt
   MCUCR |= (1 << ISC01) | (1 << ISC00);   // Falling edge set intrupt
@@ -63,86 +59,64 @@ uint8_t mcp2515_init() {
 }
 
 uint8_t mcp2515_read(uint8_t address) {
-  // spi_slave_select(SPI_MCP2515);
-  uint8_t data[3];
-  spi_transfer_t transfer = {
-      .tx_buf = (uint8_t[]){MCP_READ, address, 0xFF},
-      .rx_buf = data,
-      .len = 3,
-  };
+  uint8_t data;
+  spi_slave_select(&spi_mcp2515_dev);
 
-  // spi_transmit(MCP_READ);
-  // spi_transmit(address);
-  spi_transfer(&SPI_MCP2515, &transfer);
-  // uint8_t data = spi_receive();
-  // spi_slave_deselect();
-  return data[2];
+  spi_transmit(MCP_READ);
+  spi_transmit(address);
+
+  data = spi_receive();
+
+  spi_slave_deselect(&spi_mcp2515_dev);
+  return data;
 }
 
 void mcp2515_write(uint8_t address, uint8_t data) {
-  // spi_slave_select(SPI_MCP2515);
-  // spi_transmit(MCP_WRITE);
-  // spi_transmit(address);
-  // spi_transmit(data);
-  spi_transfer_t transfer = {
-      .tx_buf = (uint8_t[]){MCP_WRITE, address, data},
-      .rx_buf = 0,
-      .len = 3,
-  };
-  spi_transfer(&SPI_MCP2515, &transfer);
-  // spi_slave_deselect();
+  spi_slave_select(&spi_mcp2515_dev);
+
+  spi_transmit(MCP_WRITE);
+  spi_transmit(address);
+  spi_transmit(data);
+
+  spi_slave_deselect(&spi_mcp2515_dev);
 }
 
-uint8_t mcp2515_read_status(uint8_t data) {
-  uint8_t rx_buf[2];
-  // spi_slave_select(SPI_MCP2515);
-  // spi_transmit(MCP_READ_STATUS);
-  // char data = spi_receive();
-  // spi_slave_deselect();
-  spi_transfer_t transfer = {
-      .tx_buf = (uint8_t[]){MCP_READ_STATUS, data},
-      .rx_buf = rx_buf,
-      .len = 2,
-  };
-  spi_transfer(&SPI_MCP2515, &transfer);
-  return rx_buf[1];
+uint8_t mcp2515_read_status(uint8_t reg) {
+  uint8_t data;
+  spi_slave_select(&spi_mcp2515_dev);
+
+  spi_transmit(MCP_READ_STATUS);
+  spi_transmit(reg);
+  data = spi_receive();
+
+  spi_slave_deselect(&spi_mcp2515_dev);
+  return data;
 }
 
-// Request to send
-void mcp2515_RTS(int buffer) {  // Buffers 0-2
-  // spi_slave_select(SPI_MCP2515);
+void mcp2515_RTS(int buffer) {
+  spi_slave_select(&spi_mcp2515_dev);
+
   buffer = buffer % 3;
-  uint8_t data[1] = {MCP_RTS_TX0};
+  uint8_t data = MCP_RTS_TX0;
   if (buffer == 0) {
-    data[0] = MCP_RTS_TX0;
+    data = MCP_RTS_TX0;
   } else if (buffer == 1) {
-    data[0] = MCP_RTS_TX1;
+    data = MCP_RTS_TX1;
   } else if (buffer == 2) {
-    data[0] = MCP_RTS_TX2;
+    data = MCP_RTS_TX2;
   }
-  // spi_transmit(data);
-  // spi_slave_deselect();
-  spi_transfer_t transfer = {
-      .tx_buf = data,
-      .rx_buf = 0,
-      .len = 1,
-  };
-  spi_transfer(&SPI_MCP2515, &transfer);
+  spi_transmit(data);
+
+  spi_slave_deselect(&spi_mcp2515_dev);
 }
 
 void mcp2515_bitmodify(uint8_t address, uint8_t mask, uint8_t data) {
-  // spi_slave_select(SPI_MCP2515);
-  // spi_transmit(MCP_BITMOD);
-  // spi_transmit(address);  // Register to be edited
-  // spi_transmit(mask);     // 1 byte: bit=1: edit allowed
-  // spi_transmit(data);     // New bit values to be set
-  // spi_slave_deselect();
-  spi_transfer_t transfer = {
-      .tx_buf = (uint8_t[]){MCP_BITMOD, address, mask, data},
-      .rx_buf = 0,
-      .len = 4,
-  };
-  spi_transfer(&SPI_MCP2515, &transfer);
+  spi_slave_select(&spi_mcp2515_dev);
+  spi_transmit(MCP_BITMOD);
+  spi_transmit(address);  // Register to be edited
+  spi_transmit(mask);     // 1 byte: bit=1: edit allowed
+  spi_transmit(data);     // New bit values to be set
+  spi_slave_deselect(&spi_mcp2515_dev);
 }
 
 // modes: MODE_NORMAL, MODE_LOOPBACK, MODE_CONFIG

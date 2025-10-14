@@ -14,9 +14,9 @@ void init_gpio();
 
 int main() {
   spi_config_t spi_cfg = {
-      .mosi_pin_num = PB5,
-      .sck_pin_num = PB7,
-      .miso_pin_num = PB6,
+      .mosi_pin = PB5,
+      .sck_pin = PB7,
+      .miso_pin = PB6,
       .clock_div = F_DIV_16,
   };
 
@@ -37,7 +37,7 @@ int main() {
   // _delay_ms(50);
   // LOG_INF("Post-transmit\n");
   while (1) {
-    if(can_ctrl_flag) {
+    if (can_ctrl_flag) {
       LOG_INF("Interrup for CAN!\n");
       can_ctrl_flag = 0;
       // can_message_t received = can_receive();
@@ -47,7 +47,6 @@ int main() {
   }
 
   // LOG_INF("Pre-while");
-
 }
 
 uint8_t init_sys() {

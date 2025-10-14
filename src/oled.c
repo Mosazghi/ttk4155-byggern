@@ -12,8 +12,8 @@ static void oled_init_timer_30hz();
 static oled_ctx_t ctx = {0};
 
 static spi_device_handle_t dev = {
-    .ss_port_num = &PORTB,
-    .ss_pin_num = OLED_CS,
+    .ss_port = &PORTB,
+    .ss_pin = OLED_CS,
 };
 /****************************************************************
  *                      STATIC FUNCTIONS                       *
@@ -22,23 +22,23 @@ static spi_device_handle_t dev = {
 static void oled_write(uint8_t data, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CMD, type == OLED_CMD_M ? LOW : HIGH);
 
-  spi_transfer_t transfer = {
-      .tx_buf = &data,
-      .rx_buf = NULL,
-      .len = 1,
-  };
-  spi_transfer(&dev, &transfer);
+  spi_slave_select(&dev);
+
+  spi_transmit(data);
+
+  spi_slave_deselect(&dev);
 }
 
 static void oled_write_array(uint8_t* data, size_t len, oled_write_mode_t type) {
   PIN_WRITE(PORTB, OLED_CMD, type == OLED_CMD_M ? LOW : HIGH);
 
-  spi_transfer_t transfer = {
-      .tx_buf = data,
-      .rx_buf = NULL,
-      .len = len,
-  };
-  spi_transfer(&dev, &transfer);
+  spi_slave_select(&dev);
+
+  while (len--) {
+    spi_transmit(*data++);
+  }
+
+  spi_slave_deselect(&dev);
 }
 
 void oled_write_sram(uint16_t addr, uint8_t data) {

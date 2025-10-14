@@ -4,46 +4,35 @@
 #include "utility.h"
 #include <util/delay.h>
 #include <stddef.h>
+#define SPI_DUMMY_BYTE 0xFF
 
 
 void spi_init(spi_config_t *handle) {
   // Set MOSI, SCK, !SS as Output
-  DDRB |= (1 << handle->mosi_pin_num) | (1 << handle->sck_pin_num);
-  DDRB &= ~(1 << handle->miso_pin_num);  // MISO as Input
+  DDRB |= (1 << handle->mosi_pin) | (1 << handle->sck_pin);
+  DDRB &= ~(1 << handle->miso_pin);  // MISO as Input
   // Enable SPI, Set as Master, set clock rate fck/16
   SPCR |= (1 << SPE) | (1 << MSTR) | (1 << SPR0);
   // SPCR |= (handle->clock_div << SPR0);
 }
 
-void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer) {
-  spi_slave_select(dev);
+#define SPI_DUMMY_BYTE 0xFF // Dummy byte for SPI receive
 
-  const uint8_t *tx_buf = NULL;
-  if (transfer->tx_buf != NULL) {
-    tx_buf = (const uint8_t *)transfer->tx_buf;
-  }
+void spi_transmit(uint8_t data) {
+    SPDR = data; 
+    while (!(SPSR & (1 << SPIF))); 
+}
 
-  for (int i = 0; i < transfer->len; i++) {
-    uint8_t data = 0xFF;
-    if (tx_buf != NULL) {
-      data = tx_buf[i];
-    }
-    SPDR = data;
-    LOG_INF("Transmitted byte: %#x\n", data);
-    while (!(SPSR & (1 << SPIF)));
-    // skip the first return byte
-    if (transfer->rx_buf != NULL) {
-      LOG_INF("Received byte: %#x\n", SPDR);
-        transfer->rx_buf[i] = SPDR;
-    }
-  }
-  spi_slave_deselect(dev);
+uint8_t spi_receive(void) {
+    SPDR = SPI_DUMMY_BYTE; 
+    while (!(SPSR & (1 << SPIF))); 
+    return SPDR;
 }
 
 void spi_slave_select(spi_device_handle_t *dev) { 
-  *(dev->ss_port_num) &= ~(1 << dev->ss_pin_num); 
+  *(dev->ss_port) &= ~(1 << dev->ss_pin); 
 }
 
 void spi_slave_deselect(spi_device_handle_t *dev) { 
-  *(dev->ss_port_num) |= (1 << dev->ss_pin_num); 
+  *(dev->ss_port) |= (1 << dev->ss_pin); 
 }
