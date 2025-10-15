@@ -10,7 +10,6 @@
 #include "utility.h"
 
 // Store strings in flash memory to save RAM
-
 const char str_main_menu_header[] PROGMEM = "Ping Pong";
 const char str_main_menu[] PROGMEM = "Main Menu";
 
@@ -36,10 +35,11 @@ const char str_dbg2[] PROGMEM = "Debug Opt 2";
 
 const char str_return[] PROGMEM = "Return";
 
-menu_render_t str_to_render_t(const char *str);
-void set_easy_difficulty(void) { set_difficulty_level(LVL_EASY); }
-void set_medium_difficulty(void) { set_difficulty_level(LVL_MEDIUM); }
-void set_hard_difficulty(void) { set_difficulty_level(LVL_HARD); }
+static menu_render_t str_to_render_t(const char *str);
+
+static void set_easy_difficulty(void) { try_start_game(LVL_EASY, &g_game_state); }
+static void set_medium_difficulty(void) { try_start_game(LVL_MEDIUM, &g_game_state); }
+static void set_hard_difficulty(void) { try_start_game(LVL_HARD, &g_game_state); }
 
 // Solution: Initialize without parent, then set parent after declaration
 menu_item_t difficulty_items[] = {
@@ -111,6 +111,7 @@ menu_t g_menu_root = {
     .num_items = ARR_LEN(main_items),
     .parent = NULL,
 };
+
 menu_state_t g_menu_state;
 // ------------------
 
@@ -129,7 +130,7 @@ void setup_menu_structure(void) {
   score_items[0].callback = reset_high_scores;
   score_items[1].callback = NULL;
 
-  // TODO: DEBUG ---
+  // DEBUG ---
   debug_menu.parent = &g_menu_root;
   debug_items[0].callback = NULL;  // Placeholder
   debug_items[1].callback = NULL;  // Placeholder
@@ -145,10 +146,7 @@ void setup_menu_structure(void) {
   g_menu_state.current_index = 0;
 }
 
-void menu_init() {
-  // (void)root;
-  setup_menu_structure();
-}
+void menu_init() { setup_menu_structure(); }
 
 void menu_loop(buttons_t *buttons) {
   if (buttons->NU == 1) {
@@ -160,7 +158,7 @@ void menu_loop(buttons_t *buttons) {
   }
 }
 
-void update_display() {
+void render_menu() {
   static char display_buffer[32];  // Reduced size and made static
   char temp_str[16];               // Temporary buffer for PROGMEM strings
 
@@ -251,7 +249,7 @@ void menu_select(menu_state_t *state) {
   }
 };
 
-menu_render_t str_to_render_t(const char *str) {
+static menu_render_t str_to_render_t(const char *str) {
   // Compare against the actual PROGMEM string variables
   if (strcmp_P(str, str_new_game_menu) == 0) {
     return NEW_GAME_MENU;

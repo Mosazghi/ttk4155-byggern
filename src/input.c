@@ -26,18 +26,18 @@
 //   // joystick.btn = !((PINF >> PINF5) & 0x01); // Active low
 // }
 
-joystick_dir_t joystick_get_dir(joystick_xy_t joystick, uint8_t threshold) {
+joystick_dir_t joystick_get_dir(joystick_xy_t* joystick, uint8_t threshold) {
   // joystick_dir_t dir = NEUTRAL;
-  if (joystick.x > threshold) {
+  if (joystick->x > threshold) {
     LOG_DBG("Joystick direction: RIGHT\n");
     return RIGHT;
-  } else if (joystick.x < -threshold) {
+  } else if (joystick->x < -threshold) {
     LOG_DBG("Joystick direction: LEFT\n");
     return LEFT;
-  } else if (joystick.y > threshold) {
+  } else if (joystick->y > threshold) {
     LOG_DBG("Joystick direction: UP\n");
     return UP;
-  } else if (joystick.y < -threshold) {
+  } else if (joystick->y < -threshold) {
     LOG_DBG("Joystick direction: DOWN\n");
     return DOWN;
   } else {
