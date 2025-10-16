@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Provides the low-level initialization functions that called 
+ * \brief Provides the low-level initialization functions that called
  * on chip startup.
  *
  * Copyright (c) 2011-2018 Microchip Technology Inc. and its subsidiaries.
@@ -32,7 +32,8 @@
  *
  */
 /*
- * Support and FAQ: visit <a href="https://www.microchip.com/support/">Microchip Support</a>
+ * Support and FAQ: visit <a href="https://www.microchip.com/support/">Microchip
+ * Support</a>
  */
 
 #ifndef SYSTEM_SAM3X_H_INCLUDED
@@ -46,10 +47,10 @@ extern "C" {
 /**INDENT-ON**/
 /* @endcond */
 
-#include <stdint.h>
 #include <compiler.h>
+#include <stdint.h>
 
-extern uint32_t SystemCoreClock;	/* System Clock Frequency (Core Clock) */
+extern uint32_t SystemCoreClock; /* System Clock Frequency (Core Clock) */
 
 /**
  * @brief Setup the microcontroller system.
@@ -58,12 +59,12 @@ extern uint32_t SystemCoreClock;	/* System Clock Frequency (Core Clock) */
 void SystemInit(void);
 
 /**
- * @brief Updates the SystemCoreClock with current core Clock 
+ * @brief Updates the SystemCoreClock with current core Clock
  * retrieved from cpu registers.
  */
 void SystemCoreClockUpdate(void);
 
-/** 
+/**
  * Initialize flash.
  */
 void system_init_flash(uint32_t ul_clk);

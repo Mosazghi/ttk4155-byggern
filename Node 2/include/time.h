@@ -2,8 +2,6 @@
 
 #include <stdint.h>
 
-
-
 // Time is a count of the number of ticks, and is represented as a uint64_t
 // Time is used to mean both absolute time since device start, and a duration
 
@@ -36,18 +34,19 @@ void time_spinUntil(uint64_t then);
 // Example:
 //   time_doPeriodic(msecs(50)){
 //       // do stuff
-//   }    
-#define time_doPeriodic(period) \
-    for(uint64_t then = time_now() + (period); 1; then += (period), time_spinUntil(then))
+//   }
+#define time_doPeriodic(period)                                                \
+  for (uint64_t then = time_now() + (period); 1;                               \
+       then += (period), time_spinUntil(then))
 
 // Human-readable time
 typedef struct Time Time;
 struct Time {
-    uint16_t ticks;
-    uint16_t msecs;
-    uint8_t  seconds;
-    uint8_t  minutes;
-    uint16_t hours;
+  uint16_t ticks;
+  uint16_t msecs;
+  uint8_t seconds;
+  uint8_t minutes;
+  uint16_t hours;
 };
 
 // Split ticks into human-readable form
