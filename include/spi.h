@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/iom162.h>
 #include <stdint.h>
+
 typedef enum {
   F_DIV_4 = 0,
   F_DIV_16,
@@ -11,22 +12,17 @@ typedef enum {
   F_DIV_8,
   F_DIV_32,
 } spi_clock_div_t;
+
 typedef struct {
-  uint8_t mosi_pin_num;
-  uint8_t sck_pin_num;
-  uint8_t miso_pin_num;
+  uint8_t mosi_pin;
+  uint8_t sck_pin;
+  uint8_t miso_pin;
   spi_clock_div_t clock_div;
 } spi_config_t;
 
 typedef struct {
-  const void *tx_buf;
-  uint8_t *rx_buf;
-  int len;
-} spi_transfer_t;
-
-typedef struct {
-  volatile uint8_t *ss_port_num;
-  uint8_t ss_pin_num;
+  volatile uint8_t *ss_port;
+  uint8_t ss_pin;
 } spi_device_handle_t;
 
 /**
@@ -36,10 +32,15 @@ typedef struct {
 void spi_init(spi_config_t *handle);
 /**
  * @brief Performs a SPI transfer (both read and write).
- * @param dev Pointer to the SPI device handle.
- * @param transfer Pointer to the SPI transfer structure.
+ * @param data Byte to be sent over SPI.
  */
-void spi_transfer(spi_device_handle_t *dev, spi_transfer_t *transfer);
+void spi_transmit(uint8_t data);
+/**
+ * @brief Receives a byte over SPI.
+ * @param dev Pointer to the SPI device handle.
+ * @return The received byte.
+ */
+uint8_t spi_receive(void);
 
 /**
  * @brief Selects the SPI slave device.

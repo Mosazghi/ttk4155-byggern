@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 #define F_CPU 4915200UL
 #define BAUD 9600
@@ -10,6 +11,7 @@
 #include <util/delay.h>
 
 #include "game_menu.h"
+#include "mcp2515.h"
 #include "oled.h"
 #include "spi.h"
 #include "sram.h"
@@ -17,3 +19,4 @@
 #include "utility.h"
 
 #define OLED_SS_PIN PB3
+// #define MPC_SS_PIN PB1

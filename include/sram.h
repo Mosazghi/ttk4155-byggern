@@ -2,6 +2,8 @@
 
 #include <avr/io.h>
 #include <avr/iom162.h>
+#include <stdio.h>
+#include <avr/io.h>
 #include <stdint.h>
 #include <stdio.h>
 

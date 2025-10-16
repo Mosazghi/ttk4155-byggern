@@ -83,12 +83,11 @@ void sram_test(void) {
     uint8_t some_value = rand();
     uint8_t retreived_value = ext_ram[i];
     if (retreived_value != some_value) {
-      LOG_ERR("Retrieval phase error: ext_ram[%4d] (%04X) = %02X (should be %02X)", i,
-              (uint16_t)&ext_ram[i], retreived_value, some_value);
+      // LOG_ERR("Retrieval phase error: ext_ram[%4d] (%04X) = %02X (should be %02X)", i,
+      // (uint16_t)&ext_ram[i], retreived_value, some_value);
       retrieval_errors++;
     }
   }
-  LOG_INF(
-      "SRAM test completed with \n%4d errors in write phase and \n%4d errors in retrieval phase\n",
-      write_errors, retrieval_errors);
+  // LOG_INF("SRAM test completed with \n%4d errors in write phase and \n%4d errors in retrieval
+  // phase\n", write_errors, retrieval_errors);
 }

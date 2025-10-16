@@ -1,4 +1,9 @@
 #pragma once
+#include <string.h>
+
+#include "spi.h"
+#include "sram.h"
+#include "utility.h"
 #define OLED_CS PB3
 #define OLED_CMD PB2
 #define SEG_WIDTH 127
