@@ -26,25 +26,25 @@ int main() {
     return 1;
   }
   // CAN TEST
-  can_message_t msg = {
-      .id = 0x200,
-      .data_length = 1,
-      .data = "H",
-  };
+  char buf[8];
+  char disp_buf[32];
 
-  // LOG_INF("Pre-transmit\n");
-  can_transmit(&msg);
-  // _delay_ms(50);
-  // LOG_INF("Post-transmit\n");
+  can_message_t msg = {.id = 299, .data = "Hello", .data_length = 8};
+
+  if (can_transmit(&msg) != CAN_ERROR_NONE) {
+    LOG_ERR("CAN transmit failed!\n");
+  }
   while (1) {
     if (can_ctrl_flag) {
-      LOG_INF("Interrup for CAN!\n");
       can_ctrl_flag = 0;
-      // can_message_t received = can_receive();
-      // LOG_INF("Data received: %d, %#x\n", received.data[0], received.id);
+      LOG_INF("Interrup for CAN!\n");
+      can_message_t received = can_receive();
+      LOG_INF("ID received: %d\n", received.id);
+      LOG_INF("Data received: %s \n", received.data);
     }
     _delay_ms(50);
   }
+  return 0;
 }
 
 uint8_t init_sys() {
@@ -55,7 +55,7 @@ uint8_t init_sys() {
   // menu_init();
   // avr_init();
   if (mcp2515_init() != 0) {
-    LOG_ERR("MCP2515 initialization failed!\n");
+    // LOG_ERR("MCP2515 initialization failed!\n");
     return 1;
   }
   LOG_INF("System initialized.\n");

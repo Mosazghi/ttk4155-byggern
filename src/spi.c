@@ -16,7 +16,6 @@ void spi_init(spi_config_t *handle) {
   // SPCR |= (handle->clock_div << SPR0);
 }
 
-#define SPI_DUMMY_BYTE 0xFF // Dummy byte for SPI receive
 
 void spi_transmit(uint8_t data) {
     SPDR = data; 
@@ -24,9 +23,9 @@ void spi_transmit(uint8_t data) {
 }
 
 uint8_t spi_receive(void) {
-    SPDR = SPI_DUMMY_BYTE; 
-    while (!(SPSR & (1 << SPIF))); 
-    return SPDR;
+  SPDR = SPI_DUMMY_BYTE; 
+  while (!(SPSR & (1 << SPIF))); 
+  return SPDR;
 }
 
 void spi_slave_select(spi_device_handle_t *dev) { 

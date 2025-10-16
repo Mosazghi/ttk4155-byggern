@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 #define F_CPU 4915200UL
 #define BAUD 9600
@@ -18,4 +19,4 @@
 #include "utility.h"
 
 #define OLED_SS_PIN PB3
-//#define MPC_SS_PIN PB1
+// #define MPC_SS_PIN PB1
