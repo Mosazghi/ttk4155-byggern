@@ -7,8 +7,8 @@ MCUTYPE = __SAM3X8E__
 # Do NOT use a backslash after the last file.
 SOURCE_FILES = \
 	$(BOOTUP) \
-	main.c \
 	$(wildcard src/*.c) \
+	main.c \
 #	../path_to/uart.c \
 #   filename1.c \
 #   filename2.c \
@@ -61,7 +61,7 @@ debug: $(ELF)
 
 .PHONY: flash
 flash: $(ELF)
-	#./sam/write_bin.sh sam/openocd.cfg $(BUILD_DIR)/main.elf
+	# ./sam/write_bin.sh sam/openocd.cfg $(BUILD_DIR)/main.elf
 	if pgr openocd; then killall -s 9 openocd; fi
 	openocd -f sam/openocd.cfg -c "program ${BUILD_DIR}/main.elf verify reset exit"
 

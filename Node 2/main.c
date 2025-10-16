@@ -16,19 +16,24 @@
  */
 // #include "../path_to/uart.h"
 #include "uart.h"
+#define BAUDRATE 115200
+#define F_CPU 84000000
 
 int main() {
   SystemInit();
 
-  WDT->WDT_MR = WDT_MR_WDDIS; // Disable Watchdog Timer
-                              //
+  WDT->WDT_MR = WDT_MR_WDDIS;  // Disable Watchdog Timer
+                               //
 
   // Uncomment after including uart above
   // uart_init(/*cpufreq*/, /*baud*/);
-  uart_init(F_CPU, 115200);
+  uart_init(F_CPU, BAUDRATE);
   printf("Hello World\n\r");
 
+  int x = 0;
   while (1) {
-    /* code */
+    printf("LFG x = %d\n\r", x);
+    x++;
+    for (volatile int i = 0; i < 1000000; i++);
   }
 }

@@ -1,6 +1,8 @@
 #include "uart.h"
-#include "sam.h"
+
 #include <stdio.h>
+
+#include "sam.h"
 
 #define F_CPU 84000000
 
@@ -20,8 +22,7 @@ int push(RingBuf *rb, uint8_t val) {
     return 0;
   }
   rb->buffer[rb->insertIdx] = val;
-  rb->insertIdx =
-      (rb->insertIdx + 1) % (sizeof(rb->buffer) / sizeof(rb->buffer[0]));
+  rb->insertIdx = (rb->insertIdx + 1) % (sizeof(rb->buffer) / sizeof(rb->buffer[0]));
   rb->length++;
   return 1;
 }
@@ -31,8 +32,7 @@ int pop(RingBuf *rb, uint8_t *val) {
     return 0;
   }
   *val = rb->buffer[rb->removeIdx];
-  rb->removeIdx =
-      (rb->removeIdx + 1) % (sizeof(rb->buffer) / sizeof(rb->buffer[0]));
+  rb->removeIdx = (rb->removeIdx + 1) % (sizeof(rb->buffer) / sizeof(rb->buffer[0]));
   rb->length--;
   return 1;
 }
@@ -52,8 +52,7 @@ void uart_init(uint32_t cpufreq, uint32_t baudrate) {
 
   // Configure interrupts on receive ready and errors
   UART->UART_IDR = 0xFFFFFFFF;
-  UART->UART_IER =
-      UART_IER_RXRDY | UART_IER_OVRE | UART_IER_FRAME | UART_IER_PARE;
+  UART->UART_IER = UART_IER_RXRDY | UART_IER_OVRE | UART_IER_FRAME | UART_IER_PARE;
 
   // Enable UART interrupt in the Nested Vectored Interrupt Controller (NVIC)
   NVIC_EnableIRQ((IRQn_Type)ID_UART);
@@ -79,7 +78,6 @@ int uart_flush(char *buf, int len) {
 }
 
 void UART_Handler() {
-
   uint32_t status = UART->UART_SR;
 
   // Errors: Reset UART
@@ -159,4 +157,3 @@ int _read(int file, char *ptr, int len) {
   }
   return nread;
 }
-
