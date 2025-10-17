@@ -2,6 +2,7 @@
 #define F_CPU 84000000
 #include <stdarg.h>
 #include <stdio.h>
+#include "servo.h"
 
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
@@ -28,12 +29,15 @@ int main() {
   // Uncomment after including uart above
   // uart_init(/*cpufreq*/, /*baud*/);
   uart_init(F_CPU, BAUDRATE);
+  piob_output_init(13);
   printf("Hello World\n\r");
 
-  int x = 0;
+
+
   while (1) {
-    printf("LFG x = %d\n\r", x);
-    x++;
-    for (volatile int i = 0; i < 1000000; i++);
+    piob_set_pin_high(13);
+    for (volatile int i = 0; i < 1000000; i++); // delay
+    piob_set_pin_low(13);
+    for (volatile int i = 0; i < 1000000; i++); // delay
   }
 }
