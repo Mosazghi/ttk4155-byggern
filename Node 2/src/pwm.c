@@ -30,7 +30,9 @@ void pwm_init(){
     PWM->PWM_ENA = (1 << PWM_CH1);
 }
 
-// Update duty cycle CDTY for PWM channel
+// Update duty cycle as a ratio of: (current_period / CDTY) for PWM channel
 void pwm_update_dutyCycle(int channel, int CDTY) {
-    PWM->PWM_CH_NUM[channel].PWM_CDTYUPD = CDTY;
+
+    int period = PWM->PWM_CH_NUM[channel].PWM_CPRD;
+    PWM->PWM_CH_NUM[channel].PWM_CDTYUPD = (period / CDTY);
 }
