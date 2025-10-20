@@ -36,7 +36,7 @@ const char str_dbg2[] PROGMEM = "Debug Opt 2";
 
 const char str_return[] PROGMEM = "Return";
 
-menu_render_t str_to_render_t(const char *str);
+menu_render_t str_to_render_t(const char* str);
 void set_easy_difficulty(void) { set_difficulty_level(LVL_EASY); }
 void set_medium_difficulty(void) { set_difficulty_level(LVL_MEDIUM); }
 void set_hard_difficulty(void) { set_difficulty_level(LVL_HARD); }
@@ -150,7 +150,7 @@ void menu_init() {
   setup_menu_structure();
 }
 
-void menu_loop(buttons_t *buttons) {
+void menu_loop(buttons_t* buttons) {
   if (buttons->NU == 1) {
     menu_move_up(&g_menu_state);
   } else if (buttons->ND == 1) {
@@ -211,22 +211,22 @@ void update_display() {
   oled_display();
 }
 
-void menu_move_up(menu_state_t *state) {
+void menu_move_up(menu_state_t* state) {
   if (state->current_index > 0) {
     state->current_index--;
   } else
     state->current_index = state->current_menu->num_items - 1;
 }
 
-void menu_move_down(menu_state_t *state) {
+void menu_move_down(menu_state_t* state) {
   if (state->current_index < state->current_menu->num_items - 1) {
     state->current_index++;
   } else
     state->current_index = 0;
 }
 
-void menu_select(menu_state_t *state) {
-  menu_item_t *item = &state->current_menu->items[state->current_index];
+void menu_select(menu_state_t* state) {
+  menu_item_t* item = &state->current_menu->items[state->current_index];
 
   // Enter submenu
   if (item->sub_menu != NULL) {
@@ -251,7 +251,7 @@ void menu_select(menu_state_t *state) {
   }
 };
 
-menu_render_t str_to_render_t(const char *str) {
+menu_render_t str_to_render_t(const char* str) {
   // Compare against the actual PROGMEM string variables
   if (strcmp_P(str, str_new_game_menu) == 0) {
     return NEW_GAME_MENU;

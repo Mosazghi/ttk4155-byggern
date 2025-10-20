@@ -19,31 +19,30 @@ Edited 2020 by Eivind H. J�lsgard and Gustav O. Often for use in course
 TTK4155 2020
 */
 
-#include "uart.h"
 #include <stdarg.h>
 
+#include "uart.h"
+
 // insert function to print to here
-static void printchar(char **str, int c) {
-  (void)uart_putchar(c); // Send characters to uart
+static void printchar(char** str, int c) {
+  // (void)uart_putchar(c); // Send characters to uart
 }
 
 #define PAD_RIGHT 1
 #define PAD_ZERO 2
 
-static int prints(char **out, const char *string, int width, int pad) {
+static int prints(char** out, const char* string, int width, int pad) {
   register int pc = 0, padchar = ' ';
 
   if (width > 0) {
     register int len = 0;
-    register const char *ptr;
-    for (ptr = string; *ptr; ++ptr)
-      ++len;
+    register const char* ptr;
+    for (ptr = string; *ptr; ++ptr) ++len;
     if (len >= width)
       width = 0;
     else
       width -= len;
-    if (pad & PAD_ZERO)
-      padchar = '0';
+    if (pad & PAD_ZERO) padchar = '0';
   }
   if (!(pad & PAD_RIGHT)) {
     for (; width > 0; --width) {
@@ -66,10 +65,9 @@ static int prints(char **out, const char *string, int width, int pad) {
 /* the following should be enough for 32 bit int */
 #define PRINT_BUF_LEN 12
 
-static int printi(char **out, int i, int b, int sg, int width, int pad,
-                  int letbase) {
+static int printi(char** out, int i, int b, int sg, int width, int pad, int letbase) {
   char print_buf[PRINT_BUF_LEN];
-  register char *s;
+  register char* s;
   register int t, neg = 0, pc = 0;
   register unsigned int u = i;
 
@@ -89,8 +87,7 @@ static int printi(char **out, int i, int b, int sg, int width, int pad,
 
   while (u) {
     t = u % b;
-    if (t >= 10)
-      t += letbase - '0' - 10;
+    if (t >= 10) t += letbase - '0' - 10;
     *--s = t + '0';
     u /= b;
   }
@@ -108,7 +105,7 @@ static int printi(char **out, int i, int b, int sg, int width, int pad,
   return pc + prints(out, s, width, pad);
 }
 
-static int print(char **out, const char *format, va_list args) {
+static int print(char** out, const char* format, va_list args) {
   register int width, pad;
   register int pc = 0;
   char scr[2];
@@ -117,10 +114,8 @@ static int print(char **out, const char *format, va_list args) {
     if (*format == '%') {
       ++format;
       width = pad = 0;
-      if (*format == '\0')
-        break;
-      if (*format == '%')
-        goto out;
+      if (*format == '\0') break;
+      if (*format == '%') goto out;
       if (*format == '-') {
         ++format;
         pad = PAD_RIGHT;
@@ -134,7 +129,7 @@ static int print(char **out, const char *format, va_list args) {
         width += *format - '0';
       }
       if (*format == 's') {
-        register char *s = (char *)va_arg(args, int);
+        register char* s = (char*)va_arg(args, int);
         pc += prints(out, s ? s : "(null)", width, pad);
         continue;
       }
@@ -167,27 +162,26 @@ static int print(char **out, const char *format, va_list args) {
       ++pc;
     }
   }
-  if (out)
-    **out = '\0';
+  if (out) **out = '\0';
   va_end(args);
   return pc;
 }
 
-int printf(const char *format, ...) {
+int printf(const char* format, ...) {
   va_list args;
 
   va_start(args, format);
   return print(0, format, args);
 }
 
-int sprintf(char *out, const char *format, ...) {
+int sprintf(char* out, const char* format, ...) {
   va_list args;
 
   va_start(args, format);
   return print(&out, format, args);
 }
 
-int snprintf(char *buf, unsigned int count, const char *format, ...) {
+int snprintf(char* buf, unsigned int count, const char* format, ...) {
   va_list args;
 
   (void)count;
