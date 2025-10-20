@@ -5,7 +5,7 @@
 #include "sram.h"
 #include "utility.h"
 #define OLED_CS PB3
-#define OLED_CMD PB2
+#define OLED_CMD PB1
 #define SEG_WIDTH 127
 #define PAGE_HEIGHT 7
 #define ADDR_START 0x1400  // start of sram (1kb)

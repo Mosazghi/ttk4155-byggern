@@ -31,13 +31,12 @@ int main() {
 
   can_message_t msg = {.id = 299, .data = "Hello", .data_length = 8};
 
-  if (can_transmit(&msg) != CAN_ERROR_NONE) {
-    LOG_ERR("CAN transmit failed!\n");
-  }
   while (1) {
+    // if (can_transmit(&msg) != CAN_ERROR_NONE) {
+    //   LOG_ERR("CAN transmit failed!\n");
+    // }
     if (can_ctrl_flag) {
       can_ctrl_flag = 0;
-      LOG_INF("Interrup for CAN!\n");
       can_message_t received = can_receive();
       LOG_INF("ID received: %d\n", received.id);
       LOG_INF("Data received: %s \n", received.data);
@@ -58,7 +57,7 @@ uint8_t init_sys() {
     // LOG_ERR("MCP2515 initialization failed!\n");
     return 1;
   }
-  LOG_INF("System initialized.\n");
+  LOG_INF("System initialized - V2\n");
   return 0;
 }
 

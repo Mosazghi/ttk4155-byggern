@@ -34,6 +34,7 @@ can_message_t can_receive() {
   }
 
   // Clear RX0IF flag
-  mcp2515_bitmodify(MCP_CANINTF, 0x01, 0x00);
+  mcp2515_bitmodify(MCP_CANINTF, MCP_RX0IF, 0x00);
+  mcp2515_bitmodify(MCP_CANINTF, MCP_RX1IF, 0x00);
   return message;
 }
