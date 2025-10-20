@@ -1,11 +1,10 @@
 #include "sam3xa.h"  // Header for SAM3X register definitions
 #include "sam.h"
-//#define PB13 (1u << 13)
-//#define PWM_CH1 1
+#include "servo.h"
 
-#define F_PWM(hz) = (CHIP_FREQ_CPU_MAX / 64 * hz)
-//TODO: use F_PWM as pwm_init argument to set a given frequency??
-//TODO: #define dutyCycle() = ??
+#define CLKA (CHIP_FREQ_CPU_MAX / 64)
+#define F_PWM(hz)(CLKA / hz)        // Corresponds to ticks, not actual frequecy
+#define PWM_PERIOD_20_US 20000
 
 enum PWM_CHANNEL{
     PWM_CH0 = 0,
@@ -28,5 +27,6 @@ enum portb_pin{
     PB18 = (1u << 18),  // Low  - D26
     PB19 = (1u << 19)   // Low  - D27
 };
-void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin);
-void pwm_update_dutyCycle(enum PWM_CHANNEL channel, int CDTY);
+void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin, int Hz);
+void pwm_set_dutyCycle(enum PWM_CHANNEL channel, int CDTY);
+void pwm_set_pulseWidth(enum PWM_CHANNEL channel, int pulsewidth, int Hz);

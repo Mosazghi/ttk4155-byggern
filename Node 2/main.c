@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "servo.h"
+#include "pwm.h"
 
 /*
  * Remember to update the Makefile with the (relative) path to the uart.c file.
@@ -31,13 +32,16 @@ int main() {
   uart_init(F_CPU, BAUDRATE);
   piob_output_init(13);
   printf("Hello World\n\r");
+  pwm_init(PWM_CH1, PB13, 50);
 
 
 
   while (1) {
-    piob_set_pin_high(13);
-    for (volatile int i = 0; i < 1000000; i++); // delay
-    piob_set_pin_low(13);
-    for (volatile int i = 0; i < 1000000; i++); // delay
+    // piob_set_pin_high(13);
+     for (volatile int i = 0; i < 1000000; i++); // delay
+     printf("toggle");
+    // piob_set_pin_low(13);
+     for (volatile int i = 0; i < 1000000; i++); // delay
+
   }
 }
