@@ -35,9 +35,8 @@ void time_spinUntil(uint64_t then);
 //   time_doPeriodic(msecs(50)){
 //       // do stuff
 //   }
-#define time_doPeriodic(period)                                                \
-  for (uint64_t then = time_now() + (period); 1;                               \
-       then += (period), time_spinUntil(then))
+#define time_doPeriodic(period) \
+  for (uint64_t then = time_now() + (period); 1; then += (period), time_spinUntil(then))
 
 // Human-readable time
 typedef struct Time Time;
