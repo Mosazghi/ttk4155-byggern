@@ -15,25 +15,40 @@
  * apt or your favorite package manager.
  */
 // #include "../path_to/uart.h"
+#include "can.h"
 #include "uart.h"
 #define BAUDRATE 115200
 #define F_CPU 84000000
+
+CanInit can_setup = {
+    .brp = 5,
+    .phase1 = 2,
+    .phase2 = 2,
+    .propag = 1,
+    .sjw = 2,
+};
 
 int main() {
   SystemInit();
 
   WDT->WDT_MR = WDT_MR_WDDIS;  // Disable Watchdog Timer
-                               //
-
-  // Uncomment after including uart above
-  // uart_init(/*cpufreq*/, /*baud*/);
   uart_init(F_CPU, BAUDRATE);
-  printf("Hello World\n\r");
+  can_init(can_setup, 0);
 
-  int x = 0;
+  CanMsg msg;
+  printf("Hello World\n\r");
+  // int x = 0;
+
   while (1) {
-    printf("LFG x = %d\n\r", x);
-    x++;
-    for (volatile int i = 0; i < 1000000; i++);
+    if (can_rx(&msg)) {
+      printf("msg: %s", msg.byte);
+      msg.byte[0] = 0x10;
+      msg.byte[1] = 0x11;
+      can_tx(msg);
+    }
+
+    // printf("LFG x = %d\n\r", x);
+    // x++;
+    // for (volatile int i = 0; i < 1000000; i++);
   }
 }
