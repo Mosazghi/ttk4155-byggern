@@ -7,15 +7,23 @@
 #define joystick_max 100
 #define CLAMP(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
+// typedef struct {
+//   int x;
+//   int y;
+//   bool btn;
+// } joystick_xy_t;
+
 long map(long x, long in_min, long in_max, long out_min, long out_max);
 void piob_output_init(int pin);
 void piob_set_pin_low(int pin);
 void piob_set_pin_high(int pin);
-int pos_to_us(int joystick_value);
-void joystick_move_servo(joystick_xy_t *joystick);
 
-typedef struct {
-  int x;
-  int y;
-  bool btn;
-} joystick_xy_t;
+/**
+ * @brief Converts joystick value to pulsewidth in us.
+ * 
+ * @param joystick_value [-100,100]
+ * @return int [1000, 2000]us
+ */
+int pos_to_us(int joystick_value);
+//void joystick_move_servo(joystick_xy_t *joystick);
+

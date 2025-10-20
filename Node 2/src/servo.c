@@ -34,8 +34,8 @@ int pos_to_us(int joystick_value) {
     return us;
 }
 
-void joystick_move_servo(joystick_xy_t *joystick) {
-    int x = pos_to_us(joystick->x);
-    pwm_set_pulseWidth(PWM_CH1, x, 50);    
-}
+// void joystick_move_servo(joystick_xy_t *joystick) {
+//     int x = pos_to_us(joystick->x);
+//     pwm_set_pulseWidth(PWM_CH1, x, 50);    
+// }
 

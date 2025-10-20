@@ -28,5 +28,21 @@ enum portb_pin{
     PB19 = (1u << 19)   // Low  - D27
 };
 void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin, int Hz);
+
+/**
+ * @brief WARNING: Do NOT use with servos.\n
+ * @brief Sets duty cycle as % of current period.
+ * 
+ * @param channel PWM channel
+ * @param CDTY Duty cycle in % of period
+ */
 void pwm_set_dutyCycle(enum PWM_CHANNEL channel, int CDTY);
+
+/**
+ * @brief Sets duty cycle as a function of pulse width. Safe to use with servos.
+ * 
+ * @param channel PWM channel
+ * @param pulsewidth [1000, 2000]us
+ * @param Hz PWM frequency
+ */
 void pwm_set_pulseWidth(enum PWM_CHANNEL channel, int pulsewidth, int Hz);

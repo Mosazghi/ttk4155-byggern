@@ -34,6 +34,10 @@ int main() {
   printf("Hello World\n\r");
   pwm_init(PWM_CH1, PB13, 50);
 
+  int x = -50;
+  int x_us = pos_to_us(x);
+  pwm_set_pulseWidth(PWM_CH1, x_us, 50);
+
 
 
   while (1) {
