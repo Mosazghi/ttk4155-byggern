@@ -1,12 +1,13 @@
 
 #pragma once
 
+#include <input.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 // Struct with bit timing information
 // See `can_init` for usage example
-typedef struct CanInit CanInit;
-__attribute__((packed)) struct CanInit {
+typedef struct __attribute__((packed)) {
   union {
     struct {
       uint32_t phase2 : 4;  // Phase 2 segment
@@ -18,14 +19,15 @@ __attribute__((packed)) struct CanInit {
     };
     uint32_t reg;
   };
-};
+  bool interrupt;
+} can_init_t;
 
-// Initialize CAN bus, with bit timings and optional interrupt
-// If `rxInterrupt` is not 0, an interrupt will be triggered when a message is received.
-// (See can.c for an example interrupt handler)
-// Example:
-//    can_init((CanInit){.brp = F_CPU/2000000-1, .phase1 = 5, .phase2 = 1, .propag = 6}, 0);
-void can_init(CanInit init, uint8_t rxInterrupt);
+/**
+ * @breif Configures and starts the CAN bus
+ *
+ * @param init - configuration
+ */
+void can_init(can_init_t init);
 
 // Strict-aliasing-safe reinterpret-cast
 #define union_cast(type, x) \
@@ -36,10 +38,9 @@ void can_init(CanInit init, uint8_t rxInterrupt);
        .b)
 
 // Dummy type for use with `union_cast`, see below
-typedef struct Byte8 Byte8;
-struct Byte8 {
+typedef struct {
   uint8_t bytes[8];
-};
+} Byte8;
 
 // CAN message data type
 // Data fields have 3 access methods (via union):
@@ -66,8 +67,7 @@ struct Byte8 {
 //    };
 //    can_printmsg(m);
 //    // Should print: CanMsg(id:1, length:7, data:{10, 0, 20, 0, 0, 240, 193})
-typedef struct CanMsg CanMsg;
-struct CanMsg {
+typedef struct {
   uint8_t id;
   uint8_t length;
   union {
@@ -75,16 +75,18 @@ struct CanMsg {
     uint32_t dword[2];
     Byte8 byte8;
   };
-};
+} can_msg_t;
 
 // Send a CAN message on the bus.
 // Blocks if the bus does not receive the message (typically because one of the
 // receiving nodes has not cleared a buffer)
-void can_tx(CanMsg m);
+void can_tx(can_msg_t m);
 
 // Receive a CAN message.
 // Does not block. Returns 0 if there is no message, 1 otherwise
-uint8_t can_rx(CanMsg* m);
+uint8_t can_rx(can_msg_t* m);
 
 // Print a CAN message (using `printf`)
-void can_printmsg(CanMsg m);
+void can_printmsg(can_msg_t m);
+
+void can_parse_input_msg(can_msg_t* msg, input_t* input);

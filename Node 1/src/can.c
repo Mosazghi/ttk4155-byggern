@@ -3,7 +3,7 @@
 #include "mcp2515.h"
 #include "utility.h"
 
-can_error_t can_transmit(can_message_t *message) {
+can_error_t can_transmit(can_message_t* message) {
   if (message == NULL) return CAN_ERROR_MSG_NULL;
 
   mcp2515_write(MCP_TXB0SIDH, (message->id >> 3) & 0xFF);

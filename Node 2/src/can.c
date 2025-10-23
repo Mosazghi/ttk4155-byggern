@@ -5,7 +5,7 @@
 
 #include "sam.h"
 
-void can_printmsg(CanMsg m) {
+void can_printmsg(can_msg_t m) {
   printf("CanMsg(id:%d, length:%d, data:{", m.id, m.length);
   if (m.length) {
     printf("%d", m.byte[0]);
@@ -19,7 +19,7 @@ void can_printmsg(CanMsg m) {
 #define txMailbox 0
 #define rxMailbox 1
 
-void can_init(CanInit init, uint8_t rxInterrupt) {
+void can_init(can_init_t init) {
   // Disable CAN
   CAN0->CAN_MR &= ~CAN_MR_CANEN;
 
@@ -59,7 +59,7 @@ void can_init(CanInit init, uint8_t rxInterrupt) {
   CAN0->CAN_MB[rxMailbox].CAN_MID = CAN_MID_MIDE;
   CAN0->CAN_MB[rxMailbox].CAN_MMR = CAN_MMR_MOT_MB_RX;
   CAN0->CAN_MB[rxMailbox].CAN_MCR |= CAN_MCR_MTCR;
-  if (rxInterrupt) {
+  if (init.interrupt) {
     // Enable interrupt on receive
     CAN0->CAN_IER |= (1 << rxMailbox);
     // Enable interrupt in NVIC
@@ -70,7 +70,7 @@ void can_init(CanInit init, uint8_t rxInterrupt) {
   CAN0->CAN_MR |= CAN_MR_CANEN;
 }
 
-void can_tx(CanMsg m) {
+void can_tx(can_msg_t m) {
   while (!(CAN0->CAN_MB[txMailbox].CAN_MSR & CAN_MSR_MRDY)) {
   }
 
@@ -88,7 +88,7 @@ void can_tx(CanMsg m) {
   CAN0->CAN_MB[txMailbox].CAN_MCR = (m.length << CAN_MCR_MDLC_Pos) | CAN_MCR_MTCR;
 }
 
-uint8_t can_rx(CanMsg* m) {
+uint8_t can_rx(can_msg_t* m) {
   if (!(CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MRDY)) {
     return 0;
   }
@@ -130,3 +130,18 @@ void CAN0_Handler(void){
     NVIC_ClearPendingIRQ(ID_CAN0);
 }
 */
+
+void can_parse_input_msg(can_msg_t* msg, input_t* input) {
+  /* joystick */
+  input->joystick.x = (int8_t)msg->byte[0];
+  input->joystick.y = (int8_t)msg->byte[1];
+  input->joystick.btn = msg->byte[2];
+
+  /* buttons */
+  input->buttons.right = msg->byte[3];
+
+  /* touch_pad */
+  input->touch_pad.x = msg->byte[4];
+  input->touch_pad.y = msg->byte[5];
+  input->touch_pad.size = msg->byte[6];
+}
