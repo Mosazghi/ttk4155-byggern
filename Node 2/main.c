@@ -6,6 +6,8 @@
 #include <stdio.h>
 
 #include "can.h"
+#include "pwm.h"
+#include "servo.h"
 #include "time.h"
 #include "uart.h"
 #define BAUDRATE 115200
@@ -31,11 +33,23 @@ int main() {
   input_t input = {0};
   printf("version 3\n\r");
 
+  piob_output_init(13);
+  pwm_init(PWM_CH1, PB13, 50);
+
+  int x = -50;
+  int x_us = pos_to_us(x);
+  pwm_set_pulseWidth(PWM_CH1, x_us, 50);
+
   while (1) {
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
       printf("joystick x:%d y:%d\n\r", input.joystick.x, input.joystick.y);
     }
+    // piob_set_pin_high(13);
+    for (volatile int i = 0; i < 1000000; i++);  // delay
+    printf("toggle");
+    // piob_set_pin_low(13);
+    for (volatile int i = 0; i < 1000000; i++);  // delay
     time_spinFor(msecs(10));
   }
 }
