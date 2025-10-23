@@ -35,7 +35,7 @@ void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin, int Hz){
 void pwm_set_dutyCycle(enum PWM_CHANNEL channel, int CDTY) {
 
     int period = PWM->PWM_CH_NUM[channel].PWM_CPRD;
-    PWM->PWM_CH_NUM[channel].PWM_CDTYUPD = (period*100 / CDTY);
+    PWM->PWM_CH_NUM[channel].PWM_CDTYUPD = ((period * CDTY)/100);
 }
  
 // Sets PWM duty cycle as function of desired pulse width[us] & Hz
