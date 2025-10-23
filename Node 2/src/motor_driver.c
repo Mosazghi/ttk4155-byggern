@@ -1,7 +1,7 @@
 #include "motor_driver.h"
 
 void motor_init(){
-    pwm_init(PWM_CH0, PB12, 1e3);
+    pwm_init(PWM_CH0, PB12, 1e4);
 
     // Enable clock
     PMC->PMC_PCER0 = (ID_PIOC);
@@ -38,4 +38,14 @@ uint8_t motor_get_dir(touch_pad_t *touchpad) {
     return 0;
 }
 
+// TODO: Motor encoder setup
 
+// PC25, PC26 = encoder channel A & B
+// XC0 selected as clock for TC2 channel 0
+// Externally driven 
+// overflow vs physical endpoints?
+// - TC_CV: Current count value
+// - TC_BMR: Channel mode register
+// - TC_CCR: Channel control register
+
+void motor_encoder_init(){};

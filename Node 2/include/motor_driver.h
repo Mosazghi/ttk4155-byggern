@@ -1,5 +1,7 @@
 #include "pwm.h"
 #define PC23 (1u << 23)
+#define PC25 (1u << 25)
+#define PC26 (1u << 26)
 
 enum motor_direction {
     LEFT,
@@ -32,3 +34,5 @@ void motor_set_dir(enum motor_direction dir);
  * @return uint8_t 
  */
 uint8_t motor_get_dir(touch_pad_t *touchpad);
+
+void motor_encoder_init();
