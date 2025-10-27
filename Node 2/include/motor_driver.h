@@ -1,4 +1,5 @@
 #include "pwm.h"
+#include "input.h"
 #define PC23 (1u << 23)
 #define PC25 (1u << 25)
 #define PC26 (1u << 26)
@@ -35,4 +36,21 @@ void motor_set_dir(enum motor_direction dir);
  */
 uint8_t motor_get_dir(touch_pad_t *touchpad);
 
+/**
+ * @brief Initializes the motor encoder using TC2, channel 6(0). 
+ * 
+ * Externally driven clock: XC0 (TCLK0).
+ * 
+ * Channel A: PC25 (TIOA6)
+ * 
+ * Channel B: PC26 (TIOB6)
+ * 
+ */
 void motor_encoder_init();
+
+/**
+ * @brief Reads encoder value from TC_CV (channel 0).
+ * 
+ * @return int32_t 
+ */
+int32_t encoder_get_position(void);
