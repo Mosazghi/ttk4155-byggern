@@ -1,7 +1,7 @@
 #include "sam3xa.h"  // Header for SAM3X register definitions
 #include "sam.h"
-#define ADC_MIN 1e3
-#define ADC_MAX 1e5
+#define ADC_MIN 1e2
+#define ADC_MAX 1e6
 
 /**
  * @brief ADC initiation for IR sensor. 
