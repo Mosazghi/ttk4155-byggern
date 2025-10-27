@@ -16,11 +16,35 @@
       "-DDEBUG=0",
       "-c",
       "-o",
-      "build/src/can.o",
-      "src/can.c"
+      "build/src/mcp2515.o",
+      "src/mcp2515.c"
     ],
     "directory": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1",
-    "file": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1/src/can.c",
-    "output": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1/build/src/can.o"
+    "file": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1/src/mcp2515.c",
+    "output": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1/build/src/mcp2515.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/avr-gcc",
+      "-O",
+      "-std=c11",
+      "-mmcu=atmega162",
+      "-ggdb",
+      "-Iinclude",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-parameter",
+      "-Wno-unused-variable",
+      "-Wno-missing-field-initializers",
+      "-DDEBUG=0",
+      "-c",
+      "-o",
+      "build/main.o",
+      "main.c"
+    ],
+    "directory": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1",
+    "file": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1/main.c",
+    "output": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 1/build/main.o"
   }
 ]

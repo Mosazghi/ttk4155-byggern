@@ -19,33 +19,6 @@
       "-D",
       "__SAM3X8E__",
       "-o",
-      "build/can.o",
-      "src/can.c"
-    ],
-    "directory": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 2",
-    "file": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 2/src/can.c",
-    "output": "/home/mosa/NTNU/TTK4155/ttk4155-byggern/Node 2/build/can.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/arm-none-eabi-gcc",
-      "-c",
-      "-mcpu=cortex-m3",
-      "-mthumb",
-      "-g",
-      "-std=c11",
-      "-I",
-      "sam",
-      "-I",
-      "sam/sam3x/include",
-      "-I",
-      "sam/sam3x/source",
-      "-I",
-      "sam/cmsis",
-      "-Iinclude",
-      "-D",
-      "__SAM3X8E__",
-      "-o",
       "build/main.o",
       "main.c"
     ],

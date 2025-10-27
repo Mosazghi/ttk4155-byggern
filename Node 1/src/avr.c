@@ -52,9 +52,13 @@ joystick_xy_t avr_get_joystick() {
   joystick.btn = spi_receive();
 
   spi_slave_deselect(&spi_avr_dev);
+  LOG_INF("Raw X: %d\n", joystick.x);
+  LOG_INF("Raw Y: %d\n", joystick.y);
+  joystick.x = CLAMP(joystick.x, 60, 197);
+  joystick.y = CLAMP(joystick.y, 56, 200);
 
-  joystick.x = map(joystick.x, 54, 201, -100, 100);
-  joystick.y = map(joystick.y, 54, 201, -100, 100);
+  joystick.x = map(joystick.x, 60, 197, -100, 100);
+  joystick.y = map(joystick.y, 56, 200, -100, 100);
 
   return joystick;
 }
@@ -107,6 +111,6 @@ void avr_timer_init_10hz() {
   TCCR3B |= (1 << WGM32) | (1 << CS32) | (1 << CS30);  // CTC, 1024 prescaler
   ETIMSK |= (1 << OCIE3A);                             // IE: IV executed when OCF3A in TIFR is set
                                                        // Set when TCNT3 = OCR3A
-  OCR3A = HZ_TO_TIMER(5);                              // compare register: 10hz = 459
+  OCR3A = HZ_TO_TIMER(10);                             // compare register: 10hz = 459
   sei();
 }
