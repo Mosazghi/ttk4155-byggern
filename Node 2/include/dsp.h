@@ -7,7 +7,17 @@
 /**
  * @brief Returns the average of the last 'n_filter' samples.
  * 
- * @param stick_value 
+ * @param value 
  * @return int 
  */
-int filter_joystick(int stick_value);
+int box_filter(int value);
+
+/**
+ * @brief Checks if input value is within a threshold range of previous value. 
+ * 
+ * Returns previous value if within threshold.
+ * 
+ * @param value 
+ * @return int 
+ */
+int spike_filter(int value, int threshold);

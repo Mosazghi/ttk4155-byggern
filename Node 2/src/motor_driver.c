@@ -28,11 +28,11 @@ void motor_set_dir(enum motor_direction dir) {
     }
 }
 
-uint8_t motor_get_dir(touch_pad_t *touchpad) {
-    if (touchpad->x < 128) {
+uint8_t motor_get_dir(uint8_t value) {
+    if (value < 128) {
         return 0;
     }
-    if (touchpad->x >= 128) {
+    if (value >= 128) {
         return 1;
     }
     return 0;

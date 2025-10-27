@@ -33,3 +33,10 @@ int pos_to_us(int joystick_value) {
 //     int x = pos_to_us(joystick->x);
 //     pwm_set_pulseWidth(PWM_CH1, x, 50);
 // }
+
+int remap(uint8_t value) {
+  int remap = map(value, 0, 255, -100, 100);
+  return remap;
+}
+
+

@@ -27,14 +27,14 @@ void motor_init();
 void motor_set_dir(enum motor_direction dir);
 
 /**
- * @brief Reads value of touchpad.x and returns direction.
+ * @brief Reads uint8_t value and returns direction.
  * 
  * Value < 128 returns 0, value >= 128 returns 1.
  * 
- * @param touchpad 
+ * @param value 
  * @return uint8_t 
  */
-uint8_t motor_get_dir(touch_pad_t *touchpad);
+uint8_t motor_get_dir(uint8_t value);
 
 /**
  * @brief Initializes the motor encoder using TC2, channel 6(0). 

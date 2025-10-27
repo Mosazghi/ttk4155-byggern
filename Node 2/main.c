@@ -3,11 +3,14 @@
 #include <sys/types.h>
 
 #include "can.h"
-#include "pwm.h"
 #include "sam.h"
 #include "servo.h"
 #include "time.h"
 #include "uart.h"
+#include "motor_driver.h"
+#include "dsp.h"
+#include "adc_internal.h"
+
 #define BAUDRATE 115200
 #define F_CPU 84000000
 
@@ -33,13 +36,30 @@ int main() {
 
   piob_output_init(13);
   pwm_init(PWM_CH1, PB13, 50);
+  motor_init();
+  motor_encoder_init();
+  adc_init();
+  
 
   while (1) {
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
-      int x_us = pos_to_us(input.joystick.x);
-      printf("X: %d -> %d us\n\r", input.joystick.x, x_us);
-      pwm_set_pulseWidth(PWM_CH1, x_us, 50);
+      int x_ys = pos_to_us(input.joystick.x);
+      int x_tp = remap(input.touch_pad.x);
+      int x_tp_spike = spike_filter(x_tp, 30);  // TODO: make && test this @ torsdag.
+      
+      int x_servo = pos_to_us(x_tp);
+      u_int8_t t_dir = motor_get_dir(input.touch_pad.x);
+      printf("dir: %d -> tp.x = %d -> remapped to: %d -> PWM = %d[us]\n", t_dir, input.touch_pad.x, x_tp, x_servo);
+      printf("x_tp: %d -> Spike_filter: %d", x_tp, x_tp_spike);
+      motor_set_dir(t_dir);
+
+
+
+
+
+      //printf("X: %d -> %d us\n\r", input.joystick.x, x_ys);
+      pwm_set_pulseWidth(PWM_CH1, x_servo, 50);
     }
     time_spinFor(msecs(10));
   }
