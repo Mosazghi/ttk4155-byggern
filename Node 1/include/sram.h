@@ -2,11 +2,9 @@
 
 #include <avr/io.h>
 #include <avr/iom162.h>
-#include <stdio.h>
-#include <avr/io.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-
 #define SRAM_START 0x1400
 #define SRAM_SIZE 0x0C00
 

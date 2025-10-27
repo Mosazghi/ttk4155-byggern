@@ -9,6 +9,7 @@
 #include "utility.h"
 
 static void oled_init_timer_30hz();
+void set_cursor(int x, int y);
 static oled_ctx_t ctx = {0};
 
 static spi_device_handle_t dev = {
@@ -46,6 +47,15 @@ void oled_write_sram(uint16_t addr, uint8_t data) {
     LOG_ERR("Outside of display sram scope (oled_write_sram)");
   }
   sram_write(addr, data);
+}
+
+void oled_clear_raw() {
+  for (int page = 0; page < 8; page++) {
+    set_cursor(page, 0);
+    for (int col = 0; col < 128; col++) {
+      oled_write(0xFF, OLED_DATA_M);
+    }
+  }
 }
 
 static void oled_go_to_column(int column) {

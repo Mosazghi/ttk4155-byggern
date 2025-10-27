@@ -61,6 +61,7 @@ void oled_clear(void);
  */
 void oled_printf(const char* str, int x, int y);
 
+void oled_clear_raw();
 /**
  * @brief Fetches data from back-buffer and displays it
  *
