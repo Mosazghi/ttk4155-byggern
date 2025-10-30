@@ -39,7 +39,7 @@ void pwm_set_dutyCycle(enum PWM_CHANNEL channel, int CDTY) {
 }
 
 // Sets PWM duty cycle as function of desired pulse width[us] & Hz
-void wm_set_pulseWidth(enum PWM_CHANNEL channel, int pulsewidth, int Hz) {
+void pwm_set_pulseWidth(enum PWM_CHANNEL channel, int pulsewidth, int Hz) {
   pulsewidth = CLAMP(pulsewidth, SERVO_MIN, SERVO_MAX);  // pw clamped to [1000, 2000]us
   uint32_t period = PWM->PWM_CH_NUM[channel].PWM_CPRD;   // Reads current period in ticks
   PWM->PWM_CH_NUM[channel].PWM_CDTYUPD = ((uint32_t)(pulsewidth * period * Hz) / 1e6);

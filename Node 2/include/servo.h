@@ -27,3 +27,4 @@ void piob_set_pin_high(int pin);
 int pos_to_us(int joystick_value);
 //void joystick_move_servo(joystick_xy_t *joystick);
 
+int remap(uint8_t value);
