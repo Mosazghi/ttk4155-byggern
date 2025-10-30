@@ -3,17 +3,17 @@
 // PWM_init for PWM_channel, PortB_pin, for given frequency, 10% DC
 void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin, int Hz) {
   // 1. Enable peripheral clocks for PIOB & PWM
-  PMC->PMC_PCER0 = (1 << ID_PIOB);
-  PMC->PMC_PCER1 = (1 << (ID_PWM - 32));
+  PMC->PMC_PCER0 |= (1 << ID_PIOB);
+  PMC->PMC_PCER1 |= (1 << (ID_PWM - 32));
 
   // 2. Enable peripheral mode B (disable PIO control)
-  PIOB->PIO_PDR = pin;
+  PIOB->PIO_PDR |= pin;
 
   // 3. Select perhipheral mode B (PWM)
   PIOB->PIO_ABSR |= pin;
 
   // 4. Disable pull-up
-  PIOB->PIO_PUDR = pin;
+  PIOB->PIO_PUDR |= pin;
 
   // 5. Configure PWM clock: f_pwm = CLKA / period = 50Hz
   // CLKA = MCK / (DIVA * 2^PREA), MCK = 84MHz, Duty Cycle = [0.9, 2.1]ms
@@ -29,7 +29,7 @@ void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin, int Hz) {
   // PWM->PWM_CH_NUM[channel].PWM_CDTY = 2625;
 
   // 7. Enable PWM channel
-  PWM->PWM_ENA = (1 << channel);
+  PWM->PWM_ENA |= (1 << channel);
 }
 
 // Sets PWM duty cycle as % of current period

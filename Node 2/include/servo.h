@@ -1,5 +1,6 @@
-#include "sam3xa.h"  // Header for SAM3X register definitions
+#pragma once
 #include "sam.h"
+#include "sam3xa.h"  // Header for SAM3X register definitions
 #define SERVO_MAX 2000
 #define SERVO_MIN 1000
 #define SERVO_CENTERED 1500
@@ -20,11 +21,11 @@ void piob_set_pin_high(int pin);
 
 /**
  * @brief Converts joystick value to pulsewidth in us.
- * 
+ *
  * @param joystick_value [-100,100]
  * @return int [1000, 2000]us
  */
 int pos_to_us(int joystick_value);
-//void joystick_move_servo(joystick_xy_t *joystick);
+// void joystick_move_servo(joystick_xy_t *joystick);
 
 int remap(uint8_t value);

@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 // UART is connected to the ATmega16U2 on the Arduino, which acts as a USB
 // serial device. This module hooks into the stdio functions, by spoofing
@@ -32,4 +33,3 @@ uint8_t uart_rx(uint8_t *val);
 //        printf("%d\n", result);
 //    }
 int uart_flush(char *buf, int len);
-

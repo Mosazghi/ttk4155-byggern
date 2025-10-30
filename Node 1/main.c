@@ -47,25 +47,8 @@ int main() {
       input_ctrl_flag = 0;
       buttons = avr_get_buttons();
       joystick = avr_get_joystick();
-      // touch_pad = avr_get_touch_pad();
-      // snprintf(disp_buf, sizeof(disp_buf), "X:%03d ", joystick.x);
-      // oled_printf(disp_buf, 0, 0);
-      //
-      // snprintf(disp_buf, sizeof(disp_buf), "Y:%03d ", joystick.y);
-      // oled_printf(disp_buf, 0, 1);
-      // oled_display();
-      //
-      // msg.data[0] = (uint8_t)joystick.x;
-      // msg.data[1] = (uint8_t)joystick.y;
-      // msg.data[2] = (uint8_t)joystick.btn;
-      // msg.data[3] = buttons.right;
-      // msg.data[4] = touch_pad.x;
-      // msg.data[5] = touch_pad.y;
-      // msg.data[6] = touch_pad.size;
-
-      // if (can_transmit(&msg) != CAN_ERROR_NONE) {
-      //   LOG_ERR("CAN transmit failed!\n");
-      // }
+      touch_pad = avr_get_touch_pad();
+      send_inputs_can(&buttons, &joystick, &touch_pad);
     }
 
     if (oled_ctrl_flag) {
@@ -100,6 +83,7 @@ int main() {
     // else {
     //   sys_state = STATE_MENU;
     // }
+    _delay_ms(100);
   }
 
   return 0;
@@ -125,16 +109,16 @@ uint8_t init_sys() {
   return 0;
 }
 
-void send_inputs_can() {
+void send_inputs_can(buttons_t *buttons, joystick_xy_t *joystick, touch_pad_t *touch_pad) {
   can_message_t msg = {.id = 299, .data = {0}, .data_length = 7};
 
-  msg.data[0] = (uint8_t)joystick.x;
-  msg.data[1] = (uint8_t)joystick.y;
-  msg.data[2] = (uint8_t)joystick.btn;
-  msg.data[3] = buttons.right;
-  msg.data[4] = touch_pad.x;
-  msg.data[5] = touch_pad.y;
-  msg.data[6] = touch_pad.size;
+  msg.data[0] = (uint8_t)joystick->x;
+  msg.data[1] = (uint8_t)joystick->y;
+  msg.data[2] = (uint8_t)joystick->btn;
+  msg.data[3] = buttons->right;
+  msg.data[4] = touch_pad->x;
+  msg.data[5] = touch_pad->y;
+  msg.data[6] = touch_pad->size;
 
   if (can_transmit(&msg) != CAN_ERROR_NONE) {
     LOG_ERR("CAN transmit failed!\n");

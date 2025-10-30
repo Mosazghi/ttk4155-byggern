@@ -26,17 +26,17 @@ void reset_high_scores() { g_game_state.score = 0; }
 
 void game_loop(game_state_t *state, joystick_xy_t *joystick) {
   bool prev_btn_pressed = false;
-  // can_message_t can_buf = {0};
+  can_message_t can_buf = {0};
   // joystick_dir_t joystick_dir = {0};
 
   // while (1) {
-  if (joystick->btn && !prev_btn_pressed) {
-    // TODO: Send CAN message when joystick buttonc is pressed
-  }
+  // if (joystick->btn && !prev_btn_pressed) {
+  //   // TODO: Send CAN message when joystick buttonc is pressed
+  // }
   prev_btn_pressed = joystick->btn;
 
   if (state->new_can_msg && state->is_in_game) {
-    // can_buf = can_receive();
+    can_receive();  // need to call this to clear the flag in MCP2515
     state->lives--;
     state->new_can_msg = false;
   }
@@ -95,7 +95,7 @@ static void render_game_over() {
   oled_set_font(FONT_S);
   oled_printf("Skill issue...", 25, 7);
   oled_display();
-  _delay_ms(3000);
+  _delay_ms(3800);
   oled_set_font(FONT_M);
 }
 
