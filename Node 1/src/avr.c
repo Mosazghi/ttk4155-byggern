@@ -52,8 +52,7 @@ joystick_xy_t avr_get_joystick() {
   joystick.btn = spi_receive();
 
   spi_slave_deselect(&spi_avr_dev);
-  LOG_INF("Raw X: %d\n", joystick.x);
-  LOG_INF("Raw Y: %d\n", joystick.y);
+
   joystick.x = CLAMP(joystick.x, 60, 197);
   joystick.y = CLAMP(joystick.y, 56, 200);
 

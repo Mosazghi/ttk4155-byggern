@@ -11,6 +11,7 @@ typedef struct {
   int score;
   int lives;
   bool is_in_game;
+  bool new_can_msg;
 } game_state_t;
 
 void game_loop(game_state_t *state, joystick_xy_t *joystick);

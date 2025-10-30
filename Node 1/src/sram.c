@@ -56,7 +56,7 @@ void sram_transmit_packet(uint16_t addr, const uint8_t *data, size_t size) {
   LOG_DBG("Transmitted up until %#X", addr);
 }
 
-void sram_test(void) {
+bool sram_test(void) {
   volatile char *ext_ram = (char *)SRAM_START;  // Start address for the SRAM
   uint16_t ext_ram_size = SRAM_SIZE;
   uint16_t write_errors = 0;
@@ -88,6 +88,7 @@ void sram_test(void) {
       retrieval_errors++;
     }
   }
+  return (write_errors == 0 && retrieval_errors == 0);
   // LOG_INF("SRAM test completed with \n%4d errors in write phase and \n%4d errors in retrieval
   // phase\n", write_errors, retrieval_errors);
 }

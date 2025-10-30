@@ -1,13 +1,15 @@
 #include "game_logic.h"
 
+#include "can.h"
 #include "main.h"
 #include "oled.h"
 #include "utility.h"
 
 static void game_reset(game_state_t *state);
 static bool is_game_over(game_state_t *state);
+static void render_game_over();
 
-game_state_t g_game_state = {LVL_EASY, 0, 3, false};
+game_state_t g_game_state = {LVL_EASY, 10, 3, false};
 
 void try_start_game(difficulty_level_t level, game_state_t *state) {
   if (!state->is_in_game) {
@@ -24,43 +26,35 @@ void reset_high_scores() { g_game_state.score = 0; }
 
 void game_loop(game_state_t *state, joystick_xy_t *joystick) {
   bool prev_btn_pressed = false;
-  joystick_dir_t joystick_dir = {0};
+  // can_message_t can_buf = {0};
+  // joystick_dir_t joystick_dir = {0};
 
-  while (1) {
-    joystick_dir = joystick_get_dir(joystick, 15);
-    if (joystick->btn && !prev_btn_pressed) {
-      // TODO: Send CAN message when joystick buttonc is pressed
-    }
-
-    switch (joystick_dir) {
-      case UP:
-        // TODO: Send CAN message for UP movement
-        break;
-      case DOWN:
-        // TODO: Send CAN message for DOWN movement
-        break;
-      case LEFT:
-        // TODO: Send CAN message for LEFT movement
-        break;
-      case RIGHT:
-        // TODO: Send CAN message for RIGHT movement
-        break;
-      default:
-        break;
-    }
-
-    prev_btn_pressed = joystick->btn;
-
-    bool has_lost = is_game_over(state);
-    if (has_lost) {
-      game_reset(state);
-      break;
-    }
+  // while (1) {
+  if (joystick->btn && !prev_btn_pressed) {
+    // TODO: Send CAN message when joystick buttonc is pressed
   }
+  prev_btn_pressed = joystick->btn;
+
+  if (state->new_can_msg && state->is_in_game) {
+    // can_buf = can_receive();
+    state->lives--;
+    state->new_can_msg = false;
+  }
+
+  bool has_lost = is_game_over(state);
+
+  if (has_lost) {
+    LOG_INF("Game Over!\n");
+    render_game_over();
+    game_reset(state);
+    // break;
+  }
+  // }
 }
 
 void game_reset(game_state_t *state) {
-  state->score = 0;
+  // NOTE: Do we need to reset everything?
+  // state->score = 0;
   state->lives = 3;
   state->is_in_game = false;
   state->current_level = LVL_EASY;
@@ -89,6 +83,20 @@ void render_game(game_state_t *state) {
   }
   oled_printf(disp_buf, 0, 2);
   oled_display();
+}
+
+static void render_game_over() {
+  static char disp_buf[32];
+  oled_clear();
+  oled_set_font(FONT_L);
+  snprintf(disp_buf, sizeof(disp_buf), "Your Score: %d", g_game_state.score);
+  oled_printf("Game Over!", 25, 2);
+  oled_printf(disp_buf, 25, 4);
+  oled_set_font(FONT_S);
+  oled_printf("Skill issue...", 25, 7);
+  oled_display();
+  _delay_ms(3000);
+  oled_set_font(FONT_M);
 }
 
 static bool is_game_over(game_state_t *state) { return state->lives <= 0; }
