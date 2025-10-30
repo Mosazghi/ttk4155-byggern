@@ -15,8 +15,9 @@ int box_filter(int value)
     return (sum / n_filter);
 }
 
-int spike_filter(int value, int threshold) {
-    static int prev_value = 0;
+int spike_filter(int array[2], int threshold) {
+    int prev_value = array[0];
+    int value = array[1];
     int diff = value - prev_value;
     
     if (abs(diff) > threshold) {

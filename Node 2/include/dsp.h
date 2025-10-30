@@ -17,7 +17,7 @@ int box_filter(int value);
  * 
  * Returns previous value if within threshold.
  * 
- * @param value 
+ * @param array 
  * @return int 
  */
-int spike_filter(int value, int threshold);
+int spike_filter(int array[2], int threshold);

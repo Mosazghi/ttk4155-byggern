@@ -40,13 +40,19 @@ int main() {
   motor_encoder_init();
   adc_init();
   
-
+  int arr[2];
+  int idx = 0; 
   while (1) {
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
       int x_ys = pos_to_us(input.joystick.x);
       int x_tp = remap(input.touch_pad.x);
-      int x_tp_spike = spike_filter(x_tp, 30);  // TODO: make && test this @ torsdag.
+      arr[idx] = x_tp;
+      idx += 1; 
+      if(idx == 2) {
+
+      
+      int x_tp_spike = spike_filter(arr, 20);  // TODO: make && test this @ torsdag.
       
       int x_servo = pos_to_us(x_tp);
       u_int8_t t_dir = motor_get_dir(input.touch_pad.x);
@@ -60,6 +66,8 @@ int main() {
 
       //printf("X: %d -> %d us\n\r", input.joystick.x, x_ys);
       pwm_set_pulseWidth(PWM_CH1, x_servo, 50);
+      idx =0;
+    }
     }
     time_spinFor(msecs(10));
   }
