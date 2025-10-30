@@ -1,8 +1,11 @@
+#pragma once
 #include "pwm.h"
 #include "input.h"
 #define PC23 (1u << 23)
 #define PC25 (1u << 25)
 #define PC26 (1u << 26)
+#define ENCODER_MIN 0
+#define ENCODER_MAX 5596
 
 enum motor_direction {
     LEFT,
