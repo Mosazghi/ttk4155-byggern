@@ -95,9 +95,9 @@ void PI_control(PI_controller_t *PI, int joy_x) {
       // Updates global variable target_position based on joystick input.
       update_target_pos(joy_x);
 
-      PI_update_setpoint(&PI, target_position);
+      PI_update_setpoint(PI, target_position);
 
-      PI_update(&PI, (float)position);
+      PI_update(PI, (float)position);
 
      // Sets motor direction based on sign of the PI error.
       if (PI->prevError < 0.0f) {
