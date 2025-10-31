@@ -44,16 +44,19 @@ int main() {
   PI_controller_t PI;
   PI_init(&PI);
   int joy_x = 0;
+
+  piob_output_init(17);
   
   // int arr[2];
   // int idx = 0; 
   while (1) {
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
-      int x_us = pos_to_us(input.joystick.x);
+      //int x_us = pos_to_us(input.joystick.x);
+      bool button_state = input.buttons.R1;
       joy_x = input.joystick.x;
       int x_tp = remap(input.touch_pad.x);
-      printf("x_tp: %d", x_tp);
+      //printf("x_tp: %d", x_tp);
       // arr[idx] = x_tp;
       // idx += 1; 
       // if(idx == 2) {
@@ -68,26 +71,33 @@ int main() {
       //motor_set_dir(t_dir);
       //printf("X: %d -> %d us\n\r", input.joystick.x, x_us);
 
-
+      if (button_state == 1) {
+        piob_set_pin_high(17);
+      }
+      else {piob_set_pin_low(17);}
 
       pwm_set_pulseWidth(PWM_CH1, x_servo, 50);
       //idx =0;
     
     }
+
+    // After testing the if statement below, the following function should handle all PI-control.
+    //PI_control(&PI, joy_x);
+
     if (new_sample_ready) {
       new_sample_ready = false;
 
       int32_t position = encoder_position;
 
-      update_setpoint_from_joyx(joy_x);
+      update_target_pos(joy_x);
       PI_update_setpoint(&PI, target_position);
 
       PI_update(&PI, (float)position);
 
-      //printf("Target position: %d. Encoder value: %d. Previous error: %d. Integrator: %d\n", target_position, position, PI.prevError, PI.integrator);
+      printf("Target position: %d. Encoder value: %d. Previous error: %d. Integrator: %d\n", target_position, position, PI.prevError, PI.integrator);
 
     }
     printf("L");
-    time_spinFor(msecs(10));
+    time_spinFor(msecs(100));
   }
 }

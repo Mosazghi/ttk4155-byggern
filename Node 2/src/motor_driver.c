@@ -28,11 +28,29 @@ void motor_set_dir(enum motor_direction dir) {
     }
 }
 
-uint8_t motor_get_dir(uint8_t value) {
+void motor_set_speed(int joy_x){
+    const int deadzone = 5;
+    if (abs(joy_x) < deadzone) {
+        pwm_set_dutyCycle(PWM_CH0, 0);
+    }
+    pwm_set_dutyCycle(PWM_CH0, abs(joy_x));
+}
+
+uint8_t motor_get_dir(uint8_t value) { 
     if (value < 128) {
         return 0;
     }
     if (value >= 128) {
+        return 1;
+    }
+    return 0;
+}
+
+int joy_get_dir(int joy_x) { 
+    if (joy_x < 0) {
+        return 0;
+    }
+    if (joy_x >= 0) {
         return 1;
     }
     return 0;

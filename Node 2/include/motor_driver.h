@@ -40,6 +40,27 @@ void motor_set_dir(enum motor_direction dir);
 uint8_t motor_get_dir(uint8_t value);
 
 /**
+ * @brief Reads joystick.x value and returns direction.
+ * 
+ * joy_x < 0 returns 0 (LEFT).
+ * 
+ * joy_x >= 0 returns 1 (RIGHT).
+ * 
+ * @param joy_x 
+ * @return int 
+ */
+int joy_get_dir(int joy_x);
+
+/**
+ * @brief Sets the duty cycle of the motor equal to the absolute value of the joystick value.
+ * 
+ * Includes deadzone hardcoded to 5.
+ * 
+ * @param joy_x 
+ */
+void motor_set_speed(int joy_x);
+
+/**
  * @brief Initializes the motor encoder using TC2, channel 6(0). 
  * 
  * Externally driven clock: XC0 (TCLK0).
