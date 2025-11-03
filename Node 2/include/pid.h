@@ -2,20 +2,20 @@
 #include "motor_driver.h"
 
 typedef struct {
-    float Kp, Ki;                   // Gains
-    float limMin;
-    float limMax;                   // Output limits
+    double Kp, Ki;                   // Gains
+    double limMin;
+    double limMax;                   // Output limits
 
-    float intlimMin;
-    float intlimMax;
-    float T;                        // Sample time[s]
-    float setpoint;
+    double intlimMin;
+    double intlimMax;
+    double T;                        // Sample time[s]
+    double setpoint;
 
     // Memory
-    float integrator;
-    float prevError;
+    double integrator;
+    double prevError;
 
-    float output;
+    double output;
 } PI_controller_t;
 
 /**
@@ -32,9 +32,9 @@ void PI_init(PI_controller_t *PI);
  * 
  * @param PI 
  * @param measurement 
- * @return float 
+ * @return double 
  */
-float PI_update(PI_controller_t *PI, float measurement);
+double PI_update(PI_controller_t *PI, double measurement);
 
 /**
  * @brief Updates the internal setpoint value of the PI-controller.
@@ -42,7 +42,7 @@ float PI_update(PI_controller_t *PI, float measurement);
  * @param PI 
  * @param setpoint 
  */
-void PI_update_setpoint(PI_controller_t *PI, float setpoint);
+void PI_update_setpoint(PI_controller_t *PI, double setpoint);
 
 /**
  * @brief Updates global setpoint 'target_position' based by adding joystick.x value to the current value. 

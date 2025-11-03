@@ -18,9 +18,9 @@ void piob_output_init(int pin) {
   PIOB->PIO_OER = (1 << pin);
 }
 
-void piob_set_pin_low(int pin) { PIOB->PIO_CODR = (1 << pin); }
+void piob_set_pin_low(int pin) { PIOB->PIO_CODR |= (1 << pin); }
 
-void piob_set_pin_high(int pin) { PIOB->PIO_SODR = (1 << pin); }
+void piob_set_pin_high(int pin) { PIOB->PIO_SODR |= (1 << pin); }
 
 // Converts joystick value to pulsewidth in us
 int pos_to_us(int joystick_value) {

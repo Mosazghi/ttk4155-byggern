@@ -2,7 +2,7 @@
 #include "sam.h"
 #include <math.h>
 #include <stdint.h>
-#define n_filter 3  // box filter coefficients 
+#define n_filter 1  // box filter coefficients 
 
 /**
  * @brief Returns the average of the last 'n_filter' samples.
@@ -21,3 +21,5 @@ int box_filter(int value);
  * @return int 
  */
 int spike_filter(int array[2], int threshold);
+
+int combined_filter(int new_value);
