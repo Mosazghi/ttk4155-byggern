@@ -10,6 +10,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "game_logic.h"
 #include "game_menu.h"
 #include "mcp2515.h"
 #include "oled.h"
@@ -19,4 +20,8 @@
 #include "utility.h"
 
 #define OLED_SS_PIN PB3
+typedef enum {
+  STATE_MENU,
+  STATE_GAME,
+} system_state_t;
 // #define MPC_SS_PIN PB1

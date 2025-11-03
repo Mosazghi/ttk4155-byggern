@@ -1,56 +1,54 @@
-#include "pwm.h"
+#pragma once
 #include "input.h"
+#include "pwm.h"
 #define PC23 (1u << 23)
 #define PC25 (1u << 25)
 #define PC26 (1u << 26)
 
-enum motor_direction {
-    LEFT,
-    RIGHT
-};
+enum motor_direction { LEFT, RIGHT };
 
 /**
  * @brief Initiates motor driver to output PWM channel 0 on pin PB13 with 1000Hz.
- * 
+ *
  * DIR initiated to pin PC23.
- * 
+ *
  */
 void motor_init();
 
 /**
  * @brief Sets PC23 high or low to change motor direction.
- * 
+ *
  * LEFT = low, RIGHT = high.
- * 
- * @param dir 
+ *
+ * @param dir
  */
 void motor_set_dir(enum motor_direction dir);
 
 /**
  * @brief Reads uint8_t value and returns direction.
- * 
+ *
  * Value < 128 returns 0, value >= 128 returns 1.
- * 
- * @param value 
- * @return uint8_t 
+ *
+ * @param value
+ * @return uint8_t
  */
 uint8_t motor_get_dir(uint8_t value);
 
 /**
- * @brief Initializes the motor encoder using TC2, channel 6(0). 
- * 
+ * @brief Initializes the motor encoder using TC2, channel 6(0).
+ *
  * Externally driven clock: XC0 (TCLK0).
- * 
+ *
  * Channel A: PC25 (TIOA6)
- * 
+ *
  * Channel B: PC26 (TIOB6)
- * 
+ *
  */
 void motor_encoder_init();
 
 /**
  * @brief Reads encoder value from TC_CV (channel 0).
- * 
- * @return int32_t 
+ *
+ * @return int32_t
  */
 int32_t encoder_get_position(void);
