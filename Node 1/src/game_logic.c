@@ -44,7 +44,6 @@ void game_loop(game_state_t *state, joystick_xy_t *joystick) {
   bool has_lost = is_game_over(state);
 
   if (has_lost) {
-    LOG_INF("Game Over!\n");
     render_game_over();
     game_reset(state);
     // break;

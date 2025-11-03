@@ -9,7 +9,6 @@
 #include "oled.h"
 #include "utility.h"
 
-// Store strings in flash memory to save RAM
 const char str_main_menu_header[] PROGMEM = "Ping Pong";
 const char str_main_menu[] PROGMEM = "Main Menu";
 
@@ -30,7 +29,7 @@ const char str_cal_opt2[] PROGMEM = "Cal Opt 2";
 
 const char str_debug_header[] PROGMEM = "Debug";
 const char str_debug_menu[] PROGMEM = "Debug Menu";
-const char str_dbg1[] PROGMEM = "Debug Opt 1";
+const char str_dbg1[] PROGMEM = "SRAM Test";
 const char str_dbg2[] PROGMEM = "Debug Opt 2";
 
 const char str_return[] PROGMEM = "Return";
@@ -41,7 +40,6 @@ static void set_easy_difficulty(void) { try_start_game(LVL_EASY, &g_game_state);
 static void set_medium_difficulty(void) { try_start_game(LVL_MEDIUM, &g_game_state); }
 static void set_hard_difficulty(void) { try_start_game(LVL_HARD, &g_game_state); }
 
-// Solution: Initialize without parent, then set parent after declaration
 menu_item_t difficulty_items[] = {
     {str_easy, NULL, NULL},
     {str_medium, NULL, NULL},
@@ -49,26 +47,22 @@ menu_item_t difficulty_items[] = {
     {str_return, NULL, NULL},
 };
 
-menu_t difficulty_menu = {
-    .header = str_new_game_header,
-    .title = str_new_game_menu,
-    .items = difficulty_items,
-    .num_items = ARR_LEN(difficulty_items),
-    .parent = NULL  // Will be set in setup function
-};
+menu_t difficulty_menu = {.header = str_new_game_header,
+                          .title = str_new_game_menu,
+                          .items = difficulty_items,
+                          .num_items = ARR_LEN(difficulty_items),
+                          .parent = NULL};
 
 menu_item_t score_items[] = {
     {str_reset_scores, NULL, NULL},
     {str_return, NULL, NULL},
 };
 
-menu_t score_menu = {
-    .header = str_high_score_header,
-    .title = str_high_score_menu,
-    .items = score_items,
-    .num_items = ARR_LEN(score_items),
-    .parent = NULL  // Will be set in setup function
-};
+menu_t score_menu = {.header = str_high_score_header,
+                     .title = str_high_score_menu,
+                     .items = score_items,
+                     .num_items = ARR_LEN(score_items),
+                     .parent = NULL};
 
 menu_item_t debug_items[] = {
     {str_dbg1, NULL, NULL},
@@ -76,13 +70,11 @@ menu_item_t debug_items[] = {
     {str_return, NULL, NULL},
 };
 
-menu_t debug_menu = {
-    .header = str_debug_header,
-    .title = str_debug_menu,
-    .items = debug_items,
-    .num_items = ARR_LEN(debug_items),
-    .parent = NULL  // Will be set in setup function
-};
+menu_t debug_menu = {.header = str_debug_header,
+                     .title = str_debug_menu,
+                     .items = debug_items,
+                     .num_items = ARR_LEN(debug_items),
+                     .parent = NULL};
 
 menu_item_t calibrate_items[] = {
     {str_cal_opt1, NULL, NULL},
@@ -90,13 +82,11 @@ menu_item_t calibrate_items[] = {
     {str_return, NULL, NULL},
 };
 
-menu_t calibrate_menu = {
-    .header = str_calibrate_header,
-    .title = str_calibrate_menu,
-    .items = calibrate_items,
-    .num_items = ARR_LEN(calibrate_items),
-    .parent = NULL  // Will be set in setup function
-};
+menu_t calibrate_menu = {.header = str_calibrate_header,
+                         .title = str_calibrate_menu,
+                         .items = calibrate_items,
+                         .num_items = ARR_LEN(calibrate_items),
+                         .parent = NULL};
 
 menu_item_t main_items[] = {{str_new_game_menu, &difficulty_menu, NULL},
                             {str_high_score_menu, &score_menu, NULL},
@@ -117,10 +107,8 @@ menu_state_t g_menu_state;
 
 void setup_menu_structure(void) {
   // NEW GAME ---
-  // Set up parent relationships AFTER all menus are declared
   difficulty_menu.parent = &g_menu_root;
-  // Set up callbacks with proper parameters if needed
-  // Note: Your callback signature might need adjustment for level parameter
+
   difficulty_items[0].callback = set_easy_difficulty;
   difficulty_items[1].callback = set_medium_difficulty;
   difficulty_items[2].callback = set_hard_difficulty;
@@ -132,14 +120,14 @@ void setup_menu_structure(void) {
 
   // DEBUG ---
   debug_menu.parent = &g_menu_root;
-  debug_items[0].callback = NULL;  // Placeholder
-  debug_items[1].callback = NULL;  // Placeholder
-  debug_items[2].callback = NULL;  // CALIBRATE ---
+  debug_items[0].callback = sram_test;  // SRAM TEST
+  debug_items[1].callback = NULL;       // Placeholder
+  debug_items[2].callback = NULL;
   // CALIBRATE ---
   calibrate_menu.parent = &g_menu_root;
   calibrate_items[0].callback = NULL;  // Placeholder
   calibrate_items[1].callback = NULL;  // Placeholder
-  calibrate_items[2].callback = NULL;  // RETURN ---
+  calibrate_items[2].callback = NULL;  // RETURN
   // MENU STATE ---
   g_menu_state.current_menu = &g_menu_root;
   g_menu_state.current_render = MAIN_MENU;
@@ -161,10 +149,9 @@ void menu_loop(buttons_t *buttons) {
 }
 
 void render_menu() {
-  static char display_buffer[32];  // Reduced size and made static
-  char temp_str[16];               // Temporary buffer for PROGMEM strings
+  static char display_buffer[32];
+  char temp_str[16];
 
-  // Clear
   oled_clear();
 
   // Copy header from PROGMEM to RAM
@@ -186,7 +173,7 @@ void render_menu() {
     } else {
       snprintf(display_buffer, sizeof(display_buffer), "  %s", temp_str);
     }
-    oled_printf(display_buffer, 0, i + 2);  // +1 to account for header
+    oled_printf(display_buffer, 0, i + 2);
   }
 
   switch (g_menu_state.current_render) {
@@ -202,6 +189,7 @@ void render_menu() {
     case CALIBRATE_MENU:
       break;
     case DEBUG_MENU:
+      
       break;
     default:
       break;
@@ -236,7 +224,7 @@ void menu_select(menu_state_t *state) {
     state->current_render = str_to_render_t(tmp_str);
     state->current_index = 0;
   }
-  // Return to parent menu - compare with PROGMEM string
+  // Return to parent menu
   else if (item->sub_menu == NULL && state->current_menu->parent != NULL &&
            strcmp_P("Return", item->label) == 0) {
     state->current_menu = state->current_menu->parent;
@@ -252,7 +240,6 @@ void menu_select(menu_state_t *state) {
 };
 
 static menu_render_t str_to_render_t(const char *str) {
-  // Compare against the actual PROGMEM string variables
   if (strcmp_P(str, str_new_game_menu) == 0) {
     return NEW_GAME_MENU;
   } else if (strcmp_P(str, str_high_score_menu) == 0) {
@@ -262,6 +249,6 @@ static menu_render_t str_to_render_t(const char *str) {
   } else if (strcmp_P(str, str_debug_menu) == 0) {
     return DEBUG_MENU;
   } else {
-    return MAIN_MENU;  // Default case
+    return MAIN_MENU;
   }
 }

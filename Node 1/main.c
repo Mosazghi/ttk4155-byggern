@@ -64,7 +64,6 @@ int main() {
 
     if (can_ctrl_flag) {
       can_ctrl_flag = 0;
-      LOG_INF("CAN message received!\n");
       g_game_state.new_can_msg = true;
     }
 
