@@ -50,9 +50,6 @@ int main() {
 
   int arr[2];
   int idx = 0;
-  bool ir_detected = false;
-  int ir_adc_value = 0;
-  bool ir_was_blocked = true;
   while (1) {
     if (totalMsecs(time_now()) - ir_check_prev_millis >= IR_CHECK_INTERVAL_MS) {
       ir_check_prev_millis = totalMsecs(time_now());
@@ -90,7 +87,6 @@ int main() {
 
 static void check_ir_blocked() {
   static bool ir_was_blocked = false;
-  printf("Checking IR sensor...\n");
   uint16_t ir_adc_value = adc_read();
   bool ir_detected = (ir_adc_value < 500);
 

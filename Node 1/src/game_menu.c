@@ -149,6 +149,8 @@ void setup_menu_structure(void) {
 void menu_init() { setup_menu_structure(); }
 
 void menu_loop(buttons_t *buttons) {
+  static buttons_t *prev_btn_press = NULL;
+
   if (buttons->NU == 1) {
     menu_move_up(&g_menu_state);
   } else if (buttons->ND == 1) {
