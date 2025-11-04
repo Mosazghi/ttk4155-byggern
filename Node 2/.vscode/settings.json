@@ -2,6 +2,7 @@
     "files.associations": {
         "*.css": "tailwindcss",
         "uart.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "motor_driver.h": "c"
     }
 }

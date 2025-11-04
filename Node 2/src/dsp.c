@@ -1,5 +1,7 @@
 #include "dsp.h"
 
+// Box filter
+#define n_filter 1  // box filter coefficients 
 int box_filter(int value)
 {
     static int buffer[n_filter];
@@ -15,6 +17,8 @@ int box_filter(int value)
     return (sum / n_filter);
 }
 
+// Spike filter
+// TODO: (ring-buffer implementation)
 int spike_filter(int array[2], int threshold) {
     int prev_value = array[0];
     int value = array[1];
@@ -27,6 +31,16 @@ int spike_filter(int array[2], int threshold) {
     
 }
 
+// Low-pass filter
+#define LPF_ALPHA 0.8f
+static float filtered_joy_x = 0.0f; 
+
+float low_pass_filter(int new_value) {
+    filtered_joy_x = LPF_ALPHA * new_value + (1.0f - LPF_ALPHA) * filtered_joy_x;
+    return filtered_joy_x;
+}
+
+// Combined median & low-pass filter
 #define MEDIAN_SIZE 3
 #define ALPHA 0.92f
 

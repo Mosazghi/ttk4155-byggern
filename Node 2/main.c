@@ -14,14 +14,8 @@
 
 #define BAUDRATE 115200
 #define F_CPU 84000000
-#define LPF_ALPHA 0.8f
 
-static float filtered_joy_x = 0.0f; 
 
-float low_pass_filter(int new_value) {
-  filtered_joy_x = LPF_ALPHA * new_value + (1.0f - LPF_ALPHA) * filtered_joy_x;
-  return filtered_joy_x;
-}
 
 can_init_t can_config = {
     .brp = 84,  // Baud Rate Prescaling (83)
