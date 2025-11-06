@@ -51,6 +51,7 @@ typedef struct {
 //
 // Example:
 //    typedef struct {
+
 //        uint16_t  a;
 //        uint8_t   b;
 //        float     c;
