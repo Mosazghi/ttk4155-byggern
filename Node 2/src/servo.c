@@ -2,10 +2,7 @@
 
 #include "pwm.h"
 
-long map(long x, long in_min, long in_max, long out_min, long out_max) {
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
+#include "dsp.h"
 // Set pin n on port p as output
 void piob_output_init(int pin) {
   // Enable PIOB timer
@@ -24,6 +21,8 @@ void piob_set_pin_high(int pin) { PIOB->PIO_SODR |= (1 << pin); }
 
 // Converts joystick value to pulsewidth in us
 int pos_to_us(int joystick_value) {
+     const int DEADZONE = 5;
+    if (abs(joystick_value) < DEADZONE) joystick_value = 0;
   joystick_value = CLAMP(joystick_value, joystick_min, joystick_max);
   int us = SERVO_CENTERED + (joystick_value * 5);  // [1000,2000]us
   return us;

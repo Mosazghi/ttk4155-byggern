@@ -2,6 +2,11 @@
 
 // Box filter
 #define n_filter 1  // box filter coefficients 
+
+long map(long x, long in_min, long in_max, long out_min, long out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 int box_filter(int value)
 {
     static int buffer[n_filter];
@@ -32,10 +37,12 @@ int spike_filter(int array[2], int threshold) {
 }
 
 // Low-pass filter
-#define LPF_ALPHA 0.8f
+#define LPF_ALPHA 0.5f
 static float filtered_joy_x = 0.0f; 
 
 float low_pass_filter(int new_value) {
+    if (abs(new_value) < 5)  new_value = 0; 
+
     filtered_joy_x = LPF_ALPHA * new_value + (1.0f - LPF_ALPHA) * filtered_joy_x;
     return filtered_joy_x;
 }

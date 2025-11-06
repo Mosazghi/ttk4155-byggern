@@ -47,7 +47,6 @@ int main() {
   encoder_zero();
 
   PI_init(&PI);
-  int joy_x_raw = 0;
   int joy_x = 0;
 
   piob_output_init(17);
@@ -58,18 +57,18 @@ int main() {
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
       bool button_state = input.buttons.R1;
-      joy_x_raw = input.joystick.x;
-      joy_x =(int) low_pass_filter(joy_x_raw);
+      joy_x =(int) low_pass_filter(input.joystick.x);
+      printf(">Joy_x: %d,Joy_y: %d\r\n", joy_x, input.joystick.y);
 
 
-      int x_tp = remap(input.touch_pad.x);
+      //int x_tp = remap(input.touch_pad.x);
       //printf("x_tp: %d", x_tp);
       // arr[idx] = x_tp;
       // idx += 1; 
       // if(idx == 2) {
       // int x_tp_spike = spike_filter(arr, 20);  // TODO: make && test this @ torsdag.
       
-      int x_servo = pos_to_us(x_tp);
+      int x_servo = pos_to_us(input.joystick.y);
       //u_int8_t t_dir = motor_get_dir(input.joystick.x);
       //int32_t encoder_value = encoder_get_position();
       //printf("Encoder value: %d\n", encoder_value);
@@ -105,7 +104,6 @@ int main() {
     //   PI_update(&PI, (double)position);
 
     }
-    //printf("L");
     //time_spinFor(msecs(10));
   }
 

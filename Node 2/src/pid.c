@@ -1,4 +1,5 @@
 #include "pid.h"
+#include "dsp.h"
 #define CONTROL_HZ   100             // 100 Hz = 10 ms
 #define CONTROL_T    (1.0f / CONTROL_HZ)
 int ENCODER_MAX = 0;
@@ -28,7 +29,7 @@ void TC1_init_10ms(void)
 
 void PI_init(PI_controller_t *PI){
     PI->Kp = 1.7f;
-    PI->Ki = 0.8f;
+    PI->Ki = 0.03f;
     PI->integrator = 0.0f;
     PI->prevError = 0.0f;
     PI->output = 0.0f;
@@ -42,7 +43,6 @@ void PI_init(PI_controller_t *PI){
 
 
 double PI_update(PI_controller_t *PI, double measurement){
-    //double error = CLAMP((PI->setpoint - measurement), ENCODER_MIN, ENCODER_MAX);
     double error = PI->setpoint - measurement;
     double proportional = PI->Kp * error;
     PI->integrator = PI->integrator + (0.5f * PI->T * PI->Ki
@@ -50,8 +50,8 @@ double PI_update(PI_controller_t *PI, double measurement){
     //PI->integrator += error * PI->T * PI->Ki;
     
     // Anti-windup
-    //if (PI->integrator > PI->intlimMax) PI->integrator = PI->intlimMax;
-    //if (PI->integrator < PI->intlimMin) PI->integrator = PI->intlimMin;
+    if (PI->integrator > PI->intlimMax) PI->integrator = PI->intlimMax;
+    if (PI->integrator < PI->intlimMin) PI->integrator = PI->intlimMin;
 
     if (abs(error) < 250) {
         PI->integrator = 0;
@@ -90,10 +90,9 @@ void TC3_Handler(void) // TC3_Handler -> TC1, channel 0 -> ID_TC3.
 }
 
 void update_target_pos(int joy_x) {
-    const int DEADZONE = 5;
+    const int DEADZONE = 7;
     if (abs(joy_x) < DEADZONE) joy_x = 0;
-
-    int delta_p = joy_x / 1;       // Scales position value to change speed of position update
+    int delta_p = -joy_x;       // Scales position value to change speed of position update
     int pre_clamp = target_position += delta_p;
 
     target_position = CLAMP(pre_clamp, ENCODER_MIN, ENCODER_MAX);
@@ -101,6 +100,7 @@ void update_target_pos(int joy_x) {
 
 void PI_update_setpoint(PI_controller_t *PI, double setpoint){
     PI->setpoint = setpoint;
+    //printf("PI setpoint updated to: %f\n", PI->setpoint);
 }
 
 void PI_control(PI_controller_t *PI, int joy_x) {

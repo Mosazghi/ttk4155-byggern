@@ -3,6 +3,9 @@
 #include <math.h>
 #include <stdint.h>
 
+#define CLAMP(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
+
+
 /**
  * @brief Returns the average of the last 'n_filter' samples.
  * 
@@ -36,3 +39,5 @@ int combined_filter(int new_value);
  * @return float 
  */
 float low_pass_filter(int new_value);
+
+long map(long x, long in_min, long in_max, long out_min, long out_max);

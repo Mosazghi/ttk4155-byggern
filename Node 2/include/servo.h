@@ -5,7 +5,6 @@
 #define SERVO_CENTERED 1500
 #define joystick_min -100
 #define joystick_max 100
-#define CLAMP(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 // typedef struct {
 //   int x;
