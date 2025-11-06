@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+#include "adc.h"
 #include "utility.h"
 
 // ADC adc = {0};
@@ -19,12 +20,12 @@
 //   // joystick->y = map(joystick->y, 0, 241, -100, 100);
 // }
 
-// void joystick_read(joystick_xy_t *joystick) {
-//   joystick->x = adc_read(ADC_CH1);
-//   joystick->y = adc_read(ADC_CH0);
-//   LOG_DBG("Raw joystick values: X = %d, Y = %d", joystick->x, joystick->y);
-//   // joystick.btn = !((PINF >> PINF5) & 0x01); // Active low
-// }
+void joystick_read(joystick_xy_t* joystick) {
+  joystick->x = adc_read(ADC_CH1);
+  joystick->y = adc_read(ADC_CH0);
+  LOG_DBG("Raw joystick values: X = %d, Y = %d", joystick->x, joystick->y);
+  // joystick.btn = !((PINF >> PINF5) & 0x01); // Active low
+}
 
 joystick_dir_t joystick_get_dir(joystick_xy_t joystick, uint8_t threshold) {
   // joystick_dir_t dir = NEUTRAL;

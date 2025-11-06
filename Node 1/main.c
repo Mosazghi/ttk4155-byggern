@@ -42,7 +42,7 @@ int main() {
     if (input_ctrl_flag) {
       input_ctrl_flag = 0;
       buttons = avr_get_buttons();
-      joystick = avr_get_joystick();
+      joystick_read(&joystick);
       touch_pad = avr_get_touch_pad();
       // print x
       snprintf(disp_buf, sizeof(disp_buf), "X:%03d ", joystick.x);
