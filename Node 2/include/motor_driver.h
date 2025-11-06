@@ -4,8 +4,8 @@
 #define PC23 (1u << 23)
 #define PC25 (1u << 25)
 #define PC26 (1u << 26)
-#define ENCODER_MIN 0
-#define ENCODER_MAX 5596
+//#define ENCODER_MIN 0
+//#define ENCODER_MAX 5800
 
 enum motor_direction {
     LEFT,
@@ -78,3 +78,9 @@ void motor_encoder_init();
  * @return int32_t 
  */
 int32_t encoder_get_position(void);
+
+/**
+ * @brief Ensures the initial conditions for the encoder are consistent by moving to the extremalities and setting the encoder limits once reached.
+ * 
+ */
+void encoder_zero();

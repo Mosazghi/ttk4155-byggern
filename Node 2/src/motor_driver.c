@@ -1,4 +1,8 @@
+#include "time.h"
 #include "motor_driver.h"
+#include "pid.h"
+extern int ENCODER_MAX;
+extern int ENCODER_MIN;
 
 void motor_init(){
     pwm_init(PWM_CH0, PB12, 1e4);
@@ -30,11 +34,14 @@ void motor_set_dir(enum motor_direction dir) {
 
 void motor_set_speed(int joy_x){
     const int deadzone = 5;
-    if (abs(joy_x) < deadzone) {
+    int duty = abs(joy_x);
+
+    if (duty < deadzone) {
         pwm_set_dutyCycle(PWM_CH0, 0);
     }
-    pwm_set_dutyCycle(PWM_CH0, abs(joy_x));
-}
+    //printf("Motor speed: %d %%\n", duty);
+    pwm_set_dutyCycle(PWM_CH0, duty);
+}   
 
 uint8_t motor_get_dir(uint8_t value) { 
     if (value < 128) {
@@ -54,6 +61,21 @@ int joy_get_dir(int joy_x) {
         return 1;
     }
     return 0;
+}
+
+void encoder_zero(){
+    motor_set_dir(RIGHT);
+    motor_set_speed(70);
+    time_spinFor(msecs(1000));
+    ENCODER_MIN = encoder_get_position();
+    motor_set_dir(LEFT);
+    motor_set_speed(70);
+    time_spinFor(msecs(1000));
+    ENCODER_MAX = encoder_get_position();
+    motor_set_dir(RIGHT);
+    motor_set_speed(70);
+    time_spinFor(msecs(1000));
+    motor_set_speed(0); 
 }
 
 void motor_encoder_init(){
@@ -81,5 +103,3 @@ int32_t encoder_get_position(void){
     // Returns signed 32-bit position count
     return (int32_t)TC2->TC_CHANNEL[0].TC_CV;
 }
-
-
