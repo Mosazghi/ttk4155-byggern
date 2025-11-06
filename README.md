@@ -4,5 +4,5 @@ https://github.com/Mosazghi/ttk4155-byggern
 
 ## Ping Pong Project 
 
-Videos: https://drive.google.com/drive/folders/1JJoNPLtHwjZk7zbqk35WghtHnUCBQ-ms?usp=sharing
+[Project preview videos](https://drive.google.com/drive/folders/1JJoNPLtHwjZk7zbqk35WghtHnUCBQ-ms?usp=sharing)
 
