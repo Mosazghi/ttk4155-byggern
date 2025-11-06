@@ -13,18 +13,25 @@
 #include "uart.h"
 #include "motor_driver.h"
 #include "dsp.h"
-#include "adc_internal.h"
+#include "adc.h"
 #include "pid.h"
 
 #define BAUDRATE 115200
 #define F_CPU 84000000
 #define IR_CHECK_INTERVAL_MS 500
+#define SCORE_UPDATE_INTERVAL_MS 1000
 
 uint32_t ir_check_prev_millis = 0;
+uint32_t score_update_prev_milis = 0;
+
 static void can_tx_ir_blocked_msg();
 static void check_ir_blocked();
+static void update_score();
 
-
+typedef enum {
+  IR_BLOCKED,
+  SCORE_UPDATE
+} can_message_type_t;
 
 can_init_t can_config = {
     .brp = 84,  // Baud Rate Prescaling (83)
@@ -56,6 +63,7 @@ int main() {
   TC1_init_10ms();
   PI_controller_t PI;
   encoder_zero();
+  printf("Encoder min: %d, Encoder max: %d.", ENCODER_MIN, ENCODER_MAX);
 
   PI_init(&PI);
   int joy_x = 0;
@@ -69,12 +77,15 @@ int main() {
       check_ir_blocked();
     }
 
+     if (totalMsecs(time_now()) - score_update_prev_milis >= SCORE_UPDATE_INTERVAL_MS) {
+      score_update_prev_milis = totalMsecs(time_now());
+      update_score();
+    }
+
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
       bool button_state = input.buttons.R1;
       joy_x =(int) low_pass_filter(input.joystick.x);
-      printf(">Joy_x: %d,Joy_y: %d\r\n", joy_x, input.joystick.y);
-
       int x_servo = pos_to_us(input.joystick.y);
 
 
@@ -85,29 +96,12 @@ int main() {
         piob_set_pin_low(17);
       }
 
-
       pwm_set_pulseWidth(PWM_CH1, x_servo, 50);
-      //idx =0;
     }
 
     PI_control(&PI, joy_x);
-    // After testing the if statement below, the following function should handle all PI-control.
-    //PI_control(&PI, joy_x);
-    
-    // if (new_sample_ready) {
-    //   new_sample_ready = false;
-
-    //   int32_t position = encoder_position;
-
-    //   update_target_pos(joy_x);
-    //   PI_update_setpoint(&PI, target_position);
-
-    //   PI_update(&PI, (double)position);
-
     
   }
-      //time_spinFor(msecs(10));
-
 }
 
 static void check_ir_blocked() {
@@ -126,7 +120,7 @@ static void check_ir_blocked() {
 
 static void can_tx_ir_blocked_msg() {
   can_msg_t tx_msg = {0};
-  tx_msg.id = 0x10;  // Example ID for IR blocked message
+  tx_msg.id = IR_BLOCKED;  // Example ID for IR blocked message
   tx_msg.length = 2;
   tx_msg.byte[0] = 1;  // Indicate blocked
   tx_msg.byte[1] = 0;  // Reserved
@@ -134,3 +128,12 @@ static void can_tx_ir_blocked_msg() {
   can_tx(tx_msg);
 }
 
+void update_score(){
+  can_msg_t tx_msg = {0};
+  tx_msg.id = SCORE_UPDATE;
+  tx_msg.length = 1;
+  tx_msg.byte[0] = 1;
+
+  can_tx(tx_msg);
+
+}

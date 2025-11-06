@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "avr.h"
+#include "adc.h"
 #include "avr/io.h"
 #include "can.h"
 #include "include/oled.h"
@@ -12,6 +13,7 @@
 volatile uint8_t oled_ctrl_flag = 0;
 volatile uint8_t input_ctrl_flag = 0;
 volatile uint8_t can_ctrl_flag = 0;
+
 
 /* -- INPUT VARS-- */
 buttons_t buttons;
@@ -79,10 +81,7 @@ int main() {
     } else if (!g_game_state.is_in_game && sys_state == STATE_GAME) {
       sys_state = STATE_MENU;
     }
-    // else {
-    //   sys_state = STATE_MENU;
-    // }
-    _delay_ms(100);
+   
   }
 
   return 0;
@@ -95,6 +94,7 @@ uint8_t init_sys() {
   oled_init();
   menu_init();
   avr_init();
+  adc_timer_init();
 
   if (!sram_test()) {
     return 1;

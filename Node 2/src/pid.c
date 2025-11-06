@@ -2,8 +2,7 @@
 #include "dsp.h"
 #define CONTROL_HZ   100             // 100 Hz = 10 ms
 #define CONTROL_T    (1.0f / CONTROL_HZ)
-int ENCODER_MAX = 0;
-int ENCODER_MIN = 0;
+
 
 volatile int32_t encoder_position = 0;
 int32_t target_position = 0;
@@ -28,8 +27,8 @@ void TC1_init_10ms(void)
 }
 
 void PI_init(PI_controller_t *PI){
-    PI->Kp = 1.7f;
-    PI->Ki = 0.03f;
+    PI->Kp = 0.45f;
+    PI->Ki = 0.54f / 16;
     PI->integrator = 0.0f;
     PI->prevError = 0.0f;
     PI->output = 0.0f;
@@ -45,19 +44,19 @@ void PI_init(PI_controller_t *PI){
 double PI_update(PI_controller_t *PI, double measurement){
     double error = PI->setpoint - measurement;
     double proportional = PI->Kp * error;
-    PI->integrator = PI->integrator + (0.5f * PI->T * PI->Ki
-                                 * (error + PI->prevError));
-    //PI->integrator += error * PI->T * PI->Ki;
+    //PI->integrator = PI->integrator + (0.5f * PI->T * PI->Ki
+    //                             * (error + PI->prevError));
+    PI->integrator += error * PI->T * PI->Ki;
     
     // Anti-windup
-    if (PI->integrator > PI->intlimMax) PI->integrator = PI->intlimMax;
-    if (PI->integrator < PI->intlimMin) PI->integrator = PI->intlimMin;
+    // if (PI->integrator > PI->intlimMax) PI->integrator = PI->intlimMax;
+    // if (PI->integrator < PI->intlimMin) PI->integrator = PI->intlimMin;
 
-    if (abs(error) < 250) {
-        PI->integrator = 0;
-        error = 0;
-        proportional = 0;
-    }
+    // if (abs(error) < 20) {
+    //     PI->integrator = 0;
+    //     error = 0;
+    //     proportional = 0;
+    // }
 
     PI->output = proportional + PI->integrator;
 
@@ -95,12 +94,15 @@ void update_target_pos(int joy_x) {
     int delta_p = -joy_x;       // Scales position value to change speed of position update
     int pre_clamp = target_position += delta_p;
 
-    target_position = CLAMP(pre_clamp, ENCODER_MIN, ENCODER_MAX);
+    // Target position (Working)
+    //target_position = CLAMP(pre_clamp, ENCODER_MIN, ENCODER_MAX);
+
+    // Joystick position directly (Working currently with IR)
+    target_position = -map(joy_x, -100, 100, ENCODER_MIN, ENCODER_MAX);
 }
 
 void PI_update_setpoint(PI_controller_t *PI, double setpoint){
     PI->setpoint = setpoint;
-    //printf("PI setpoint updated to: %f\n", PI->setpoint);
 }
 
 void PI_control(PI_controller_t *PI, int joy_x) {
@@ -109,9 +111,6 @@ void PI_control(PI_controller_t *PI, int joy_x) {
     if (new_sample_ready) {
       new_sample_ready = false;
 
-      // Global variable encoder_position updates every 10ms through TC3_Handler.
-
-      // Updates global variable target_position based on joystick input.
       update_target_pos(joy_x);
 
       PI_update_setpoint(PI, target_position);
@@ -119,7 +118,7 @@ void PI_control(PI_controller_t *PI, int joy_x) {
       double output = PI_update(PI, (double)encoder_position);
       //printf("Encoder min/max: %d/%d\n", ENCODER_MIN, ENCODER_MAX);
       //printf("Target position: %d. Encoder value: %d. Previous error: %f. Integrator: %f\n--------------\n", target_position, encoder_position, PI->prevError, PI->integrator);
-      printf(">output:%f,target_pos:%d,encoder_pos:%d,err:%f\r\n", output, target_position, encoder_position, PI->prevError);
+      //printf(">output:%f,target_pos:%d,encoder_pos:%d,err:%f\r\n", output, target_position, encoder_position, PI->prevError);
 
      // Sets motor direction based on sign of the PI error.
       if (output > 0.0f) {

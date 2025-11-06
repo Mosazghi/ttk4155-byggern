@@ -1,8 +1,8 @@
 #include "time.h"
 #include "motor_driver.h"
 #include "pid.h"
-extern int ENCODER_MAX;
-extern int ENCODER_MIN;
+int ENCODER_MAX = 0;
+int ENCODER_MIN = 0;
 
 void motor_init() {
   pwm_init(PWM_CH0, PB12, 1e4);
@@ -52,11 +52,6 @@ uint8_t motor_get_dir(uint8_t value) {
     }
     return 0;
   }
-  if (value >= 128) {
-    return 1;
-  }
-  return 0;
-}
 
 int joy_get_dir(int joy_x) { 
     if (joy_x < 0) {
@@ -81,6 +76,7 @@ void encoder_zero(){
     motor_set_speed(70);
     time_spinFor(msecs(1000));
     motor_set_speed(0); 
+    
 }
 
 void motor_encoder_init(){

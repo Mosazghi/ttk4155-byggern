@@ -7,6 +7,8 @@
 #define PC26 (1u << 26)
 //#define ENCODER_MIN 0
 //#define ENCODER_MAX 5800
+extern int ENCODER_MAX;
+extern int ENCODER_MIN;
 
 enum motor_direction { LEFT, RIGHT };
 

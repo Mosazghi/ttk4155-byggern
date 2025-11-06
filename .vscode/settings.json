@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "compare": "c",
+        "game_logic.h": "c"
+    }
+}

@@ -1,5 +1,5 @@
 #include "dsp.h"
-
+#include <stdlib.h>
 // Box filter
 #define n_filter 1  // box filter coefficients 
 

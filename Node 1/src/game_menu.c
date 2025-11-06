@@ -14,9 +14,9 @@ const char str_main_menu[] PROGMEM = "Main Menu";
 
 const char str_new_game_menu[] PROGMEM = "New Game Menu";
 const char str_new_game_header[] PROGMEM = "Choose Difficulty";
-const char str_easy[] PROGMEM = "Easy";
-const char str_medium[] PROGMEM = "Medium";
-const char str_hard[] PROGMEM = "Hard";
+const char str_easy[] PROGMEM = "Casual";
+const char str_medium[] PROGMEM = "Gamer";
+const char str_hard[] PROGMEM = "GOAT";
 
 const char str_high_score_header[] PROGMEM = "High Scores";
 const char str_high_score_menu[] PROGMEM = "High Scores Menu";
@@ -120,7 +120,7 @@ void setup_menu_structure(void) {
 
   // DEBUG ---
   debug_menu.parent = &g_menu_root;
-  debug_items[0].callback = sram_test;  // SRAM TEST
+  debug_items[0].callback = NULL;  // SRAM TEST
   debug_items[1].callback = NULL;       // Placeholder
   debug_items[2].callback = NULL;
   // CALIBRATE ---
