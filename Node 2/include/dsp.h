@@ -2,9 +2,8 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "sam.h"
-#include "sam3xa.h"  // Header for SAM3X register definitions
-#define n_filter 3   // box filter coefficients
+#define CLAMP(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
+
 
 /**
  * @brief Returns the average of the last 'n_filter' samples.
@@ -23,3 +22,21 @@ int box_filter(int value);
  * @return int
  */
 int spike_filter(int array[2], int threshold);
+
+/**
+ * @brief Combines median & low-pass filtering
+ * 
+ * @param new_value 
+ * @return int 
+ */
+int combined_filter(int new_value);
+
+/**
+ * @brief Low-pass filter
+ * 
+ * @param new_value 
+ * @return float 
+ */
+float low_pass_filter(int new_value);
+
+long map(long x, long in_min, long in_max, long out_min, long out_max);

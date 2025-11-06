@@ -2,6 +2,7 @@
 #include "can.h"
 
 #include <stdio.h>
+#include "dsp.h"
 
 #include "sam.h"
 
@@ -133,12 +134,17 @@ void CAN0_Handler(void){
 
 void can_parse_input_msg(can_msg_t* msg, input_t* input) {
   /* joystick */
-  input->joystick.x = (int8_t)msg->byte[0];
-  input->joystick.y = (int8_t)msg->byte[1];
+  input->joystick.x = (int)msg->byte[0];
+  input->joystick.x = map(input->joystick.x, 0, 228, -100, 100);  
+  input->joystick.x = CLAMP(input->joystick.x, -100, 100);
+  input->joystick.y = (int)msg->byte[1];
+  input->joystick.y = map(input->joystick.y, 0, 228, -100, 100);
+  input->joystick.y= CLAMP(input->joystick.y, -100, 100);
+
   input->joystick.btn = msg->byte[2];
 
   /* buttons */
-  input->buttons.right = msg->byte[3];
+  input->buttons.right = msg->byte[3];  
 
   /* touch_pad */
   input->touch_pad.x = msg->byte[4];

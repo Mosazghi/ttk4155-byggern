@@ -40,3 +40,5 @@
 #define HIGH 1
 #define INPUT 0
 #define OUTPUT 1
+
+long map(long x, long in_min, long in_max, long out_min, long out_max);

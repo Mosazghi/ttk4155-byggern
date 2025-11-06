@@ -1,4 +1,8 @@
+#include "time.h"
 #include "motor_driver.h"
+#include "pid.h"
+extern int ENCODER_MAX;
+extern int ENCODER_MIN;
 
 void motor_init() {
   pwm_init(PWM_CH0, PB12, 1e4);
@@ -28,8 +32,24 @@ void motor_set_dir(enum motor_direction dir) {
   }
 }
 
-uint8_t motor_get_dir(uint8_t value) {
-  if (value < 128) {
+void motor_set_speed(int joy_x){
+    const int deadzone = 5;
+    int duty = abs(joy_x);
+
+    if (duty < deadzone) {
+        pwm_set_dutyCycle(PWM_CH0, 0);
+    }
+    //printf("Motor speed: %d %%\n", duty);
+    pwm_set_dutyCycle(PWM_CH0, duty);
+}   
+
+uint8_t motor_get_dir(uint8_t value) { 
+    if (value < 128) {
+        return 0;
+    }
+    if (value >= 128) {
+        return 1;
+    }
     return 0;
   }
   if (value >= 128) {
@@ -38,9 +58,34 @@ uint8_t motor_get_dir(uint8_t value) {
   return 0;
 }
 
-void motor_encoder_init() {
-  // Enable clock for TC2 (ch6)
-  PMC->PMC_PCER1 = (1 << (ID_TC6 - 32));
+int joy_get_dir(int joy_x) { 
+    if (joy_x < 0) {
+        return 0;
+    }
+    if (joy_x >= 0) {
+        return 1;
+    }
+    return 0;
+}
+
+void encoder_zero(){
+    motor_set_dir(RIGHT);
+    motor_set_speed(70);
+    time_spinFor(msecs(1000));
+    ENCODER_MIN = encoder_get_position();
+    motor_set_dir(LEFT);
+    motor_set_speed(70);
+    time_spinFor(msecs(1000));
+    ENCODER_MAX = encoder_get_position();
+    motor_set_dir(RIGHT);
+    motor_set_speed(70);
+    time_spinFor(msecs(1000));
+    motor_set_speed(0); 
+}
+
+void motor_encoder_init(){
+    // Enable clock for TC2 (ch6)
+    PMC->PMC_PCER1 = (1 << (ID_TC6 - 32));
 
   // Configure PIO pins for TIOA6/TIOB6 (Peripheral B)
   PIOC->PIO_PDR = PC25 | PC26;    // Disable GPIO control

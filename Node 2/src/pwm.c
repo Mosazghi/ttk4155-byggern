@@ -1,5 +1,5 @@
 #include "pwm.h"
-
+#include "dsp.h"
 // PWM_init for PWM_channel, PortB_pin, for given frequency, 10% DC
 void pwm_init(enum PWM_CHANNEL channel, enum portb_pin pin, int Hz) {
   // 1. Enable peripheral clocks for PIOB & PWM
