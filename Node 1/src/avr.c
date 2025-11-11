@@ -15,6 +15,7 @@ static spi_device_handle_t spi_avr_dev = {
     .ss_pin = AVR_SS_PIN,
 };
 
+// https://docs.arduino.cc/language-reference/en/functions/math/map/
 inline long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
@@ -110,6 +111,6 @@ void avr_timer_init_10hz() {
   TCCR3B |= (1 << WGM32) | (1 << CS32) | (1 << CS30);  // CTC, 1024 prescaler
   ETIMSK |= (1 << OCIE3A);                             // IE: IV executed when OCF3A in TIFR is set
                                                        // Set when TCNT3 = OCR3A
-  OCR3A = HZ_TO_TIMER(100);                             // compare register: 10hz = 459
+  OCR3A = HZ_TO_TIMER(100);                            // compare register: 10hz = 459
   sei();
 }
