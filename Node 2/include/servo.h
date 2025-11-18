@@ -7,12 +7,6 @@
 #define joystick_min -100
 #define joystick_max 100
 
-// typedef struct {
-//   int x;
-//   int y;
-//   bool btn;
-// } joystick_xy_t;
-
 long map(long x, long in_min, long in_max, long out_min, long out_max);
 void piob_output_init(int pin);
 void piob_set_pin_low(int pin);
