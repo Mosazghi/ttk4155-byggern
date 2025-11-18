@@ -24,4 +24,3 @@ typedef enum {
   STATE_MENU,
   STATE_GAME,
 } system_state_t;
-// #define MPC_SS_PIN PB1

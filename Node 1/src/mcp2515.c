@@ -7,12 +7,6 @@
 #include "utility.h"
 
 #define MCP_F_FREQ 16000000UL  // 16MHz
-// #define PS1 6
-// #define PS2 7
-// #define PROPAG 2
-// // #define BRP 4
-// #define T_OSC (1 / MCP_F_FREQ)
-// #define TQ (2 * BRP * MCP_F_FREQ)
 
 static spi_device_handle_t spi_mcp2515_dev = {
     .ss_port = &PORTB,

@@ -6,6 +6,9 @@
 
 #include "avr.h"
 
+/**
+ * @brief Menu render states
+ */
 typedef enum {
   MAIN_MENU,
   NEW_GAME_MENU,
@@ -39,10 +42,34 @@ struct menu_state_t {
   menu_render_t current_render;
 };
 
+/**
+ * @brief Initializes the menu system
+ */
 void menu_init();
+/**
+ * @brief Moves the menu selection up
+ * @param state Pointer to the current menu state
+ */
 void menu_move_up(menu_state_t *state);
+/**
+ * @brief Moves the menu selection down
+ * @param state Pointer to the current menu state
+ */
 void menu_move_down(menu_state_t *state);
+/**
+ * @brief Selects the current menu item
+ * @param state Pointer to the current menu state
+ */
 void menu_select(menu_state_t *state);
+/**
+ * @brief Main menu loop function
+ * @param buttons Pointer to the current button states
+ */
 void menu_loop(buttons_t *buttons);
+/**
+ * @brief Renders the current menu state to the display
+ * @remarks Uses the global g_menu_state variable.
+ * TODO: Pass as parameter instead?
+ */
 void render_menu();
 // void menu_test_loop(void);

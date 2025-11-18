@@ -6,10 +6,7 @@
 #include "utility.h"
 
 /* -- en enum --*/
-typedef enum {
-  IR_BLOCKED,
-  SCORE_UPDATE
-} can_message_type_t;
+typedef enum { IR_BLOCKED, SCORE_UPDATE } can_message_type_t;
 
 static void game_reset(game_state_t *state);
 static bool is_game_over(game_state_t *state);
@@ -23,26 +20,15 @@ void try_start_game(difficulty_level_t level, game_state_t *state) {
     state->lives = 10;
     state->is_in_game = true;
     state->current_level = level;
-    // TODO: Notify NODE 2 that the game has started (with the selected diff. level)?!
+    // TODO: Notify NODE 2 that the game has started (with the selected diff. level)?
   }
 }
 
-// WARN: Try to avoid accessing the global variable directly
 void reset_high_scores() { g_game_state.score = 0; }
 
 void game_loop(game_state_t *state, joystick_xy_t *joystick) {
-  // bool prev_btn_pressed = false;
   can_message_t can_buf = {0};
-  // // joystick_dir_t joystick_dir = {0};
-
-  // // while (1) {
-  // // if (joystick->btn && !prev_btn_pressed) {
-  // //   // TODO: Send CAN message when joystick buttonc is pressed
-  // // }
-  // prev_btn_pressed = joystick->btn;
-
   if (state->new_can_msg && state->is_in_game) {
-    //can_receive();  // need to call this to clear the flag in MCP2515
     can_buf = can_receive();
     if (can_buf.id == IR_BLOCKED) {
       state->lives--;
@@ -58,14 +44,10 @@ void game_loop(game_state_t *state, joystick_xy_t *joystick) {
   if (has_lost) {
     render_game_over();
     game_reset(state);
-    // break;
   }
-  // }
 }
 
 void game_reset(game_state_t *state) {
-  // NOTE: Do we need to reset everything?
-  // state->score = 0;
   state->lives = 10;
   state->is_in_game = false;
   state->current_level = LVL_EASY;

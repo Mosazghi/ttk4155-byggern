@@ -5,6 +5,9 @@
 
 #include "input.h"
 
+/**
+ * @brief Button from the IO board.
+ */
 typedef struct __attribute__((packed)) {
   union {
     uint8_t right;
@@ -41,12 +44,18 @@ typedef struct __attribute__((packed)) {
   };
 } buttons_t;
 
+/**
+ * @brief Touch pad from the IO board.
+ */
 typedef struct __attribute__((packed)) {
   uint8_t x;
   uint8_t y;
   uint8_t size;
 } touch_pad_t;
 
+/**
+ * @brief Touch slider from the IO board.
+ */
 typedef struct __attribute__((packed)) {
   uint8_t x;
   uint8_t y;

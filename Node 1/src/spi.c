@@ -13,7 +13,6 @@ void spi_init(spi_config_t *handle) {
   DDRB &= ~(1 << handle->miso_pin);  // MISO as Input
   // Enable SPI, Set as Master, set clock rate fck/16
   SPCR |= (1 << SPE) | (1 << MSTR) | (1 << SPR0);
-  // SPCR |= (handle->clock_div << SPR0);
 }
 
 
