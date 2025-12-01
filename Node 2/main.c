@@ -6,15 +6,12 @@
 #include "can.h"
 #include "dsp.h"
 #include "motor_driver.h"
+#include "pid.h"
 #include "pwm.h"
 #include "sam.h"
 #include "servo.h"
 #include "time.h"
 #include "uart.h"
-#include "motor_driver.h"
-#include "dsp.h"
-#include "adc.h"
-#include "pid.h"
 
 #define BAUDRATE 115200
 #define F_CPU 84000000
@@ -28,10 +25,7 @@ static void can_tx_ir_blocked_msg();
 static void check_ir_blocked();
 static void update_score();
 
-typedef enum {
-  IR_BLOCKED,
-  SCORE_UPDATE
-} can_message_type_t;
+typedef enum { IR_BLOCKED, SCORE_UPDATE } can_message_type_t;
 
 can_init_t can_config = {
     .brp = 84,  // Baud Rate Prescaling (83)
@@ -51,7 +45,7 @@ int main() {
   can_init(can_config);
   can_msg_t msg = {0};
   input_t input = {0};
-  printf("version 7\n\r");
+  printf("version 8\n\r");
 
   piob_output_init(13);
   // REG_ADC_MR |= (1 << 0);     // Disable hardware trigger
@@ -77,7 +71,7 @@ int main() {
       check_ir_blocked();
     }
 
-     if (totalMsecs(time_now()) - score_update_prev_milis >= SCORE_UPDATE_INTERVAL_MS) {
+    if (totalMsecs(time_now()) - score_update_prev_milis >= SCORE_UPDATE_INTERVAL_MS) {
       score_update_prev_milis = totalMsecs(time_now());
       update_score();
     }
@@ -85,14 +79,12 @@ int main() {
     if (can_rx(&msg)) {
       can_parse_input_msg(&msg, &input);
       bool button_state = input.buttons.R1;
-      joy_x =(int) low_pass_filter(input.joystick.x);
+      joy_x = (int)low_pass_filter(input.joystick.x);
       int x_servo = pos_to_us(input.joystick.y);
-
 
       if (button_state == 0) {
         piob_set_pin_high(17);
-      }
-      else {
+      } else {
         piob_set_pin_low(17);
       }
 
@@ -100,7 +92,6 @@ int main() {
     }
 
     PI_control(&PI, joy_x);
-    
   }
 }
 
@@ -128,12 +119,11 @@ static void can_tx_ir_blocked_msg() {
   can_tx(tx_msg);
 }
 
-void update_score(){
+void update_score() {
   can_msg_t tx_msg = {0};
   tx_msg.id = SCORE_UPDATE;
   tx_msg.length = 1;
   tx_msg.byte[0] = 1;
 
   can_tx(tx_msg);
-
 }

@@ -100,8 +100,8 @@ static void oled_init_timer_30hz() {
   TIMSK |= (1 << OCIE0);
 
   /*
-    use the following: (f_CPU / prescaler * target_freq) - 1
-    (4915200 / 1024 * 30) - 1 = 159
+    use the following: (f_CPU / prescaler * T_target_freq) - 1
+    (4915200 / 1024 * 1/30) - 1 = 159
   */
   OCR0 = 159;
   sei();
